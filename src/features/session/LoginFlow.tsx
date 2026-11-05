@@ -1,22 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Check } from 'lucide-react';
+import { Building2, Check, ClipboardCheck, HardHat } from 'lucide-react';
 import type { Role } from '@/core/types';
-import { SEED_WORKERS, SUPERVISOR } from '@/core/seed';
-import { Face, PeoplePicker, shortName, useWorkforce } from '@/features/workforce';
+import { PeoplePicker, shortName, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { SpeakButton, useSay } from '@/shared/voice';
 import { ActionBar, Pictogram } from '@/shared/ui';
+import type { IconType, PictoShape, PictoTone } from '@/shared/ui';
 import { useSession } from './store';
 
-const ROLES: Array<{ role: Role; path: string; title: Text; desc: Text; cta: Text }> = [
+const ROLES: Array<{ role: Role; path: string; title: Text; desc: Text; cta: Text; icon: IconType; tone: PictoTone; shape: PictoShape }> = [
   {
     role: 'worker',
     path: '/worker',
     title: { en: 'Worker', bn: 'শ্রমিক' },
     desc: { en: 'See your pay, make a complaint, ask for a raise.', bn: 'মজুরি দেখুন, অভিযোগ করুন, বেতন বাড়ানোর আবেদন করুন।' },
     cta: { en: 'I am a worker', bn: 'আমি শ্রমিক' },
+    icon: HardHat,
+    tone: 'mark',
+    shape: 'plate',
   },
   {
     role: 'supervisor',
@@ -24,6 +27,9 @@ const ROLES: Array<{ role: Role; path: string; title: Text; desc: Text; cta: Tex
     title: { en: 'Supervisor', bn: 'সুপারভাইজার' },
     desc: { en: 'Start the shift, give breaks, count the workers.', bn: 'শিফট শুরু করুন, বিরতি দিন, শ্রমিক গুনুন।' },
     cta: { en: 'I am the supervisor', bn: 'আমি সুপারভাইজার' },
+    icon: ClipboardCheck,
+    tone: 'guide',
+    shape: 'plate',
   },
   {
     role: 'admin',
@@ -31,15 +37,13 @@ const ROLES: Array<{ role: Role; path: string; title: Text; desc: Text; cta: Tex
     title: { en: 'Head office', bn: 'প্রধান কার্যালয়' },
     desc: { en: 'Approve pay and follow the whole project.', bn: 'মজুরি অনুমোদন করুন, পুরো প্রকল্প দেখুন।' },
     cta: { en: 'Open the office view', bn: 'অফিসের পাতা খুলুন' },
+    icon: Building2,
+    tone: 'sign',
+    shape: 'disc',
   },
 ];
 
-function RoleArt({ role }: { role: Role }) {
-  if (role === 'admin') return <Pictogram icon={Building2} tone="sign" shape="disc" size={84} />;
-  return <Face look={role === 'worker' ? SEED_WORKERS[1].look : SUPERVISOR.look} size={84} className="block rounded-full ring-4 ring-paper" />;
-}
-
-export type LoginStep = 'role' | 'face';
+export type LoginStep = 'role' | 'name';
 
 export function LoginFlow({ onStepChange }: { onStepChange?: (step: LoginStep) => void }) {
   const { t, tx } = useI18n();
@@ -62,14 +66,18 @@ export function LoginFlow({ onStepChange }: { onStepChange?: (step: LoginStep) =
     navigate(path);
   };
 
-  if (step === 'face') {
+  if (step === 'name') {
     return (
       <div className="pb-32">
-        <div className="mb-5 flex items-center gap-3">
-          <h1 className="font-sign text-4xl sm:text-5xl">{t('Tap your picture', 'আপনার ছবিতে চাপ দিন')}</h1>
-          <SpeakButton text={{ en: 'Tap your picture', bn: 'আপনার ছবিতে চাপ দিন' }} size="lg" />
+        <div className="mb-2 flex items-center gap-3">
+          <h1 className="font-sign text-3xl sm:text-5xl">{t('Tap your name', 'আপনার নামে চাপ দিন')}</h1>
+          <SpeakButton
+            text={{ en: 'Tap your name. The phone will say the name you tapped.', bn: 'আপনার নামে চাপ দিন। চাপ দিলে ফোন নামটি বলে দেবে।' }}
+            size="lg"
+          />
         </div>
-        <PeoplePicker people={workers} selected={picked ? [picked] : []} onPick={setPicked} size={84} />
+        <p className="mb-5 text-ink-soft sm:text-lg">{t('Each person has their own colour and work sign.', 'প্রত্যেকের আলাদা রং ও কাজের চিহ্ন আছে।')}</p>
+        <PeoplePicker people={workers} selected={picked ? [picked] : []} onPick={setPicked} size={80} />
         <ActionBar
           onBack={() => {
             setPicked(null);
@@ -77,10 +85,10 @@ export function LoginFlow({ onStepChange }: { onStepChange?: (step: LoginStep) =
           }}
           onNext={() => {
             if (me) enter('worker', '/worker', me.id);
-            else say({ en: 'Tap your picture first', bn: 'আগে আপনার ছবিতে চাপ দিন' });
+            else say({ en: 'Tap your name first', bn: 'আগে আপনার নামে চাপ দিন' });
           }}
           nextIcon={Check}
-          nextLabel={me ? t(`Yes, I am ${shortName(me, 'en')}`, `হ্যাঁ, আমি ${shortName(me, 'bn')}`) : t('Tap your picture', 'আপনার ছবিতে চাপ দিন')}
+          nextLabel={me ? t(`Yes, I am ${shortName(me, 'en')}`, `হ্যাঁ, আমি ${shortName(me, 'bn')}`) : t('Tap your name', 'আপনার নামে চাপ দিন')}
         />
       </div>
     );
@@ -89,8 +97,8 @@ export function LoginFlow({ onStepChange }: { onStepChange?: (step: LoginStep) =
   return (
     <div>
       <div className="mb-5 flex items-center gap-3">
-        <h1 className="font-sign text-4xl sm:text-5xl">{t('Who are you?', 'আপনি কে?')}</h1>
-        <SpeakButton text={{ en: 'Who are you? Tap your picture.', bn: 'আপনি কে? আপনার ছবিতে চাপ দিন।' }} size="lg" />
+        <h1 className="font-sign text-3xl sm:text-5xl">{t('Who are you?', 'আপনি কে?')}</h1>
+        <SpeakButton text={{ en: 'Who are you? Choose one.', bn: 'আপনি কে? একটি বেছে নিন।' }} size="lg" />
       </div>
       <div className="grid gap-3 md:grid-cols-3 md:gap-4">
         {ROLES.map((r) => (
@@ -98,7 +106,12 @@ export function LoginFlow({ onStepChange }: { onStepChange?: (step: LoginStep) =
             key={r.role}
             className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 rounded-3xl border-2 border-line bg-white p-4 transition hover:border-guide-600 md:flex md:flex-col md:p-6 md:text-center"
           >
-            <RoleArt role={r.role} />
+            <span className="md:hidden">
+              <Pictogram icon={r.icon} tone={r.tone} shape={r.shape} size={64} />
+            </span>
+            <span className="hidden md:block">
+              <Pictogram icon={r.icon} tone={r.tone} shape={r.shape} size={88} />
+            </span>
             <div className="min-w-0 md:mt-4 md:flex-1">
               <h2 className="font-sign text-3xl leading-tight">{tx(r.title)}</h2>
               <p className="mt-1 text-ink-soft">{tx(r.desc)}</p>
@@ -108,7 +121,7 @@ export function LoginFlow({ onStepChange }: { onStepChange?: (step: LoginStep) =
               type="button"
               onClick={() => {
                 hint(r.title);
-                if (r.role === 'worker') setStep('face');
+                if (r.role === 'worker') setStep('name');
                 else enter(r.role, r.path);
               }}
               className="col-span-3 mt-4 h-14 w-full rounded-2xl bg-guide-600 text-lg font-semibold text-white shadow-[0_3px_0_0_var(--color-guide-800)] transition after:absolute after:inset-0 after:rounded-3xl hover:bg-guide-700 active:translate-y-[2px] active:shadow-none md:mt-5"
