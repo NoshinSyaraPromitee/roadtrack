@@ -17,6 +17,6 @@ export const useSession = create<SessionState>()(
       login: (role, workerId = null) => set({ role, workerId }),
       logout: () => set({ role: null, workerId: null }),
     }),
-    { name: 'roadtrack-session' },
+    { name: 'roadtrack-v2-session' },
   ),
 );
