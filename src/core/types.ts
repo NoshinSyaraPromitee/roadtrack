@@ -1,19 +1,50 @@
+import type { Text } from '@/shared/i18n/types';
+
+export type { Text };
+
 export type Role = 'admin' | 'supervisor' | 'worker';
 export type Health = 'fit' | 'sick' | 'injured';
 export type BreakType = 'rest' | 'snack';
+export type PostKey = 'foreman' | 'mason' | 'operator' | 'roller' | 'laborer' | 'helper';
+export type MaterialKey = 'bitumen' | 'stone' | 'sand' | 'cement' | 'diesel';
+export type PayFlag = 'absent' | 'left' | 'senior' | 'sick' | 'injured';
+export type IncidentKey = 'waste' | 'mistake' | 'injury' | 'machine' | 'weather';
+export type ComplaintCategory = 'payment' | 'safety' | 'behaviour' | 'harassment' | 'conditions' | 'other';
+export type ComplaintStatus = 'open' | 'reviewing' | 'resolved';
+export type RaiseReason = 'responsibility' | 'skill' | 'prices' | 'hazard' | 'family' | 'other';
+export type RaiseStatus = 'pending' | 'approved' | 'rejected';
+export type PayrollStatus = 'pending' | 'approved';
 
-export interface Worker {
+export type HairStyle = 'short' | 'side' | 'bald' | 'cap' | 'scarf' | 'helmet';
+
+/** Drawing instructions for a worker's face. hairColor is also the colour of a cap, scarf or helmet. */
+export interface Look {
+  skin: string;
+  hair: HairStyle;
+  hairColor: string;
+  beard?: 'full' | 'moustache';
+  beardColor?: string;
+  shirt: string;
+  glasses?: boolean;
+  bg: string;
+}
+
+export interface Person {
   id: string;
   name: string;
-  post: string;
+  nameBn: string;
+  look: Look;
+}
+
+export interface Worker extends Person {
+  post: PostKey;
   age: number;
   dailyRate: number;
   phone: string;
 }
 
 export interface MaterialLine {
-  name: string;
-  unit: string;
+  key: MaterialKey;
   allocated: number;
   used: number;
   wasted: number;
@@ -35,21 +66,16 @@ export interface BreakLog {
 
 export interface PayrollLine {
   workerId: string;
-  name: string;
-  post: string;
   basePay: number;
   deduction: number;
   welfareBonus: number;
   total: number;
-  notes: string[];
+  flags: PayFlag[];
 }
-
-export type PayrollStatus = 'pending' | 'approved';
 
 export interface Shift {
   id: string;
   site: string;
-  supervisor: string;
   startedAt: string;
   endedAt?: string;
   status: 'active' | 'completed';
@@ -58,40 +84,38 @@ export interface Shift {
   attendance: Attendance[];
   materials: MaterialLine[];
   breaks: BreakLog[];
+  incidentTags: IncidentKey[];
   incidents: string;
   payroll: PayrollLine[];
   payrollStatus?: PayrollStatus;
 }
 
-export type ComplaintStatus = 'open' | 'reviewing' | 'resolved';
-
 export interface Complaint {
   id: string;
   fromWorkerId: string;
   anonymous: boolean;
-  against: string;
-  category: string;
+  againstId: string;
+  category: ComplaintCategory;
   message: string;
+  audio?: string;
   createdAt: string;
   status: ComplaintStatus;
 }
-
-export type RaiseStatus = 'pending' | 'approved' | 'rejected';
 
 export interface RaiseRequest {
   id: string;
   workerId: string;
   currentRate: number;
   requestedRate: number;
-  reason: string;
+  reason: RaiseReason;
   details: string;
+  audio?: string;
   createdAt: string;
   status: RaiseStatus;
 }
 
 export interface Project {
-  name: string;
-  section: string;
+  name: Text;
+  section: Text;
   lengthKm: number;
-  supervisor: string;
 }

@@ -1,4 +1,4 @@
-import type { Attendance, PayrollLine, Worker } from './types';
+import type { Attendance, PayFlag, PayrollLine, Worker } from './types';
 
 export const PAYROLL_RULES = {
   seniorAge: 50,
@@ -8,34 +8,33 @@ export const PAYROLL_RULES = {
 } as const;
 
 export function calculatePayLine(worker: Worker, a: Attendance): PayrollLine {
-  const base = { workerId: worker.id, name: worker.name, post: worker.post };
   if (!a.presentAtStart) {
-    return { ...base, basePay: 0, deduction: 0, welfareBonus: 0, total: 0, notes: ['Absent'] };
+    return { workerId: worker.id, basePay: 0, deduction: 0, welfareBonus: 0, total: 0, flags: ['absent'] };
   }
 
-  const notes: string[] = [];
+  const flags: PayFlag[] = [];
   const basePay = worker.dailyRate;
 
   const deduction = a.presentAtEnd ? 0 : (basePay * PAYROLL_RULES.earlyLeaveCutPct) / 100;
-  if (!a.presentAtEnd) notes.push(`Missing at recount -${PAYROLL_RULES.earlyLeaveCutPct}%`);
+  if (!a.presentAtEnd) flags.push('left');
 
   let welfareBonus = 0;
   if (worker.age >= PAYROLL_RULES.seniorAge) {
     welfareBonus += (basePay * PAYROLL_RULES.seniorBonusPct) / 100;
-    notes.push(`Senior (${worker.age}) +${PAYROLL_RULES.seniorBonusPct}%`);
+    flags.push('senior');
   }
   if (a.health !== 'fit') {
     welfareBonus += (basePay * PAYROLL_RULES.healthBonusPct) / 100;
-    notes.push(`${a.health === 'sick' ? 'Sick' : 'Injured'} support +${PAYROLL_RULES.healthBonusPct}%`);
+    flags.push(a.health);
   }
 
   return {
-    ...base,
+    workerId: worker.id,
     basePay,
     deduction: Math.round(deduction),
     welfareBonus: Math.round(welfareBonus),
     total: Math.round(basePay - deduction + welfareBonus),
-    notes,
+    flags,
   };
 }
 
