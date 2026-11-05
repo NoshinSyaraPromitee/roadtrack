@@ -1,12 +1,84 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Anek Bangla Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-paper: #eceeea;
+  --color-ink: #1f2623;
+  --color-ink-soft: #56615b;
+  --color-line: #d5dad4;
+  --color-asphalt: #2c3330;
+
+  --color-guide-50: #e6f3ec;
+  --color-guide-100: #c8e6d6;
+  --color-guide-200: #93ccae;
+  --color-guide-500: #0e8459;
+  --color-guide-600: #0a6b4a;
+  --color-guide-700: #08573c;
+  --color-guide-800: #06422e;
+
+  --color-mark-100: #fff4cc;
+  --color-mark-300: #ffdc66;
+  --color-mark-400: #ffc930;
+  --color-mark-600: #b88700;
+  --color-mark-800: #634900;
+
+  --color-stop-50: #fdecee;
+  --color-stop-100: #f8c9d0;
+  --color-stop-500: #d3263a;
+  --color-stop-600: #b51d30;
+  --color-stop-700: #8c1424;
+
+  --color-sign-50: #e8f0fa;
+  --color-sign-100: #c8daf1;
+  --color-sign-500: #1c5fb0;
+  --color-sign-600: #164e92;
+  --color-sign-800: #0e3566;
 }
 
-html { -webkit-tap-highlight-color: transparent; }
-body { @apply bg-stone-100 text-zinc-900 antialiased; }
+@utility font-sign {
+  font-stretch: 80%;
+  font-weight: 720;
+  letter-spacing: 0.002em;
+}
 
-.hazard {
-  background-image: repeating-linear-gradient(-45deg, #fbbf24 0 14px, #18181b 14px 28px);
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-weight: 430;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-sign-500);
+  outline-offset: 2px;
+}
+
+.road-dash {
+  background-image: repeating-linear-gradient(90deg, #ffffff 0 16px, transparent 16px 30px);
+}
+
+.gravel {
+  background-color: #d9ddd6;
+  background-image: radial-gradient(#b4bab1 1.1px, transparent 1.3px), radial-gradient(#c6cbc3 1px, transparent 1.2px);
+  background-size: 9px 9px, 6px 6px;
+  background-position: 0 0, 3px 4px;
+}
+
+.today-paint {
+  background-image: repeating-linear-gradient(-45deg, rgba(255, 201, 48, 0.95) 0 8px, rgba(255, 201, 48, 0.7) 8px 16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
