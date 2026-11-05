@@ -17,7 +17,7 @@ export function PayrollList({ lines }: { lines: PayrollLine[] }) {
           if (!w) return null;
           return (
             <li key={l.workerId} className={cn('grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 py-3', l.total === 0 && 'opacity-60')}>
-              <Avatar person={w} size={48} badge={false} dim={l.total === 0} />
+              <Avatar person={w} size={48} dim={l.total === 0} />
               <div className="min-w-0">
                 <p className="truncate font-semibold leading-tight">{personName(w, i.lang)}</p>
                 <p className="mb-1.5 truncate text-sm text-ink-soft">{i.tx(roleOf(w))}</p>

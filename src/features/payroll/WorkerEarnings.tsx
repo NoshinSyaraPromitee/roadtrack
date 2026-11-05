@@ -1,6 +1,6 @@
 import { CalendarCheck, CircleCheck, HandCoins, HeartHandshake, Hourglass } from 'lucide-react';
 import type { Shift, Worker } from '@/core/types';
-import { Face, shortName } from '@/features/workforce';
+import { Avatar, shortName } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import { SpeakButton } from '@/shared/voice';
 import { Badge, Card, CardHeader, EmptyState, Pictogram } from '@/shared/ui';
@@ -28,39 +28,41 @@ export function WorkerEarnings({ shifts, worker }: { shifts: Shift[]; worker: Wo
   };
 
   return (
-    <div className="space-y-4">
-      <section className="relative overflow-hidden rounded-3xl bg-guide-600 p-5 text-white">
-        <div className="pointer-events-none absolute inset-2 rounded-[20px] border-2 border-white/80" />
-        <div className="relative">
-          <div className="flex items-center gap-3">
-            <Face look={worker.look} size={56} className="rounded-full ring-2 ring-white" />
-            <div className="min-w-0 flex-1">
-              <p className="text-white/80">{i.t('Your money', 'আপনার টাকা')}</p>
-              <p className="truncate font-sign text-2xl leading-tight">{shortName(worker, i.lang)}</p>
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:items-start lg:gap-6">
+      <div className="space-y-4">
+        <section className="relative overflow-hidden rounded-3xl bg-guide-600 p-5 text-white lg:p-6">
+          <div className="pointer-events-none absolute inset-2 rounded-[20px] border-2 border-white/80" />
+          <div className="relative">
+            <div className="flex items-center gap-3">
+              <Avatar person={worker} size={56} />
+              <div className="min-w-0 flex-1">
+                <p className="text-white/80">{i.t('Your money', 'আপনার টাকা')}</p>
+                <p className="truncate font-sign text-2xl leading-tight">{shortName(worker, i.lang)}</p>
+              </div>
+              <SpeakButton text={summary} tone="dark" size="lg" />
             </div>
-            <SpeakButton text={summary} tone="dark" size="lg" />
+            <p className="mt-5 text-white/85">{i.t('Paid to you', 'আপনি পেয়েছেন')}</p>
+            <p className="font-sign text-6xl leading-none tabular-nums">{i.taka(paid)}</p>
+            <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5">
+              <HandCoins className="h-5 w-5" />
+              {i.t(`Daily pay ${i.taka(worker.dailyRate)}`, `দৈনিক মজুরি ${i.taka(worker.dailyRate)}`)}
+            </p>
           </div>
-          <p className="mt-5 text-white/85">{i.t('Paid to you', 'আপনি পেয়েছেন')}</p>
-          <p className="font-sign text-6xl leading-none tabular-nums">{i.taka(paid)}</p>
-          <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5">
-            <HandCoins className="h-5 w-5" />
-            {i.t(`Daily pay ${i.taka(worker.dailyRate)}`, `দৈনিক মজুরি ${i.taka(worker.dailyRate)}`)}
-          </p>
-        </div>
-      </section>
+        </section>
 
-      <div className="grid grid-cols-3 gap-2">
-        {[
-          { icon: Hourglass, tone: 'mark' as const, label: i.t('Waiting', 'অপেক্ষায়'), value: i.taka(waiting) },
-          { icon: CalendarCheck, tone: 'guide' as const, label: i.t('Days worked', 'কাজের দিন'), value: i.num(days) },
-          { icon: HeartHandshake, tone: 'sign' as const, label: i.t('Extra help', 'বাড়তি সহায়তা'), value: i.taka(extra) },
-        ].map((s) => (
-          <div key={s.label} className="flex flex-col items-center gap-2 rounded-2xl border border-line bg-white px-2 py-3 text-center">
-            <Pictogram icon={s.icon} tone={s.tone} size={40} />
-            <p className="font-sign text-2xl leading-none tabular-nums">{s.value}</p>
-            <p className="text-sm leading-tight text-ink-soft">{s.label}</p>
-          </div>
-        ))}
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { icon: Hourglass, tone: 'mark' as const, label: i.t('Waiting', 'অপেক্ষায়'), value: i.taka(waiting) },
+            { icon: CalendarCheck, tone: 'guide' as const, label: i.t('Days worked', 'কাজের দিন'), value: i.num(days) },
+            { icon: HeartHandshake, tone: 'sign' as const, label: i.t('Extra help', 'বাড়তি সহায়তা'), value: i.taka(extra) },
+          ].map((s) => (
+            <div key={s.label} className="flex flex-col items-center gap-2 rounded-2xl border border-line bg-white px-2 py-3 text-center">
+              <Pictogram icon={s.icon} tone={s.tone} size={40} />
+              <p className="font-sign text-2xl leading-none tabular-nums">{s.value}</p>
+              <p className="text-sm leading-tight text-ink-soft">{s.label}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <Card>
