@@ -1,0 +1,10 @@
+import type { ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
+import type { Role } from '@/core/types';
+import { useSession } from '@/features/session';
+
+export function RequireRole({ role, children }: { role: Role; children: ReactNode }) {
+  const current = useSession((s) => s.role);
+  if (current !== role) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
