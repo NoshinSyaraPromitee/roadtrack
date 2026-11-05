@@ -1,24 +1,34 @@
 import type { ReactNode } from 'react';
-import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+import type { IconType } from './icons';
+import { Pictogram } from './Pictogram';
+import type { PictoShape, PictoTone } from './Pictogram';
 
-interface Props {
+export function StatCard({
+  label,
+  value,
+  hint,
+  icon,
+  tone = 'guide',
+  shape = 'plate',
+  className,
+}: {
   label: string;
   value: ReactNode;
   hint?: ReactNode;
-  icon: LucideIcon;
-  accent?: boolean;
-}
-
-export function StatCard({ label, value, hint, icon: Icon, accent = false }: Props) {
+  icon: IconType;
+  tone?: PictoTone;
+  shape?: PictoShape;
+  className?: string;
+}) {
   return (
-    <div className={cn('rounded-2xl border p-4 shadow-sm', accent ? 'border-zinc-800 bg-zinc-900 text-white' : 'border-zinc-200 bg-white')}>
-      <div className="flex items-center justify-between gap-2">
-        <p className={cn('text-xs font-semibold uppercase tracking-wide', accent ? 'text-zinc-400' : 'text-zinc-500')}>{label}</p>
-        <Icon className={cn('h-4 w-4', accent ? 'text-amber-400' : 'text-amber-600')} />
+    <div className={cn('flex flex-col gap-2 rounded-2xl border border-line bg-white p-4 sm:flex-row sm:items-start sm:gap-3', className)}>
+      <Pictogram icon={icon} tone={tone} shape={shape} size={40} />
+      <div className="min-w-0">
+        <p className="text-sm text-ink-soft">{label}</p>
+        <p className="mt-0.5 font-sign text-[1.7rem] leading-none tabular-nums sm:text-3xl">{value}</p>
+        {hint && <p className="mt-1.5 text-sm text-ink-soft">{hint}</p>}
       </div>
-      <p className="mt-2 truncate text-2xl font-extrabold tracking-tight tabular-nums">{value}</p>
-      {hint && <p className={cn('mt-1 truncate text-xs', accent ? 'text-zinc-400' : 'text-zinc-500')}>{hint}</p>}
     </div>
   );
 }

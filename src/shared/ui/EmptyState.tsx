@@ -1,11 +1,12 @@
-import type { LucideIcon } from 'lucide-react';
+import type { IconType } from './icons';
+import { Pictogram } from './Pictogram';
 
-export function EmptyState({ icon: Icon, title, text }: { icon: LucideIcon; title: string; text?: string }) {
+export function EmptyState({ icon, title, text }: { icon: IconType; title: string; text?: string }) {
   return (
-    <div className="flex flex-col items-center rounded-xl border border-dashed border-zinc-300 px-4 py-8 text-center">
-      <Icon className="h-8 w-8 text-zinc-400" />
-      <p className="mt-2 font-semibold text-zinc-800">{title}</p>
-      {text && <p className="mt-1 text-sm text-zinc-500">{text}</p>}
+    <div className="flex flex-col items-center rounded-2xl border-2 border-dashed border-line px-4 py-8 text-center">
+      <Pictogram icon={icon} tone="muted" size={52} />
+      <p className="mt-3 text-lg font-semibold">{title}</p>
+      {text && <p className="mt-1 max-w-sm text-ink-soft">{text}</p>}
     </div>
   );
 }

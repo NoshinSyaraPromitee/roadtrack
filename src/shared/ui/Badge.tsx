@@ -1,19 +1,22 @@
 import type { ReactNode } from 'react';
 import { cn } from '@/shared/lib/utils';
+import type { IconType } from './icons';
 
-export type Tone = 'neutral' | 'amber' | 'green' | 'red' | 'blue';
+export type Tone = 'green' | 'yellow' | 'red' | 'blue' | 'neutral';
 
 const tones: Record<Tone, string> = {
-  neutral: 'bg-zinc-100 text-zinc-700 ring-zinc-200',
-  amber: 'bg-amber-50 text-amber-800 ring-amber-200',
-  green: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-  red: 'bg-red-50 text-red-700 ring-red-200',
-  blue: 'bg-sky-50 text-sky-700 ring-sky-200',
+  green: 'bg-guide-50 text-guide-700 ring-guide-200',
+  yellow: 'bg-mark-100 text-mark-800 ring-mark-300',
+  red: 'bg-stop-50 text-stop-700 ring-stop-100',
+  blue: 'bg-sign-50 text-sign-600 ring-sign-100',
+  neutral: 'bg-white text-ink-soft ring-line',
 };
 
-export function Badge({ tone = 'neutral', children, className }: { tone?: Tone; children: ReactNode; className?: string }) {
+/** Status chips always pair a colour with an icon, so colour is never the only signal. */
+export function Badge({ tone = 'neutral', icon: Icon, children, className }: { tone?: Tone; icon?: IconType; children: ReactNode; className?: string }) {
   return (
-    <span className={cn('inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset', tones[tone], className)}>
+    <span className={cn('inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-sm font-semibold ring-1 ring-inset', tones[tone], className)}>
+      {Icon && <Icon className="h-4 w-4 shrink-0" strokeWidth={2.4} />}
       {children}
     </span>
   );
