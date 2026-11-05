@@ -1,33 +1,39 @@
-import { Fragment, useState } from 'react';
-import { ChevronDown, Download, FileText } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronDown, CircleCheck, Coffee, Cookie, Download, FileText, Hourglass, MapPin, Users } from 'lucide-react';
+import { INCIDENTS, MATERIAL_BY_KEY } from '@/core/catalog';
 import { payrollTotal } from '@/core/payroll';
-import { useCompletedShifts } from '@/features/shift';
-import { Badge, Button, Card, CardHeader } from '@/shared/ui';
-import { cn, fmtDate, fmtTime, pct, sum, taka } from '@/shared/lib/utils';
+import { INCIDENT_ICON, MaterialPicto, useCompletedShifts } from '@/features/shift';
+import { useI18n } from '@/shared/i18n';
+import { Badge, Button, Card, CardHeader, StackBar } from '@/shared/ui';
+import { cn, pct, sum } from '@/shared/lib/utils';
 
 export function ShiftRecords() {
-  const shifts = useCompletedShifts();
-  const rows = [...shifts].reverse();
+  const i = useI18n();
+  const { t, tx, num, fixed } = i;
+  const rows = [...useCompletedShifts()].reverse();
   const [open, setOpen] = useState<string | null>(null);
 
   const exportCsv = () => {
-    const header = ['Date', 'Location', 'Clock in', 'Clock out', 'Clocked in', 'At recount', 'Start %', 'End %', 'Breaks', 'Payroll BDT', 'Payroll status', 'Incidents'];
+    const header = ['Date', 'Site', 'Clock in', 'Clock out', 'Clocked in', 'At recount', 'Start %', 'End %', 'Rest breaks', 'Snack breaks', 'Wastage %', 'Payroll BDT', 'Payroll status', 'Problems', 'Notes'];
     const body = rows.map((s) => [
-      fmtDate(s.startedAt),
+      new Date(s.startedAt).toLocaleDateString('en-GB'),
       s.site,
-      fmtTime(s.startedAt),
-      s.endedAt ? fmtTime(s.endedAt) : '',
+      new Date(s.startedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+      s.endedAt ? new Date(s.endedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '',
       s.attendance.filter((a) => a.presentAtStart).length,
       s.attendance.filter((a) => a.presentAtStart && a.presentAtEnd).length,
       s.startProgress,
       s.endProgress ?? '',
-      s.breaks.length,
+      s.breaks.filter((b) => b.type === 'rest').length,
+      s.breaks.filter((b) => b.type === 'snack').length,
+      (sum(s.materials.map((m) => pct(m.wasted, m.used + m.wasted))) / (s.materials.length || 1)).toFixed(1),
       payrollTotal(s.payroll),
       s.payrollStatus ?? '',
+      s.incidentTags.map((k) => INCIDENTS[k].en).join('; '),
       s.incidents,
     ]);
     const csv = [header, ...body].map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
-    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
     const a = document.createElement('a');
     a.href = url;
     a.download = 'roadtrack-shift-records.csv';
@@ -39,101 +45,128 @@ export function ShiftRecords() {
     <Card>
       <CardHeader
         icon={FileText}
-        title="Project records"
-        subtitle="Every shift as recorded by the supervisor. Click a row for details."
+        tone="plain"
+        title={t('Every shift on record', 'সব শিফটের রেকর্ড')}
+        subtitle={t('Tap a day to see the details.', 'বিস্তারিত দেখতে একটি দিনে চাপ দিন।')}
         action={
-          <Button size="sm" variant="secondary" onClick={exportCsv}>
-            <Download className="h-4 w-4" /> Export CSV
+          <Button variant="secondary" onClick={exportCsv}>
+            <Download />
+            {t('Download CSV', 'CSV ডাউনলোড')}
           </Button>
         }
       />
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[760px] text-sm">
-          <thead>
-            <tr className="border-b border-zinc-200 text-left text-xs uppercase tracking-wide text-zinc-500">
-              <th className="py-2 pr-3 font-semibold">Date</th>
-              <th className="py-2 pr-3 font-semibold">Location</th>
-              <th className="py-2 pr-3 font-semibold">Crew</th>
-              <th className="py-2 pr-3 font-semibold">Progress</th>
-              <th className="py-2 pr-3 font-semibold">Wastage</th>
-              <th className="py-2 pr-3 font-semibold">Payroll</th>
-              <th className="py-2 pr-3 font-semibold">Status</th>
-              <th className="py-2" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-100">
-            {rows.map((s) => {
-              const isOpen = open === s.id;
-              const present = s.attendance.filter((a) => a.presentAtStart).length;
-              const recount = s.attendance.filter((a) => a.presentAtStart && a.presentAtEnd).length;
-              const waste = sum(s.materials.map((m) => pct(m.wasted, m.used + m.wasted))) / (s.materials.length || 1);
-              const gained = (s.endProgress ?? s.startProgress) - s.startProgress;
-              return (
-                <Fragment key={s.id}>
-                  <tr className="cursor-pointer hover:bg-zinc-50" onClick={() => setOpen(isOpen ? null : s.id)}>
-                    <td className="py-3 pr-3 font-semibold">{fmtDate(s.startedAt)}</td>
-                    <td className="py-3 pr-3 text-zinc-600">{s.site}</td>
-                    <td className="py-3 pr-3 tabular-nums">
-                      {present}/{s.attendance.length}
-                    </td>
-                    <td className="py-3 pr-3 tabular-nums">
-                      {s.endProgress}% <span className="text-xs text-emerald-600">+{gained.toFixed(1)}</span>
-                    </td>
-                    <td className={cn('py-3 pr-3 tabular-nums', waste > 5 ? 'font-semibold text-red-600' : 'text-zinc-600')}>{waste.toFixed(1)}%</td>
-                    <td className="py-3 pr-3 font-semibold tabular-nums">{taka(payrollTotal(s.payroll))}</td>
-                    <td className="py-3 pr-3">
-                      <Badge tone={s.payrollStatus === 'approved' ? 'green' : 'amber'}>{s.payrollStatus === 'approved' ? 'Paid' : 'Pending'}</Badge>
-                    </td>
-                    <td className="py-3">
-                      <ChevronDown className={cn('h-4 w-4 text-zinc-400 transition', isOpen && 'rotate-180')} />
-                    </td>
-                  </tr>
-                  {isOpen && (
-                    <tr>
-                      <td colSpan={8} className="bg-zinc-50 px-4 py-4">
-                        <div className="grid gap-6 md:grid-cols-3">
-                          <div>
-                            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Materials</p>
-                            <ul className="space-y-1">
-                              {s.materials.map((m) => (
-                                <li key={m.name} className="flex justify-between gap-2">
-                                  <span>{m.name}</span>
-                                  <span className="tabular-nums text-zinc-600">
-                                    {m.used} used | <span className={cn(m.wasted > 0 && 'text-red-600')}>{m.wasted} wasted</span> {m.unit}
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
+      <ul className="space-y-2">
+        {rows.map((s) => {
+          const isOpen = open === s.id;
+          const present = s.attendance.filter((a) => a.presentAtStart).length;
+          const stayed = s.attendance.filter((a) => a.presentAtStart && a.presentAtEnd).length;
+          const waste = sum(s.materials.map((m) => pct(m.wasted, m.used + m.wasted))) / (s.materials.length || 1);
+          const gained = (s.endProgress ?? s.startProgress) - s.startProgress;
+          const paid = s.payrollStatus === 'approved';
+          return (
+            <li key={s.id} className="overflow-hidden rounded-2xl border border-line">
+              <button
+                type="button"
+                aria-expanded={isOpen}
+                onClick={() => setOpen(isOpen ? null : s.id)}
+                className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-3 text-left hover:bg-paper/60 sm:gap-4 sm:p-4"
+              >
+                <div className="grid w-14 place-items-center rounded-xl bg-paper py-1.5 text-center leading-none">
+                  <span className="text-xs text-ink-soft">{i.weekday(s.startedAt)}</span>
+                  <span className="font-sign text-2xl">{i.day(s.startedAt)}</span>
+                  <span className="text-xs text-ink-soft">{i.month(s.startedAt)}</span>
+                </div>
+                <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
+                  <span className="inline-flex items-center gap-1 text-ink-soft">
+                    <MapPin className="h-4 w-4" />
+                    {s.site}
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <Users className="h-4 w-4 text-ink-soft" />
+                    {num(stayed)}/{num(present)}
+                  </span>
+                  <span className="font-semibold text-guide-700">+{fixed(gained)}%</span>
+                  <span className={cn(waste > 5 ? 'font-semibold text-stop-600' : 'text-ink-soft')}>
+                    {t('Waste', 'নষ্ট')} {fixed(waste)}%
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <p className="font-sign text-xl tabular-nums">{i.taka(payrollTotal(s.payroll))}</p>
+                    <Badge tone={paid ? 'green' : 'yellow'} icon={paid ? CircleCheck : Hourglass}>
+                      {paid ? t('Paid', 'পরিশোধিত') : t('Waiting', 'অপেক্ষায়')}
+                    </Badge>
+                  </div>
+                  <ChevronDown className={cn('h-5 w-5 text-ink-soft transition', isOpen && 'rotate-180')} />
+                </div>
+              </button>
+              {isOpen && (
+                <div className="grid gap-5 border-t border-line bg-paper/50 p-4 md:grid-cols-3">
+                  <div>
+                    <p className="mb-2 font-semibold">{t('Materials', 'মালামাল')}</p>
+                    <ul className="space-y-2.5">
+                      {s.materials.map((m) => (
+                        <li key={m.key} className="flex items-center gap-2.5">
+                          <MaterialPicto k={m.key} size={30} />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex justify-between gap-2 text-sm">
+                              <span>{tx(MATERIAL_BY_KEY[m.key].name)}</span>
+                              <span className="tabular-nums text-ink-soft">
+                                {num(m.used)} <span className="text-stop-600">+{num(m.wasted)}</span> / {num(m.allocated)}
+                              </span>
+                            </div>
+                            <StackBar
+                              className="mt-1 h-2"
+                              total={m.allocated}
+                              parts={[
+                                { value: m.used, className: 'bg-guide-500' },
+                                { value: m.wasted, className: 'bg-stop-500' },
+                              ]}
+                            />
                           </div>
-                          <div>
-                            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Shift log</p>
-                            <ul className="space-y-1 text-zinc-600">
-                              <li>
-                                Clocked in {fmtTime(s.startedAt)}, out {s.endedAt ? fmtTime(s.endedAt) : '-'}
-                              </li>
-                              <li>
-                                {s.breaks.length} breaks ({s.breaks.filter((b) => b.type === 'snack').length} with snacks)
-                              </li>
-                              <li>
-                                Recount: {recount} of {present} present
-                              </li>
-                              <li>Supervisor: {s.supervisor}</li>
-                            </ul>
-                          </div>
-                          <div>
-                            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Incidents</p>
-                            <p className="text-zinc-600">{s.incidents || 'No incidents reported.'}</p>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </Fragment>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="mb-2 font-semibold">{t('Shift log', 'শিফটের হিসাব')}</p>
+                    <ul className="space-y-1.5 text-ink-soft">
+                      <li>
+                        {t('From', 'সময়')} {i.time(s.startedAt)} {t('to', 'থেকে')} {s.endedAt ? i.time(s.endedAt) : '—'}
+                      </li>
+                      <li className="flex flex-wrap gap-1.5">
+                        {s.breaks.map((b) => (
+                          <Badge key={b.id} tone={b.type === 'snack' ? 'yellow' : 'blue'} icon={b.type === 'snack' ? Cookie : Coffee}>
+                            {i.time(b.at)}
+                          </Badge>
+                        ))}
+                      </li>
+                      <li>{t(`${num(stayed)} of ${num(present)} stayed till the end`, `${num(present)} জনের মধ্যে ${num(stayed)} জন শেষ পর্যন্ত ছিলেন`)}</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="mb-2 font-semibold">{t('Problems', 'সমস্যা')}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {s.incidentTags.length === 0 ? (
+                        <Badge tone="green" icon={CircleCheck}>
+                          {t('None', 'নেই')}
+                        </Badge>
+                      ) : (
+                        s.incidentTags.map((k) => (
+                          <Badge key={k} tone="red" icon={INCIDENT_ICON[k]}>
+                            {tx(INCIDENTS[k])}
+                          </Badge>
+                        ))
+                      )}
+                    </div>
+                    {s.incidents && <p className="mt-2 text-ink-soft">{s.incidents}</p>}
+                  </div>
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </Card>
   );
 }

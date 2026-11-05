@@ -1,53 +1,62 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { LogOut, RotateCcw } from 'lucide-react';
-import { PROJECT } from '@/core/seed';
+import { Building2, LogOut, RotateCcw } from 'lucide-react';
+import { SUPERVISOR } from '@/core/seed';
 import { useSession } from '@/features/session';
-import { useWorker } from '@/features/workforce';
-import { Logo } from '@/shared/ui';
-
-const ROLE_LABEL = { admin: 'Higher Authority', supervisor: 'Supervisor', worker: 'Worker' } as const;
+import { Face, roleOf, shortName, useWorker } from '@/features/workforce';
+import { LangToggle, useI18n } from '@/shared/i18n';
+import { VoiceGuideToggle } from '@/shared/voice';
+import { Logo, Pictogram } from '@/shared/ui';
 
 export function AppShell() {
+  const i = useI18n();
   const role = useSession((s) => s.role);
   const workerId = useSession((s) => s.workerId);
   const logout = useSession((s) => s.logout);
   const worker = useWorker(workerId);
   const navigate = useNavigate();
 
-  const who = role === 'worker' ? worker?.name : role === 'supervisor' ? PROJECT.supervisor : 'Project Director';
+  const person = role === 'worker' ? worker : role === 'supervisor' ? SUPERVISOR : undefined;
 
   const resetDemo = () => {
-    if (!window.confirm('Reset all demo data to the original sample project?')) return;
+    if (!window.confirm(i.t('Reset all demo data to the sample project?', 'সব ডেমো তথ্য মুছে নমুনা প্রকল্পে ফিরে যাবেন?'))) return;
     Object.keys(localStorage)
-      .filter((k) => k.startsWith('roadtrack-'))
+      .filter((k) => k.startsWith('roadtrack-') && k !== 'roadtrack-v2-lang')
       .forEach((k) => localStorage.removeItem(k));
     window.location.href = '/';
   };
 
   return (
     <div className="min-h-screen">
-      <div className="hazard h-1.5" />
-      <header className="sticky top-0 z-30 border-b border-zinc-800 bg-zinc-900/95 text-white backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-          <Link to="/" className="flex items-center gap-3">
-            <Logo />
-            <span className="hidden border-l border-zinc-700 pl-3 text-xs text-zinc-400 md:block">{PROJECT.name}</span>
+      <header className="sticky top-0 z-30 bg-guide-700 text-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-2.5">
+          <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="RoadTrack">
+            <Logo tone="light" className="[&>span:last-child]:hidden sm:[&>span:last-child]:inline" />
           </Link>
-          <div className="flex items-center gap-1 sm:gap-2">
-            {role && (
-              <div className="mr-1 hidden text-right sm:block">
-                <p className="text-sm font-semibold leading-tight">{who}</p>
-                <p className="text-[11px] uppercase tracking-wider text-amber-400">{ROLE_LABEL[role]}</p>
-              </div>
-            )}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {person ? (
+              <span className="mr-1 hidden items-center gap-2 md:flex">
+                <Face look={person.look} size={36} className="rounded-full ring-2 ring-white/80" />
+                <span className="leading-tight">
+                  <span className="block font-semibold">{shortName(person, i.lang)}</span>
+                  <span className="block text-sm text-white/75">{i.tx(roleOf(person))}</span>
+                </span>
+              </span>
+            ) : role === 'admin' ? (
+              <span className="mr-1 hidden items-center gap-2 md:flex">
+                <Pictogram icon={Building2} tone="sign" shape="disc" size={36} />
+                <span className="font-semibold">{i.t('Head office', 'প্রধান কার্যালয়')}</span>
+              </span>
+            ) : null}
+            <LangToggle tone="dark" />
+            <VoiceGuideToggle />
             <button
               type="button"
               onClick={resetDemo}
-              title="Reset demo data"
-              aria-label="Reset demo data"
-              className="grid h-9 w-9 place-items-center rounded-lg text-zinc-400 transition hover:bg-white/10 hover:text-white"
+              title={i.t('Reset demo data', 'ডেমো তথ্য রিসেট')}
+              aria-label={i.t('Reset demo data', 'ডেমো তথ্য রিসেট')}
+              className="grid h-10 w-10 place-items-center rounded-full text-white/80 transition hover:bg-white/10 hover:text-white"
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw className="h-5 w-5" />
             </button>
             <button
               type="button"
@@ -55,15 +64,16 @@ export function AppShell() {
                 logout();
                 navigate('/');
               }}
-              className="flex h-9 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-zinc-200 transition hover:bg-white/10"
+              aria-label={i.t('Switch user', 'ব্যবহারকারী বদলান')}
+              className="flex h-10 items-center gap-2 rounded-full bg-white/10 px-3 font-semibold transition hover:bg-white/20"
             >
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Switch role</span>
+              <LogOut className="h-5 w-5" />
+              <span className="hidden lg:inline">{i.t('Switch user', 'ব্যবহারকারী বদলান')}</span>
             </button>
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-6 md:py-10">
+      <main className="mx-auto max-w-6xl px-4 py-5 md:py-8">
         <Outlet />
       </main>
     </div>

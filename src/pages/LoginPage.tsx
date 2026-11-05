@@ -1,25 +1,47 @@
-import { RolePicker } from '@/features/session';
-import { Logo } from '@/shared/ui';
+import { useState } from 'react';
+import { PROJECT } from '@/core/seed';
+import { LoginFlow } from '@/features/session';
+import type { LoginStep } from '@/features/session';
+import { useProjectProgress } from '@/features/shift';
+import { LangToggle, useI18n } from '@/shared/i18n';
+import { Logo, RoadStrip } from '@/shared/ui';
 
 export function LoginPage() {
+  const i = useI18n();
+  const progress = useProjectProgress();
+  const [step, setStep] = useState<LoginStep>('role');
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
-      <div className="hazard h-2" />
-      <div className="mx-auto max-w-6xl px-4 py-12 md:py-20">
-        <Logo />
-        <h1 className="mt-10 max-w-3xl text-4xl font-extrabold leading-tight tracking-tight md:text-6xl">
-          Every worker counted.
-          <br />
-          <span className="text-amber-400">Every taka accounted for.</span>
-        </h1>
-        <p className="mt-5 max-w-2xl text-zinc-400 md:text-lg">
-          RoadTrack digitises the daily road construction shift: crew clock-in, material issue, rest and snack reminders, end-of-shift recount and fair payroll
-          with extra credit for senior and sick workers.
-        </p>
-        <p className="mb-4 mt-10 text-xs font-semibold uppercase tracking-widest text-zinc-500">Choose a role to explore the demo</p>
-        <RolePicker />
-        <p className="mt-8 text-xs text-zinc-500">Demo data is stored in your browser. Use the reset button in the header to start fresh.</p>
-      </div>
+    <div className="min-h-screen">
+      <header className="border-b border-line bg-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+          <Logo />
+          <LangToggle />
+        </div>
+      </header>
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
+        {step === 'role' && (
+          <section className="relative mb-10 overflow-hidden rounded-3xl bg-guide-600 p-5 text-white sm:p-8">
+            <div className="pointer-events-none absolute inset-2 rounded-[20px] border-2 border-white/85" />
+            <div className="relative">
+              <p className="font-sign text-4xl leading-[1.02] sm:text-6xl">{i.tx(PROJECT.name)}</p>
+              <p className="mt-2 text-lg text-white/85">{i.tx(PROJECT.section)}</p>
+              <div className="mt-6 rounded-2xl bg-white p-3 text-ink sm:p-4">
+                <RoadStrip progress={progress} lengthKm={PROJECT.lengthKm} size="lg" />
+              </div>
+            </div>
+          </section>
+        )}
+        <LoginFlow onStepChange={setStep} />
+        {step === 'role' && (
+          <p className="mt-8 text-ink-soft">
+            {i.t(
+              'This is a demo. Everything you enter stays in this browser. Use the reset button at the top of any page to start again.',
+              'এটি একটি ডেমো। আপনার দেওয়া সব তথ্য এই ব্রাউজারেই থাকে। আবার শুরু করতে যেকোনো পাতার উপরের রিসেট বোতাম চাপুন।',
+            )}
+          </p>
+        )}
+      </main>
     </div>
   );
 }

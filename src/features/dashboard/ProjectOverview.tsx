@@ -1,12 +1,16 @@
-import { Activity, AlertTriangle, Users, Wallet } from 'lucide-react';
-import { PROJECT } from '@/core/seed';
+import { Activity, Trash2, Users, Wallet } from 'lucide-react';
 import { PAYROLL_RULES, payrollTotal } from '@/core/payroll';
+import { PROJECT } from '@/core/seed';
 import { useActiveShift, useCompletedShifts, useProjectProgress } from '@/features/shift';
 import { useWorkforce } from '@/features/workforce';
-import { Card, ProgressBar, StatCard } from '@/shared/ui';
-import { fmtTime, pct, sum, taka } from '@/shared/lib/utils';
+import { useI18n } from '@/shared/i18n';
+import { SpeakButton } from '@/shared/voice';
+import { RoadStrip, StatCard } from '@/shared/ui';
+import { pct, sum } from '@/shared/lib/utils';
 
 export function ProjectOverview() {
+  const i = useI18n();
+  const { t, num, fixed } = i;
   const progress = useProjectProgress();
   const active = useActiveShift();
   const completed = useCompletedShifts();
@@ -15,36 +19,55 @@ export function ProjectOverview() {
   const lines = completed.flatMap((s) => s.materials);
   const wastePct = lines.length ? sum(lines.map((m) => pct(m.wasted, m.used + m.wasted))) / lines.length : 0;
   const pendingPay = sum(completed.filter((s) => s.payrollStatus === 'pending').map((s) => payrollTotal(s.payroll)));
+  const doneKm = (PROJECT.lengthKm * progress) / 100;
 
   return (
     <div className="space-y-4">
-      <Card>
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-amber-600">{PROJECT.section}</p>
-            <h2 className="mt-1 text-xl font-extrabold">{PROJECT.name}</h2>
+      <section className="rounded-3xl border border-line bg-white p-4 sm:p-6">
+        <div className="relative mb-5 overflow-hidden rounded-2xl bg-guide-600 px-5 py-4 text-white">
+          <div className="pointer-events-none absolute inset-1.5 rounded-xl border-2 border-white/85" />
+          <div className="relative flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="font-sign text-3xl leading-tight sm:text-4xl">{i.tx(PROJECT.name)}</p>
+              <p className="text-white/85">{i.tx(PROJECT.section)}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <p className="font-sign text-5xl leading-none tabular-nums">{fixed(progress)}%</p>
+              <SpeakButton
+                tone="dark"
+                text={{
+                  en: `${i.numEn(doneKm, 2)} of ${i.numEn(PROJECT.lengthKm, 1)} kilometres are done. That is ${i.numEn(progress, 1)} percent.`,
+                  bn: `${fixed(PROJECT.lengthKm)} কিলোমিটারের মধ্যে ${fixed(doneKm, 2)} কিলোমিটার শেষ। মানে ${fixed(progress)} শতাংশ।`,
+                }}
+              />
+            </div>
           </div>
-          <p className="text-3xl font-extrabold tabular-nums">{progress.toFixed(1)}%</p>
         </div>
-        <div className="mt-4">
-          <ProgressBar value={progress} />
-        </div>
-        <p className="mt-2 text-xs text-zinc-500">
-          {((PROJECT.lengthKm * progress) / 100).toFixed(2)} km of {PROJECT.lengthKm} km completed across {completed.length} recorded shifts
+        <RoadStrip progress={progress} lengthKm={PROJECT.lengthKm} size="lg" />
+        <p className="mt-3 text-ink-soft">
+          {t(
+            `${fixed(doneKm, 2)} km paved out of ${fixed(PROJECT.lengthKm)} km, over ${num(completed.length)} recorded shifts.`,
+            `${fixed(PROJECT.lengthKm)} কিমির মধ্যে ${fixed(doneKm, 2)} কিমি পাকা হয়েছে, ${num(completed.length)}টি শিফটে।`,
+          )}
         </p>
-      </Card>
+      </section>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
-          accent
           icon={Activity}
-          label="Live shift"
-          value={active ? `${active.attendance.length} on site` : 'Idle'}
-          hint={active ? `Since ${fmtTime(active.startedAt)} | ${active.breaks.length} breaks` : 'No shift running'}
+          tone={active ? 'mark' : 'muted'}
+          label={t('Right now', 'এই মুহূর্তে')}
+          value={active ? t(`${num(active.attendance.length)} working`, `${num(active.attendance.length)} জন কাজে`) : t('No shift', 'শিফট নেই')}
+          hint={active ? t(`Since ${i.time(active.startedAt)}, ${num(active.breaks.length)} breaks`, `${i.time(active.startedAt)} থেকে, ${num(active.breaks.length)}টি বিরতি`) : undefined}
         />
-        <StatCard icon={Users} label="Workforce" value={workers.length} hint={`${workers.filter((w) => w.age >= PAYROLL_RULES.seniorAge).length} senior workers`} />
-        <StatCard icon={AlertTriangle} label="Avg. wastage" value={`${wastePct.toFixed(1)}%`} hint="Of materials consumed" />
-        <StatCard icon={Wallet} label="Pending payroll" value={taka(pendingPay)} hint="Awaiting your approval" />
+        <StatCard
+          icon={Users}
+          label={t('Workers', 'শ্রমিক')}
+          value={num(workers.length)}
+          hint={t(`${num(workers.filter((w) => w.age >= PAYROLL_RULES.seniorAge).length)} elders`, `${num(workers.filter((w) => w.age >= PAYROLL_RULES.seniorAge).length)} জন বয়স্ক`)}
+        />
+        <StatCard icon={Trash2} tone="stop" shape="warn" label={t('Material wasted', 'মাল নষ্ট')} value={`${fixed(wastePct)}%`} hint={t('Average per shift', 'শিফট প্রতি গড়')} />
+        <StatCard icon={Wallet} tone="mark" label={t('Pay to approve', 'অনুমোদনের অপেক্ষায়')} value={i.taka(pendingPay)} />
       </div>
     </div>
   );
