@@ -59,8 +59,8 @@ export function TabBar<K extends string>({
   }
 
   return (
-    <nav className="-mx-4 overflow-x-auto px-4">
-      <div className="flex w-max gap-2 rounded-2xl bg-black/[0.04] p-1.5">
+    <nav>
+      <div className="flex flex-wrap gap-1.5 rounded-2xl bg-black/[0.04] p-1.5 sm:inline-flex">
         {items.map(({ key, icon: Icon, label, count }) => {
           const on = key === value;
           return (
@@ -73,7 +73,7 @@ export function TabBar<K extends string>({
                 onChange(key);
               }}
               className={cn(
-                'flex h-11 items-center gap-2 rounded-xl px-4 font-semibold transition',
+                'flex h-11 grow items-center justify-center gap-2 rounded-xl px-3 font-semibold transition sm:grow-0 sm:px-4',
                 on ? 'bg-white text-ink shadow-[0_1px_0_0_var(--color-line)] ring-1 ring-line' : 'text-ink-soft hover:text-ink',
               )}
             >

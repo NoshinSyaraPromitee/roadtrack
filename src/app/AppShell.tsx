@@ -2,7 +2,7 @@ import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { Building2, LogOut, RotateCcw } from 'lucide-react';
 import { SUPERVISOR } from '@/core/seed';
 import { useSession } from '@/features/session';
-import { Face, roleOf, shortName, useWorker } from '@/features/workforce';
+import { Avatar, roleOf, shortName, useWorker } from '@/features/workforce';
 import { LangToggle, useI18n } from '@/shared/i18n';
 import { VoiceGuideToggle } from '@/shared/voice';
 import { Logo, Pictogram } from '@/shared/ui';
@@ -35,7 +35,7 @@ export function AppShell() {
           <div className="flex items-center gap-1.5 sm:gap-2">
             {person ? (
               <span className="mr-1 hidden items-center gap-2 md:flex">
-                <Face look={person.look} size={36} className="rounded-full ring-2 ring-white/80" />
+                <Avatar person={person} size={36} />
                 <span className="leading-tight">
                   <span className="block font-semibold">{shortName(person, i.lang)}</span>
                   <span className="block text-sm text-white/75">{i.tx(roleOf(person))}</span>

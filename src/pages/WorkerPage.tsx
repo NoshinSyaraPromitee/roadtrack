@@ -18,6 +18,7 @@ const TABS: TabItem<Tab>[] = [
   { key: 'complain', icon: Megaphone, label: { en: 'Complain', bn: 'অভিযোগ' } },
 ];
 
+/** Phone: one column with big tabs at the bottom. Laptop: tabs on top and two columns side by side. */
 export function WorkerPage() {
   const workerId = useSession((s) => s.workerId);
   const worker = useWorker(workerId);
@@ -26,25 +27,34 @@ export function WorkerPage() {
 
   if (!worker) return <Navigate to="/" replace />;
 
+  const go = (k: Tab) => {
+    setTab(k);
+    window.scrollTo({ top: 0 });
+  };
+
   return (
-    <div className="mx-auto max-w-md space-y-4 pb-28">
+    <div className="mx-auto max-w-md pb-28 lg:max-w-none lg:pb-4">
+      <div className="mb-5 hidden lg:block">
+        <TabBar items={TABS} value={tab} onChange={go} />
+      </div>
+
       {tab === 'money' && <WorkerEarnings shifts={shifts} worker={worker} />}
       {tab === 'raise' && (
-        <>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
           <RaiseRequestForm key={worker.dailyRate} worker={worker} />
           <MyRaiseRequests workerId={worker.id} />
-        </>
+        </div>
       )}
       {tab === 'complain' && (
-        <>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
           <ComplaintWizard workerId={worker.id} />
           <MyComplaints workerId={worker.id} />
-        </>
+        </div>
       )}
-      <TabBar variant="bottom" items={TABS} value={tab} onChange={(k) => {
-        setTab(k);
-        window.scrollTo({ top: 0 });
-      }} />
+
+      <div className="lg:hidden">
+        <TabBar variant="bottom" items={TABS} value={tab} onChange={go} />
+      </div>
     </div>
   );
 }
