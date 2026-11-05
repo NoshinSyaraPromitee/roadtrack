@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+html { -webkit-tap-highlight-color: transparent; }
+body { @apply bg-stone-100 text-zinc-900 antialiased; }
+
+.hazard {
+  background-image: repeating-linear-gradient(-45deg, #fbbf24 0 14px, #18181b 14px 28px);
+}
