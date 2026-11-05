@@ -1,96 +1,148 @@
 import { useMemo } from 'react';
-import { Inbox, MessageSquareWarning } from 'lucide-react';
-import type { ComplaintStatus } from '@/core/types';
-import { useWorkforce } from '@/features/workforce';
-import { Badge, Card, CardHeader, EmptyState } from '@/shared/ui';
-import type { Tone } from '@/shared/ui';
-import { cn, fmtDate } from '@/shared/lib/utils';
+import { EyeOff, Inbox, Megaphone, UserRound } from 'lucide-react';
+import type { Complaint, ComplaintStatus, Person } from '@/core/types';
+import { COMPLAINT_CATEGORIES } from '@/core/catalog';
+import { SUPERVISOR } from '@/core/seed';
+import { Avatar, personName, useWorkforce } from '@/features/workforce';
+import { useI18n } from '@/shared/i18n';
+import { VoiceNote } from '@/shared/voice';
+import { Badge, Card, CardHeader, EmptyState, Pictogram, Segmented } from '@/shared/ui';
+import type { SegmentOption } from '@/shared/ui';
+import { CATEGORY_ICON, STATUS_META } from './meta';
 import { useComplaints } from './store';
 
-const STATUS_TONE: Record<ComplaintStatus, Tone> = { open: 'red', reviewing: 'amber', resolved: 'green' };
-const STATUSES: ComplaintStatus[] = ['open', 'reviewing', 'resolved'];
+function useFindPerson() {
+  const workers = useWorkforce((s) => s.workers);
+  return (id: string): Person | undefined => (id === SUPERVISOR.id ? SUPERVISOR : workers.find((w) => w.id === id));
+}
+
+function Against({ id, size = 36 }: { id: string; size?: number }) {
+  const i = useI18n();
+  const find = useFindPerson();
+  const p = find(id);
+  return (
+    <span className="inline-flex min-w-0 items-center gap-2">
+      {p ? <Avatar person={p} size={size} badge={false} /> : <Pictogram icon={UserRound} tone="muted" shape="disc" size={size} />}
+      <span className="truncate font-semibold">{p ? personName(p, i.lang) : i.t('Someone else', 'অন্য কেউ')}</span>
+    </span>
+  );
+}
+
+function Body({ c }: { c: Complaint }) {
+  return (
+    <div className="mt-3 space-y-2">
+      {c.audio && <VoiceNote src={c.audio} />}
+      {c.message && <p className="text-ink">{c.message}</p>}
+    </div>
+  );
+}
 
 export function MyComplaints({ workerId }: { workerId: string }) {
+  const i = useI18n();
   const all = useComplaints((s) => s.complaints);
   const mine = useMemo(() => all.filter((c) => c.fromWorkerId === workerId).reverse(), [all, workerId]);
 
   return (
     <Card>
-      <CardHeader icon={Inbox} title="My complaints" subtitle="See what the authority is doing about them" />
+      <CardHeader icon={Inbox} title={i.t('My complaints', 'আমার অভিযোগ')} subtitle={i.t('See what the office is doing', 'অফিস কী করছে দেখুন')} />
       {mine.length === 0 ? (
-        <EmptyState icon={Inbox} title="No complaints filed" />
+        <EmptyState icon={Inbox} title={i.t('No complaints yet', 'এখনো কোনো অভিযোগ নেই')} />
       ) : (
         <ul className="space-y-3">
-          {mine.map((c) => (
-            <li key={c.id} className="rounded-xl border border-zinc-200 p-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-sm font-semibold">
-                  {c.category} | against {c.against}
-                </p>
-                <Badge tone={STATUS_TONE[c.status]} className="capitalize">
-                  {c.status}
-                </Badge>
-              </div>
-              <p className="mt-1 text-sm text-zinc-600">{c.message}</p>
-              <p className="mt-2 text-xs text-zinc-400">
-                {fmtDate(c.createdAt)}
-                {c.anonymous ? ' | filed anonymously' : ''}
-              </p>
-            </li>
-          ))}
+          {mine.map((c) => {
+            const st = STATUS_META[c.status];
+            return (
+              <li key={c.id} className="rounded-2xl border border-line p-3">
+                <div className="flex items-center gap-3">
+                  <Pictogram icon={CATEGORY_ICON[c.category]} shape="warn" tone="stop" size={44} />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold leading-tight">{i.tx(COMPLAINT_CATEGORIES[c.category])}</p>
+                    <p className="text-sm text-ink-soft">{i.date(c.createdAt)}</p>
+                  </div>
+                  <Badge tone={st.tone} icon={st.icon}>
+                    {i.tx(st.label)}
+                  </Badge>
+                </div>
+                <div className="mt-3">
+                  <Against id={c.againstId} size={32} />
+                </div>
+                <Body c={c} />
+              </li>
+            );
+          })}
         </ul>
       )}
     </Card>
   );
 }
 
+const STATUS_OPTIONS: SegmentOption<ComplaintStatus>[] = (['open', 'reviewing', 'resolved'] as ComplaintStatus[]).map((s) => ({
+  value: s,
+  icon: STATUS_META[s].icon,
+  label: STATUS_META[s].label,
+  tone: STATUS_META[s].tone === 'yellow' ? 'yellow' : STATUS_META[s].tone === 'blue' ? 'blue' : 'green',
+}));
+
 export function ComplaintsInbox() {
+  const i = useI18n();
   const complaints = useComplaints((s) => s.complaints);
   const setStatus = useComplaints((s) => s.setStatus);
-  const workers = useWorkforce((s) => s.workers);
+  const find = useFindPerson();
   const sorted = useMemo(() => [...complaints].sort((a, b) => b.createdAt.localeCompare(a.createdAt)), [complaints]);
   const unresolved = complaints.filter((c) => c.status !== 'resolved').length;
 
   return (
     <Card>
       <CardHeader
-        icon={MessageSquareWarning}
-        title="Worker complaints"
-        subtitle="Filed from workers' phones"
-        action={<Badge tone={unresolved ? 'red' : 'green'}>{unresolved} unresolved</Badge>}
+        icon={Megaphone}
+        tone="stop"
+        shape="warn"
+        title={i.t('Worker complaints', 'শ্রমিকদের অভিযোগ')}
+        subtitle={i.t('Sent from workers’ phones, by voice or text.', 'শ্রমিকদের ফোন থেকে, কণ্ঠে বা লিখে পাঠানো।')}
+        action={
+          <Badge tone={unresolved ? 'red' : 'green'} icon={Megaphone}>
+            {i.t(`${i.num(unresolved)} not solved`, `${i.num(unresolved)}টি সমাধান হয়নি`)}
+          </Badge>
+        }
       />
       {sorted.length === 0 ? (
-        <EmptyState icon={Inbox} title="No complaints" />
+        <EmptyState icon={Inbox} title={i.t('No complaints', 'কোনো অভিযোগ নেই')} />
       ) : (
         <ul className="space-y-3">
           {sorted.map((c) => {
-            const from = c.anonymous ? 'Anonymous worker' : (workers.find((w) => w.id === c.fromWorkerId)?.name ?? 'Unknown');
+            const from = find(c.fromWorkerId);
             return (
-              <li key={c.id} className="rounded-xl border border-zinc-200 p-4">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge tone="neutral">{c.category}</Badge>
-                  <span className="text-sm font-semibold">Against {c.against}</span>
-                </div>
-                <p className="mt-2 text-sm text-zinc-700">{c.message}</p>
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs text-zinc-500">
-                    From {from} | {fmtDate(c.createdAt)}
-                  </p>
-                  <div className="inline-flex rounded-lg bg-zinc-100 p-0.5">
-                    {STATUSES.map((st) => (
-                      <button
-                        key={st}
-                        type="button"
-                        onClick={() => setStatus(c.id, st)}
-                        className={cn(
-                          'rounded-md px-2.5 py-1 text-xs font-semibold capitalize transition',
-                          c.status === st ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800',
-                        )}
-                      >
-                        {st}
-                      </button>
-                    ))}
+              <li key={c.id} className="rounded-2xl border border-line p-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Pictogram icon={CATEGORY_ICON[c.category]} shape="warn" tone="stop" size={44} />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold leading-tight">{i.tx(COMPLAINT_CATEGORIES[c.category])}</p>
+                    <p className="text-sm text-ink-soft">{i.dateLong(c.createdAt)}</p>
                   </div>
+                </div>
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  <div className="rounded-xl bg-stop-50 p-2.5">
+                    <p className="mb-1 text-sm text-stop-700">{i.t('About', 'যার বিষয়ে')}</p>
+                    <Against id={c.againstId} />
+                  </div>
+                  <div className="rounded-xl bg-paper p-2.5">
+                    <p className="mb-1 text-sm text-ink-soft">{i.t('From', 'যিনি পাঠিয়েছেন')}</p>
+                    {c.anonymous || !from ? (
+                      <span className="inline-flex items-center gap-2 font-semibold">
+                        <Pictogram icon={EyeOff} tone="muted" shape="disc" size={36} />
+                        {i.t('Name hidden', 'নাম গোপন')}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-2 font-semibold">
+                        <Avatar person={from} size={36} badge={false} />
+                        {personName(from, i.lang)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <Body c={c} />
+                <div className="mt-3">
+                  <Segmented size="sm" label={i.t('Status', 'অবস্থা')} options={STATUS_OPTIONS} value={c.status} onChange={(v) => setStatus(c.id, v)} />
                 </div>
               </li>
             );

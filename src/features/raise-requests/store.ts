@@ -16,12 +16,9 @@ export const useRaiseRequests = create<RaiseState>()(
   persist(
     (set) => ({
       requests: SEED_RAISES,
-      request: (r) => {
-        const item: RaiseRequest = { ...r, id: uid('r'), createdAt: new Date().toISOString(), status: 'pending' };
-        set((s) => ({ requests: [...s.requests, item] }));
-      },
+      request: (r) => set((s) => ({ requests: [...s.requests, { ...r, id: uid('r'), createdAt: new Date().toISOString(), status: 'pending' }] })),
       decide: (id, status) => set((s) => ({ requests: s.requests.map((r) => (r.id === id ? { ...r, status } : r)) })),
     }),
-    { name: 'roadtrack-raises' },
+    { name: 'roadtrack-v2-raises' },
   ),
 );

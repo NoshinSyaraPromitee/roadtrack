@@ -1,3 +1,3 @@
 export { useComplaints } from './store';
-export { ComplaintForm } from './ComplaintForm';
+export { ComplaintWizard } from './ComplaintWizard';
 export { MyComplaints, ComplaintsInbox } from './ComplaintLists';
