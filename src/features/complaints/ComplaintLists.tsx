@@ -22,7 +22,7 @@ function Against({ id, size = 36 }: { id: string; size?: number }) {
   const p = find(id);
   return (
     <span className="inline-flex min-w-0 items-center gap-2">
-      {p ? <Avatar person={p} size={size} badge={false} /> : <Pictogram icon={UserRound} tone="muted" shape="disc" size={size} />}
+      {p ? <Avatar person={p} size={size} /> : <Pictogram icon={UserRound} tone="muted" shape="disc" size={size} />}
       <span className="truncate font-semibold">{p ? personName(p, i.lang) : i.t('Someone else', 'অন্য কেউ')}</span>
     </span>
   );
@@ -134,7 +134,7 @@ export function ComplaintsInbox() {
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-2 font-semibold">
-                        <Avatar person={from} size={36} badge={false} />
+                        <Avatar person={from} size={36} />
                         {personName(from, i.lang)}
                       </span>
                     )}

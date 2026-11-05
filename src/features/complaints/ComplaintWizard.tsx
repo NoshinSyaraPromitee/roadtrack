@@ -47,7 +47,7 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
 
   const next = () => {
     setError('');
-    if (step === 0 && !against) return setError(t('Tap a face first.', 'আগে একটি ছবিতে চাপ দিন।'));
+    if (step === 0 && !against) return setError(t('Tap a person first.', 'আগে একজনের নামে চাপ দিন।'));
     if (step === 1 && !category) return setError(t('Tap what happened.', 'কী হয়েছে তা চাপুন।'));
     if (step === 2) {
       if (!audio && message.trim().length < 10) return setError(t('Record your voice or write a few words.', 'কণ্ঠ রেকর্ড করুন অথবা কয়েকটি কথা লিখুন।'));
@@ -86,7 +86,7 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
             tone="stop"
             shape="warn"
             title={t('Who is it about?', 'কার বিষয়ে অভিযোগ?')}
-            speak={{ en: 'Who is it about? Tap the face.', bn: 'কার বিষয়ে অভিযোগ? ছবিতে চাপ দিন।' }}
+            speak={{ en: 'Who is it about? Tap the person.', bn: 'কার বিষয়ে অভিযোগ? তার নামে চাপ দিন।' }}
           />
           <PeoplePicker people={people} selected={against ? [against] : []} onPick={setAgainst} size={64} className="sm:grid-cols-3 lg:grid-cols-3">
             <button
@@ -115,7 +115,7 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
             tone="stop"
             shape="warn"
             title={t('What happened?', 'কী হয়েছে?')}
-            speak={{ en: 'What happened? Tap a picture.', bn: 'কী হয়েছে? একটি ছবিতে চাপ দিন।' }}
+            speak={{ en: 'What happened? Tap a sign.', bn: 'কী হয়েছে? একটি চিহ্নে চাপ দিন।' }}
           />
           <div className="grid grid-cols-2 gap-2">
             {COMPLAINT_KEYS.map((k) => (

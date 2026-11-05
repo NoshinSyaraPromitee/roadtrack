@@ -1,11 +1,11 @@
-import { Angry, Banknote, CircleCheck, CircleEllipsis, Eye, Hand, HardHat, Send, Sun } from 'lucide-react';
+import { Banknote, CircleCheck, CircleEllipsis, Eye, Hand, HardHat, Send, Sun, UserX } from 'lucide-react';
 import type { ComplaintCategory, ComplaintStatus, Text } from '@/core/types';
 import type { IconType, Tone } from '@/shared/ui';
 
 export const CATEGORY_ICON: Record<ComplaintCategory, IconType> = {
   payment: Banknote,
   safety: HardHat,
-  behaviour: Angry,
+  behaviour: UserX,
   harassment: Hand,
   conditions: Sun,
   other: CircleEllipsis,
