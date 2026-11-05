@@ -1,67 +1,104 @@
-import { ArrowLeft, Clock, Package, Send, TrendingUp, Users, Wallet } from 'lucide-react';
+import { CircleCheck, Clock, Construction, Send, TriangleAlert, Users, Wallet } from 'lucide-react';
+import { INCIDENTS, MATERIAL_BY_KEY } from '@/core/catalog';
 import { payrollTotal } from '@/core/payroll';
-import { PayrollTable } from '@/features/payroll';
-import { Badge, Button, Card, CardHeader, PageHeader, StatCard } from '@/shared/ui';
-import { cn, fmtDate, fmtDuration, fmtTime, taka } from '@/shared/lib/utils';
+import { PROJECT } from '@/core/seed';
+import { PayrollList } from '@/features/payroll';
+import { useI18n } from '@/shared/i18n';
+import { Badge, Button, Card, CardHeader, PageHeader, RoadStrip, StackBar, StatCard } from '@/shared/ui';
 import { useShiftById } from '../model/selectors';
+import { INCIDENT_ICON, MaterialPicto } from './icons';
 
 export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: () => void }) {
+  const i = useI18n();
+  const { t, tx, num, fixed } = i;
   const shift = useShiftById(shiftId);
   if (!shift || !shift.endedAt) return null;
 
-  const duration = new Date(shift.endedAt).getTime() - new Date(shift.startedAt).getTime();
   const started = shift.attendance.filter((a) => a.presentAtStart).length;
-  const recount = shift.attendance.filter((a) => a.presentAtStart && a.presentAtEnd).length;
-  const gained = (shift.endProgress ?? shift.startProgress) - shift.startProgress;
+  const stayed = shift.attendance.filter((a) => a.presentAtStart && a.presentAtEnd).length;
+  const end = shift.endProgress ?? shift.startProgress;
+  const total = payrollTotal(shift.payroll);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
-        eyebrow={`Shift closed | ${fmtDate(shift.startedAt)}`}
-        title="End-of-shift report"
-        subtitle={shift.site}
+        title={t('Shift finished', 'শিফট শেষ')}
+        subtitle={`${i.dateLong(shift.startedAt)}, ${shift.site}`}
+        speak={{ en: `Shift finished. The pay list of ${i.numEn(total)} taka was sent to the office.`, bn: `শিফট শেষ। ${num(total)} টাকার মজুরির তালিকা অফিসে পাঠানো হয়েছে।` }}
         action={
-          <Button variant="secondary" onClick={onClose}>
-            <ArrowLeft className="h-4 w-4" /> Back
+          <Button size="lg" onClick={onClose}>
+            <CircleCheck />
+            {t('Done', 'ঠিক আছে')}
           </Button>
         }
       />
 
-      <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
-        <Send className="mt-0.5 h-5 w-5 shrink-0" />
-        <p>
-          <span className="font-semibold">Payroll sent to the higher authority.</span> Workers see it as pending on their phones until it is approved.
+      <div className="flex items-start gap-3 rounded-2xl bg-guide-600 p-4 text-white">
+        <Send className="mt-0.5 h-6 w-6 shrink-0" />
+        <p className="text-lg">
+          <b>{t('Pay list sent to the office.', 'মজুরির তালিকা অফিসে পাঠানো হয়েছে।')}</b>{' '}
+          {t('Workers see it as waiting until the office approves it.', 'অফিস অনুমোদন না করা পর্যন্ত শ্রমিকরা এটি অপেক্ষায় দেখবেন।')}
         </p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard accent icon={Clock} label="Shift length" value={fmtDuration(duration)} hint={`${fmtTime(shift.startedAt)} - ${fmtTime(shift.endedAt)}`} />
-        <StatCard icon={Users} label="Recount" value={`${recount}/${started}`} hint="At end / clocked in" />
-        <StatCard icon={TrendingUp} label="Progress" value={`+${gained.toFixed(1)}%`} hint={`Road now at ${shift.endProgress}%`} />
-        <StatCard icon={Wallet} label="Payroll" value={taka(payrollTotal(shift.payroll))} hint={`${shift.payroll.filter((l) => l.total > 0).length} workers`} />
+        <StatCard icon={Clock} label={t('Shift time', 'শিফটের সময়')} value={i.dur(new Date(shift.endedAt).getTime() - new Date(shift.startedAt).getTime())} hint={`${i.time(shift.startedAt)} – ${i.time(shift.endedAt)}`} />
+        <StatCard icon={Users} label={t('Stayed till the end', 'শেষ পর্যন্ত ছিলেন')} value={`${num(stayed)}/${num(started)}`} />
+        <StatCard icon={Construction} tone="mark" label={t('Road done today', 'আজকের কাজ')} value={`+${fixed(end - shift.startProgress)}%`} hint={t(`Now ${fixed(end)}%`, `এখন ${fixed(end)}%`)} />
+        <StatCard icon={Wallet} label={t('Pay list', 'মজুরি')} value={i.taka(total)} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.7fr]">
+      <Card>
+        <RoadStrip progress={end} lengthKm={PROJECT.lengthKm} today={{ from: shift.startProgress, to: end }} />
+      </Card>
+
+      <div className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
         <Card>
-          <CardHeader icon={Package} title="Materials" subtitle="Used and wasted today" />
-          <ul className="divide-y divide-zinc-100 text-sm">
-            {shift.materials.map((m) => (
-              <li key={m.name} className="flex items-center justify-between gap-2 py-2.5">
-                <span className="font-semibold">{m.name}</span>
-                <span className="tabular-nums text-zinc-600">
-                  {m.used} used | <span className={cn(m.wasted > 0 && 'font-semibold text-red-600')}>{m.wasted} wasted</span> {m.unit}
-                </span>
-              </li>
-            ))}
+          <CardHeader icon={TriangleAlert} shape="warn" tone="stop" title={t('Materials and problems', 'মালামাল ও সমস্যা')} />
+          <ul className="space-y-3">
+            {shift.materials.map((m) => {
+              const def = MATERIAL_BY_KEY[m.key];
+              return (
+                <li key={m.key} className="flex items-center gap-3">
+                  <MaterialPicto k={m.key} size={36} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex justify-between gap-2 text-sm">
+                      <span className="font-semibold">{tx(def.name)}</span>
+                      <span className="tabular-nums text-ink-soft">
+                        {num(m.used)} <span className="text-stop-600">+{num(m.wasted)}</span> / {num(m.allocated)} {tx(def.unit)}
+                      </span>
+                    </div>
+                    <StackBar
+                      className="mt-1.5"
+                      total={m.allocated}
+                      parts={[
+                        { value: m.used, className: 'bg-guide-500' },
+                        { value: m.wasted, className: 'bg-stop-500' },
+                      ]}
+                    />
+                  </div>
+                </li>
+              );
+            })}
           </ul>
-          <div className="mt-4 rounded-xl bg-zinc-50 p-3 text-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Incidents</p>
-            <p className="mt-1 text-zinc-700">{shift.incidents || 'No incidents reported.'}</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {shift.incidentTags.length === 0 ? (
+              <Badge tone="green" icon={CircleCheck}>
+                {t('No problems', 'কোনো সমস্যা নেই')}
+              </Badge>
+            ) : (
+              shift.incidentTags.map((k) => (
+                <Badge key={k} tone="red" icon={INCIDENT_ICON[k]}>
+                  {tx(INCIDENTS[k])}
+                </Badge>
+              ))
+            )}
           </div>
+          {shift.incidents && <p className="mt-3 rounded-xl bg-paper p-3 text-ink-soft">{shift.incidents}</p>}
         </Card>
         <Card>
-          <CardHeader icon={Wallet} title="Payroll list" action={<Badge tone="amber">Pending approval</Badge>} />
-          <PayrollTable lines={shift.payroll} />
+          <CardHeader icon={Wallet} title={t('Pay list', 'মজুরির তালিকা')} action={<Badge tone="yellow">{t('Waiting for office', 'অফিসের অপেক্ষায়')}</Badge>} />
+          <PayrollList lines={shift.payroll} />
         </Card>
       </div>
     </div>

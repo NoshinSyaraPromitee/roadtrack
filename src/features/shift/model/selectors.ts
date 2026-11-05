@@ -7,10 +7,7 @@ export const useShiftById = (id: string | null) => useShiftStore((s) => s.shifts
 
 export function useCompletedShifts() {
   const shifts = useShiftStore((s) => s.shifts);
-  return useMemo(
-    () => shifts.filter((s) => s.status === 'completed').sort((a, b) => a.startedAt.localeCompare(b.startedAt)),
-    [shifts],
-  );
+  return useMemo(() => shifts.filter((s) => s.status === 'completed').sort((a, b) => a.startedAt.localeCompare(b.startedAt)), [shifts]);
 }
 
 export function useProjectProgress() {

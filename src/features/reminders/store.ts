@@ -12,6 +12,6 @@ export const useReminderSettings = create<ReminderSettings>()(
       demoMode: true,
       setDemoMode: (demoMode) => set({ demoMode }),
     }),
-    { name: 'roadtrack-reminders' },
+    { name: 'roadtrack-v2-reminders' },
   ),
 );

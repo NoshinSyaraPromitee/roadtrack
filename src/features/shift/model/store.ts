@@ -1,21 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Attendance, BreakType, MaterialLine, Shift, Worker } from '@/core/types';
+import type { Attendance, BreakType, IncidentKey, MaterialKey, MaterialLine, Shift, Worker } from '@/core/types';
 import { calculatePayroll } from '@/core/payroll';
-import { PROJECT, SEED_SHIFTS } from '@/core/seed';
+import { SEED_SHIFTS } from '@/core/seed';
 import { uid } from '@/shared/lib/utils';
 
 export interface StartShiftInput {
   site: string;
   startProgress: number;
   workerIds: string[];
-  materials: Array<Pick<MaterialLine, 'name' | 'unit' | 'allocated'>>;
+  materials: Array<{ key: MaterialKey; allocated: number }>;
 }
 
 export interface EndShiftInput {
   attendance: Attendance[];
   materials: MaterialLine[];
   endProgress: number;
+  incidentTags: IncidentKey[];
   incidents: string;
 }
 
@@ -36,13 +37,13 @@ export const useShiftStore = create<ShiftState>()(
         const shift: Shift = {
           id: uid('s'),
           site: input.site,
-          supervisor: PROJECT.supervisor,
           startedAt: new Date().toISOString(),
           status: 'active',
           startProgress: input.startProgress,
-          attendance: input.workerIds.map((workerId): Attendance => ({ workerId, presentAtStart: true, presentAtEnd: true, health: 'fit', output: 0 })),
+          attendance: input.workerIds.map((workerId) => ({ workerId, presentAtStart: true, presentAtEnd: true, health: 'fit', output: 0 })),
           materials: input.materials.map((m) => ({ ...m, used: 0, wasted: 0 })),
           breaks: [],
+          incidentTags: [],
           incidents: '',
           payroll: [],
         };
@@ -71,9 +72,8 @@ export const useShiftStore = create<ShiftState>()(
         return active.id;
       },
 
-      approvePayroll: (id) =>
-        set((s) => ({ shifts: s.shifts.map((sh): Shift => (sh.id === id ? { ...sh, payrollStatus: 'approved' } : sh)) })),
+      approvePayroll: (id) => set((s) => ({ shifts: s.shifts.map((sh): Shift => (sh.id === id ? { ...sh, payrollStatus: 'approved' } : sh)) })),
     }),
-    { name: 'roadtrack-shifts' },
+    { name: 'roadtrack-v2-shifts' },
   ),
 );

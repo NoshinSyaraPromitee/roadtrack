@@ -1,86 +1,76 @@
-import { Clock, HardHat, MapPin, Package, TrendingUp, Users } from 'lucide-react';
-import type { Shift } from '@/core/types';
-import { PAYROLL_RULES } from '@/core/payroll';
-import { useWorkforce } from '@/features/workforce';
-import { Badge, Card, CardHeader } from '@/shared/ui';
-import { fmtDuration, fmtTime } from '@/shared/lib/utils';
+import { Clock, Flag, MapPin, Users } from 'lucide-react';
+import type { Shift, Worker } from '@/core/types';
+import { MATERIAL_BY_KEY } from '@/core/catalog';
+import { FaceStack, useWorkforce } from '@/features/workforce';
+import { useI18n } from '@/shared/i18n';
+import { SpeakButton } from '@/shared/voice';
+import { Button, Card } from '@/shared/ui';
 import { useNow } from '@/shared/lib/useNow';
+import { MaterialPicto } from './icons';
 
-export function ActiveShiftPanel({ shift }: { shift: Shift }) {
+export function ActiveShiftPanel({ shift, onFinish }: { shift: Shift; onFinish: () => void }) {
+  const i = useI18n();
   const workers = useWorkforce((s) => s.workers);
   const now = useNow();
-  const elapsed = now - new Date(shift.startedAt).getTime();
-  const crew = shift.attendance.flatMap((a) => {
-    const w = workers.find((x) => x.id === a.workerId);
-    return w ? [w] : [];
-  });
-
-  const stats = [
-    { icon: Clock, label: 'Clocked in', value: fmtTime(shift.startedAt) },
-    { icon: Users, label: 'Headcount', value: String(shift.attendance.length) },
-    { icon: TrendingUp, label: 'Start progress', value: `${shift.startProgress}%` },
-  ];
+  const crew = shift.attendance.map((a) => workers.find((w) => w.id === a.workerId)).filter((w): w is Worker => !!w);
 
   return (
-    <div className="space-y-6">
-      <div className="overflow-hidden rounded-2xl bg-zinc-900 text-white shadow-lg">
-        <div className="hazard h-2" />
-        <div className="grid gap-6 p-6 md:grid-cols-[1.3fr_1fr] md:items-center">
+    <div className="space-y-4">
+      <section className="relative overflow-hidden rounded-3xl bg-guide-600 p-5 text-white sm:p-7">
+        <div className="pointer-events-none absolute inset-2 rounded-[20px] border-2 border-white/80" />
+        <div className="relative grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-end">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-emerald-400">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+            <div className="flex items-center gap-3">
+              <span className="relative flex h-3 w-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mark-400 opacity-75" />
+                <span className="relative inline-flex h-3 w-3 rounded-full bg-mark-400" />
               </span>
-              Shift in progress
+              <p className="text-xl font-semibold">{i.t('Work is going on', 'কাজ চলছে')}</p>
+              <SpeakButton
+                tone="dark"
+                size="sm"
+                text={{
+                  en: `Work is going on since ${i.timeEn(shift.startedAt)}. ${crew.length} workers on site.`,
+                  bn: `${i.time(shift.startedAt)} থেকে কাজ চলছে। সাইটে ${i.num(crew.length)} জন শ্রমিক।`,
+                }}
+              />
             </div>
-            <p className="mt-3 font-mono text-5xl font-bold tracking-tight tabular-nums">{fmtDuration(elapsed)}</p>
-            <p className="mt-2 flex items-center gap-2 text-sm text-zinc-400">
-              <MapPin className="h-4 w-4" />
+            <p className="mt-3 font-sign text-6xl leading-none tabular-nums sm:text-7xl">{i.dur(now - new Date(shift.startedAt).getTime())}</p>
+            <p className="mt-3 flex items-center gap-2 text-lg text-white/90">
+              <MapPin className="h-5 w-5" />
               {shift.site}
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-3 text-center">
-            {stats.map(({ icon: Icon, label, value }) => (
-              <div key={label} className="rounded-xl bg-white/5 p-3 ring-1 ring-white/10">
-                <Icon className="mx-auto h-4 w-4 text-amber-400" />
-                <p className="mt-2 text-lg font-bold">{value}</p>
-                <p className="text-[11px] uppercase tracking-wide text-zinc-400">{label}</p>
-              </div>
-            ))}
+          <div className="space-y-3">
+            <FaceStack people={crew} size={44} />
+            <div className="flex flex-wrap gap-x-5 gap-y-1 text-white/90">
+              <span className="inline-flex items-center gap-1.5">
+                <Users className="h-5 w-5" />
+                {i.t(`${i.num(crew.length)} on site`, `${i.num(crew.length)} জন সাইটে`)}
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Clock className="h-5 w-5" />
+                {i.t(`Started ${i.time(shift.startedAt)}`, `শুরু ${i.time(shift.startedAt)}`)}
+              </span>
+            </div>
+            <Button variant="mark" size="xl" onClick={onFinish} className="w-full">
+              <Flag />
+              {i.t('Finish work', 'কাজ শেষ করুন')}
+            </Button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader icon={HardHat} title="Crew on site" subtitle={`${crew.length} workers clocked in`} />
-          <ul className="divide-y divide-zinc-100">
-            {crew.map((w) => (
-              <li key={w.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
-                <div>
-                  <p className="font-semibold">{w.name}</p>
-                  <p className="text-xs text-zinc-500">{w.post}</p>
-                </div>
-                {w.age >= PAYROLL_RULES.seniorAge && <Badge tone="blue">Senior | {w.age}</Badge>}
-              </li>
-            ))}
-          </ul>
-        </Card>
-        <Card>
-          <CardHeader icon={Package} title="Materials issued" subtitle="Usage is recorded at the end of the shift" />
-          <ul className="divide-y divide-zinc-100">
-            {shift.materials.map((m) => (
-              <li key={m.name} className="flex items-center justify-between py-2.5 text-sm">
-                <span className="font-semibold">{m.name}</span>
-                <span className="tabular-nums text-zinc-600">
-                  {m.allocated} {m.unit}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
+      <Card tone="sunk" className="flex flex-wrap items-center gap-x-5 gap-y-3">
+        <p className="font-semibold">{i.t('On site today', 'আজ সাইটে আছে')}</p>
+        {shift.materials.map((m) => (
+          <span key={m.key} className="inline-flex items-center gap-2">
+            <MaterialPicto k={m.key} size={32} />
+            <span className="font-sign text-xl tabular-nums">{i.num(m.allocated)}</span>
+            <span className="text-sm text-ink-soft">{i.tx(MATERIAL_BY_KEY[m.key].unit)}</span>
+          </span>
+        ))}
+      </Card>
     </div>
   );
 }
