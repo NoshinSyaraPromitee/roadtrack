@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Check, HandCoins, Inbox, X } from 'lucide-react';
+import { ArrowRight, Check, HandCoins, Inbox, X } from 'lucide-react';
 import type { RaiseRequest } from '@/core/types';
 import { RAISE_REASONS } from '@/core/catalog';
 import { Avatar, personName, roleOf, useWorkforce } from '@/features/workforce';
@@ -25,8 +25,10 @@ export function MyRaiseRequests({ workerId }: { workerId: string }) {
             <li key={r.id} className="flex items-center gap-3 py-3">
               <Pictogram icon={REASON_ICON[r.reason]} tone="sign" shape="disc" size={40} />
               <div className="min-w-0 flex-1">
-                <p className="font-sign text-xl tabular-nums">
-                  {i.taka(r.currentRate)} → {i.taka(r.requestedRate)}
+                <p className="flex items-center gap-1.5 font-sign text-xl tabular-nums">
+                  {i.taka(r.currentRate)}
+                  <ArrowRight className="h-4 w-4 text-ink-soft" />
+                  {i.taka(r.requestedRate)}
                 </p>
                 <p className="truncate text-sm text-ink-soft">{i.date(r.createdAt)}</p>
               </div>
@@ -88,8 +90,10 @@ export function RaiseInbox() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-sign text-2xl tabular-nums">
-                      {i.taka(r.currentRate)} → {i.taka(r.requestedRate)}
+                    <p className="flex items-center justify-end gap-1.5 font-sign text-2xl tabular-nums">
+                      {i.taka(r.currentRate)}
+                      <ArrowRight className="h-5 w-5 text-ink-soft" />
+                      {i.taka(r.requestedRate)}
                     </p>
                     <p className="font-semibold text-guide-700">+{i.fixed(((r.requestedRate - r.currentRate) / r.currentRate) * 100)}%</p>
                   </div>

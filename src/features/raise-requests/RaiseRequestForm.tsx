@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { HandCoins, Hourglass, MessageSquareText, Send, TrendingUp } from 'lucide-react';
+import { ArrowRight, HandCoins, Hourglass, MessageSquareText, Send, TrendingUp } from 'lucide-react';
 import type { RaiseReason, Worker } from '@/core/types';
 import { RAISE_KEYS, RAISE_REASONS } from '@/core/catalog';
 import { useI18n } from '@/shared/i18n';
@@ -26,8 +26,10 @@ export function RaiseRequestForm({ worker }: { worker: Worker }) {
         <Pictogram icon={Hourglass} tone="mark" size={56} />
         <div>
           <h2 className="font-sign text-2xl">{t('Your request is waiting', 'আপনার আবেদন অপেক্ষায় আছে')}</h2>
-          <p className="mt-1 text-lg">
-            {taka(pending.currentRate)} → {taka(pending.requestedRate)}
+          <p className="mt-1 flex items-center gap-2 text-lg">
+            {taka(pending.currentRate)}
+            <ArrowRight className="h-5 w-5" aria-label={t('to', 'থেকে')} />
+            {taka(pending.requestedRate)}
           </p>
           <p className="mt-1 text-ink-soft">{t('You can ask again after the office decides.', 'অফিস সিদ্ধান্ত দিলে আবার আবেদন করতে পারবেন।')}</p>
         </div>
