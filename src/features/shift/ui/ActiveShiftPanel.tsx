@@ -1,7 +1,7 @@
 import { Clock, Flag, MapPin, Users } from 'lucide-react';
 import type { Shift, Worker } from '@/core/types';
 import { MATERIAL_BY_KEY } from '@/core/catalog';
-import { FaceStack, useWorkforce } from '@/features/workforce';
+import { AvatarStack, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import { SpeakButton } from '@/shared/voice';
 import { Button, Card } from '@/shared/ui';
@@ -42,7 +42,7 @@ export function ActiveShiftPanel({ shift, onFinish }: { shift: Shift; onFinish: 
             </p>
           </div>
           <div className="space-y-3">
-            <FaceStack people={crew} size={44} />
+            <AvatarStack people={crew} size={44} />
             <div className="flex flex-wrap gap-x-5 gap-y-1 text-white/90">
               <span className="inline-flex items-center gap-1.5">
                 <Users className="h-5 w-5" />

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Bandage, ChevronRight, CircleCheck, Construction, LogOut, Package, Send, Smile, Thermometer, Trash2, TriangleAlert, Users, Wallet } from 'lucide-react';
+import { Bandage, ChevronRight, CircleCheck, Construction, LogOut, Package, Send, Thermometer, ThumbsUp, Trash2, TriangleAlert, Users, Wallet } from 'lucide-react';
 import type { Attendance, Health, IncidentKey, MaterialLine, Shift } from '@/core/types';
 import { INCIDENTS, INCIDENT_KEYS, MATERIAL_BY_KEY } from '@/core/catalog';
 import { calculatePayroll, payrollTotal } from '@/core/payroll';
@@ -26,7 +26,7 @@ const PRESENCE: SegmentOption<boolean>[] = [
 ];
 
 const HEALTH: SegmentOption<Health>[] = [
-  { value: 'fit', icon: Smile, label: { en: 'Well', bn: 'ভালো' }, tone: 'green' },
+  { value: 'fit', icon: ThumbsUp, label: { en: 'Well', bn: 'ভালো' }, tone: 'green' },
   { value: 'sick', icon: Thermometer, label: { en: 'Sick', bn: 'অসুস্থ' }, tone: 'yellow' },
   { value: 'injured', icon: Bandage, label: { en: 'Hurt', bn: 'আহত' }, tone: 'red' },
 ];

@@ -67,7 +67,7 @@ export function StartShiftWizard() {
             icon={Users}
             title={t('Who came today?', 'আজ কে কে এসেছেন?')}
             subtitle={t(`${num(selected.length)} of ${num(workers.length)} on site`, `${num(workers.length)} জনের মধ্যে ${num(selected.length)} জন এসেছেন`)}
-            speak={{ en: 'Who came today? Tap a face to add or remove.', bn: 'আজ কে কে এসেছেন? যোগ বা বাদ দিতে ছবিতে চাপ দিন।' }}
+            speak={{ en: 'Who came today? Tap a person to add or remove them.', bn: 'আজ কে কে এসেছেন? যোগ বা বাদ দিতে নামের উপর চাপ দিন।' }}
             action={
               <Button variant="secondary" onClick={() => setSelected(everyone ? [] : workers.map((w) => w.id))}>
                 {everyone ? t('Clear all', 'সব বাদ দিন') : t('Everyone', 'সবাই')}
