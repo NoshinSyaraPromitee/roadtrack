@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Anek Bangla Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Anek Latin Variable", "Kalpurush", ui-sans-serif, system-ui, sans-serif;
 
   --color-paper: #eceeea;
   --color-ink: #1f2623;
@@ -51,6 +51,16 @@ body {
   color: var(--color-ink);
   font-weight: 430;
   -webkit-font-smoothing: antialiased;
+  text-size-adjust: 100%;
+}
+
+/* Kalpurush draws Bangla a little smaller than the Latin font and has one weight, so Bangla gets more size and room. */
+html:lang(bn) {
+  font-size: 106.25%;
+}
+
+html:lang(bn) body {
+  line-height: 1.6;
 }
 
 :focus-visible {
