@@ -15,25 +15,12 @@ export type RaiseReason = 'responsibility' | 'skill' | 'prices' | 'hazard' | 'fa
 export type RaiseStatus = 'pending' | 'approved' | 'rejected';
 export type PayrollStatus = 'pending' | 'approved';
 
-export type HairStyle = 'short' | 'side' | 'bald' | 'cap' | 'scarf' | 'helmet';
-
-/** Drawing instructions for a worker's face. hairColor is also the colour of a cap, scarf or helmet. */
-export interface Look {
-  skin: string;
-  hair: HairStyle;
-  hairColor: string;
-  beard?: 'full' | 'moustache';
-  beardColor?: string;
-  shirt: string;
-  glasses?: boolean;
-  bg: string;
-}
-
 export interface Person {
   id: string;
   name: string;
   nameBn: string;
-  look: Look;
+  /** Each person has their own colour, so the same work icon still looks different for two people. */
+  color: string;
 }
 
 export interface Worker extends Person {

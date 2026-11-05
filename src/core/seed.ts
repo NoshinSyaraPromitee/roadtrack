@@ -12,41 +12,41 @@ export const SUPERVISOR: Person = {
   id: 'supervisor',
   name: 'Engr. Tanvir Rahman',
   nameBn: 'প্রকৌ. তানভীর রহমান',
-  look: { skin: '#b98153', hair: 'helmet', hairColor: '#ffffff', beard: 'moustache', beardColor: '#1f1a17', glasses: true, shirt: '#e2661e', bg: '#d6e6dc' },
+  color: '#2c3330',
 };
 
 export const SEED_WORKERS: Worker[] = [
   {
     id: 'w1', name: 'Abdul Karim', nameBn: 'আব্দুল করিম', post: 'foreman', age: 52, dailyRate: 1200, phone: '01711-000001',
-    look: { skin: '#a8703f', hair: 'cap', hairColor: '#f4f1ea', beard: 'full', beardColor: '#cfc9bf', shirt: '#2f6fb2', bg: '#d9e5f4' },
+    color: '#2f6fb2',
   },
   {
     id: 'w2', name: 'Rahim Uddin', nameBn: 'রহিম উদ্দিন', post: 'mason', age: 34, dailyRate: 950, phone: '01711-000002',
-    look: { skin: '#8d5a32', hair: 'short', hairColor: '#1f1a17', beard: 'moustache', shirt: '#b83a3a', bg: '#f5dfda' },
+    color: '#b83a3a',
   },
   {
     id: 'w3', name: 'Jamal Hossain', nameBn: 'জামাল হোসেন', post: 'operator', age: 41, dailyRate: 1100, phone: '01711-000003',
-    look: { skin: '#b07a4a', hair: 'side', hairColor: '#221c18', shirt: '#e07a1f', bg: '#fbe5cd' },
+    color: '#c95f12',
   },
   {
     id: 'w4', name: 'Shafiq Mia', nameBn: 'শফিক মিয়া', post: 'laborer', age: 58, dailyRate: 700, phone: '01711-000004',
-    look: { skin: '#7a4a28', hair: 'bald', hairColor: '#d9d5cc', beard: 'full', beardColor: '#ebe8e1', shirt: '#4e8a3e', bg: '#dbebd4' },
+    color: '#3f7d31',
   },
   {
     id: 'w5', name: 'Rubel Ahmed', nameBn: 'রুবেল আহমেদ', post: 'roller', age: 29, dailyRate: 1000, phone: '01711-000005',
-    look: { skin: '#9a6234', hair: 'short', hairColor: '#191512', shirt: '#e8b923', bg: '#fff0c0' },
+    color: '#8f6c00',
   },
   {
     id: 'w6', name: 'Halima Begum', nameBn: 'হালিমা বেগম', post: 'laborer', age: 45, dailyRate: 700, phone: '01711-000006',
-    look: { skin: '#a56a3f', hair: 'scarf', hairColor: '#7b3f98', shirt: '#7b3f98', bg: '#e9dbf1' },
+    color: '#7b3f98',
   },
   {
     id: 'w7', name: 'Sumon Das', nameBn: 'সুমন দাস', post: 'helper', age: 22, dailyRate: 600, phone: '01711-000007',
-    look: { skin: '#8a5a33', hair: 'side', hairColor: '#15120f', shirt: '#1f8a8a', bg: '#d4eeec' },
+    color: '#137a79',
   },
   {
     id: 'w8', name: 'Nurul Islam', nameBn: 'নুরুল ইসলাম', post: 'mason', age: 55, dailyRate: 950, phone: '01711-000008',
-    look: { skin: '#94603a', hair: 'cap', hairColor: '#f4f1ea', beard: 'full', beardColor: '#6b5b50', glasses: true, shirt: '#7a5230', bg: '#eee1d2' },
+    color: '#7a5230',
   },
 ];
 

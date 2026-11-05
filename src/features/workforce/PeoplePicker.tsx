@@ -15,7 +15,7 @@ interface PeoplePickerProps {
   children?: ReactNode;
 }
 
-/** Pick people by tapping their face. The name is read aloud when voice help is on. */
+/** Pick people by tapping them. The name is read aloud when voice help is on. */
 export function PeoplePicker({ people, selected, onPick, size = 76, className, children }: PeoplePickerProps) {
   const { lang, tx } = useI18n();
   const { hint } = useSay();
@@ -40,7 +40,7 @@ export function PeoplePicker({ people, selected, onPick, size = 76, className, c
           >
             <Avatar person={p} size={size} selected={on} />
             <span className="w-full px-1">
-              <span className="line-clamp-2 block font-semibold leading-tight">{personName(p, lang)}</span>
+              <span className="line-clamp-2 font-semibold leading-tight">{personName(p, lang)}</span>
               <span className="block truncate text-sm text-ink-soft">{tx(roleOf(p))}</span>
             </span>
           </button>
