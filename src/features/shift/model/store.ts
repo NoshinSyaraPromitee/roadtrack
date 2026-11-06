@@ -20,6 +20,7 @@ export interface EndShiftInput {
   endProgress: number;
   incidentTags: IncidentKey[];
   incidents: string;
+  photos?: string[];
   /** The supervisor's changes to the pay list, by worker. */
   payEdits?: Record<string, PayEdit>;
 }
@@ -80,6 +81,6 @@ export const useShiftStore = create<ShiftState>()(
 
       approvePayroll: (id) => set((s) => ({ shifts: s.shifts.map((sh): Shift => (sh.id === id ? { ...sh, payrollStatus: 'approved' } : sh)) })),
     }),
-    { name: 'roadtrack-v3-shifts' },
+    { name: 'roadtrack-v4-shifts' },
   ),
 );

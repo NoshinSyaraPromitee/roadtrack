@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Bandage, ChevronRight, CircleCheck, Construction, LogOut, Package, Send, Thermometer, ThumbsUp, TriangleAlert, Users, Wallet } from 'lucide-react';
+import { Bandage, Camera, ChevronRight, CircleCheck, Construction, LogOut, Package, Send, Thermometer, ThumbsUp, TriangleAlert, Users, Wallet } from 'lucide-react';
 import type { Attendance, Health, IncidentKey, MaterialLine, Shift } from '@/core/types';
 import { INCIDENTS, INCIDENT_KEYS, MATERIAL_BY_KEY } from '@/core/catalog';
 import { applyPayEdits, calculatePayroll, payrollTotal } from '@/core/payroll';
@@ -10,7 +10,7 @@ import { useHealthReports, todaysReport } from '@/features/health';
 import { PayRules, PayrollList } from '@/features/payroll';
 import { Avatar, personName, roleOf, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
-import { ActionBar, Badge, Button, Card, CardHeader, Field, PageHeader, RoadStrip, Segmented, StackBar, Stepper, Textarea, Tile, WizardSteps } from '@/shared/ui';
+import { ActionBar, Badge, Button, Card, CardHeader, Field, PageHeader, PhotoPicker, RoadStrip, Segmented, StackBar, Stepper, Textarea, Tile, WizardSteps } from '@/shared/ui';
 import type { SegmentOption } from '@/shared/ui';
 import { cn, pct } from '@/shared/lib/utils';
 import { useShiftStore } from '../model/store';
@@ -58,6 +58,7 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
   const endProgress = Math.max(shift.startProgress, kmToPct(endKm, road));
   const [tags, setTags] = useState<IncidentKey[]>([]);
   const [notes, setNotes] = useState('');
+  const [photos, setPhotos] = useState<string[]>([]);
   const [payEdits, setPayEdits] = useState<Record<string, PayEdit>>({});
   const [error, setError] = useState('');
 
@@ -79,7 +80,7 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
       return;
     }
     if (step === 3) {
-      const id = endShift(road.id, { attendance: rows, materials: mats, endProgress, incidentTags: tags, incidents: notes.trim(), payEdits }, workers);
+      const id = endShift(road.id, { attendance: rows, materials: mats, endProgress, incidentTags: tags, incidents: notes.trim(), photos, payEdits }, workers);
       if (id) onEnded(id);
       return;
     }
@@ -150,7 +151,6 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
             icon={Package}
             tone="plain"
             title={t('What was used?', 'কতটা মাল খরচ হলো?')}
-            subtitle={t('Green is used, red is wasted, grey is left over.', 'সবুজ খরচ, লাল নষ্ট, ধূসর বাকি।')}
             speak={{ en: 'What was used? Green is used, red is wasted, grey is left over.', bn: 'কতটা মাল খরচ হলো? সবুজ খরচ, লাল নষ্ট, ধূসর বাকি।' }}
           />
           <ul className="space-y-3">
@@ -242,6 +242,16 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
           </Card>
           <Card>
             <CardHeader
+              icon={Camera}
+              tone="sign"
+              shape="disc"
+              title={t('Photos of today’s work', 'আজকের কাজের ছবি')}
+              speak={{ en: "Add photos of today's work. Tap Add photo.", bn: 'আজকের কাজের ছবি দিন। "ছবি যোগ করুন" চাপুন।' }}
+            />
+            <PhotoPicker photos={photos} onChange={setPhotos} />
+          </Card>
+          <Card>
+            <CardHeader
               icon={TriangleAlert}
               shape="warn"
               tone="stop"
@@ -281,7 +291,6 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
           <CardHeader
             icon={Wallet}
             title={t('Check the pay list', 'মজুরির তালিকা দেখুন')}
-            subtitle={t('You can change anyone’s pay and add a comment. The office approves it before anyone is paid.', 'যে কারও মজুরি বদলাতে ও মন্তব্য দিতে পারেন। টাকা দেওয়ার আগে অফিস এটি অনুমোদন করবে।')}
             speak={{
               en: `Check the pay list. Total ${i.numEn(payrollTotal(preview))} taka. You can change anyone's pay and add a comment.`,
               bn: `মজুরির তালিকা দেখুন। মোট ${num(payrollTotal(preview))} টাকা। যে কারও মজুরি বদলাতে ও মন্তব্য দিতে পারেন।`,

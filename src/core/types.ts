@@ -79,6 +79,8 @@ export interface Shift {
   breaks: BreakLog[];
   incidentTags: IncidentKey[];
   incidents: string;
+  /** Photos of the work, taken when the shift ends. Saved as small JPEG data URLs. */
+  photos?: string[];
   payroll: PayrollLine[];
   payrollStatus?: PayrollStatus;
 }

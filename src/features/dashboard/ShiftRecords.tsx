@@ -6,7 +6,7 @@ import { pctToKm } from '@/core/roads';
 import { useRoad } from '@/features/road';
 import { INCIDENT_ICON, MaterialPicto, useCompletedShifts } from '@/features/shift';
 import { useI18n } from '@/shared/i18n';
-import { Badge, Button, Card, CardHeader, StackBar } from '@/shared/ui';
+import { Badge, Button, Card, CardHeader, PhotoStrip, StackBar } from '@/shared/ui';
 import { cn, pct, sum } from '@/shared/lib/utils';
 
 export function ShiftRecords() {
@@ -17,7 +17,7 @@ export function ShiftRecords() {
   const [open, setOpen] = useState<string | null>(null);
 
   const exportCsv = () => {
-    const header = ['Date', 'Site', 'Clock in', 'Clock out', 'Clocked in', 'At recount', 'Start %', 'End %', 'Start km', 'End km', 'Rest breaks', 'Snack breaks', 'Wastage %', 'Payroll BDT', 'Payroll status', 'Problems', 'Notes'];
+    const header = ['Date', 'Site', 'Clock in', 'Clock out', 'Clocked in', 'At recount', 'Start %', 'End %', 'Start km', 'End km', 'Rest breaks', 'Snack breaks', 'Wastage %', 'Payroll BDT', 'Payroll status', 'Problems', 'Notes', 'Photos'];
     const body = rows.map((s) => [
       new Date(s.startedAt).toLocaleDateString('en-GB'),
       s.site.en,
@@ -36,6 +36,7 @@ export function ShiftRecords() {
       s.payrollStatus ?? '',
       s.incidentTags.map((k) => INCIDENTS[k].en).join('; '),
       s.incidents,
+      s.photos?.length ?? 0,
     ]);
     const csv = [header, ...body].map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
     const url = URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' }));
@@ -52,7 +53,6 @@ export function ShiftRecords() {
         icon={FileText}
         tone="plain"
         title={t('Every shift on record', 'সব শিফটের রেকর্ড')}
-        subtitle={t('Tap a day to see the details.', 'বিস্তারিত দেখতে একটি দিনে চাপ দিন।')}
         action={
           <Button variant="secondary" onClick={exportCsv}>
             <Download />
@@ -162,6 +162,12 @@ export function ShiftRecords() {
                     </div>
                     {s.incidents && <p className="mt-2 text-ink-soft">{s.incidents}</p>}
                   </div>
+                  {!!s.photos?.length && (
+                    <div className="md:col-span-3">
+                      <p className="mb-2 font-semibold">{t('Photos of the work', 'কাজের ছবি')}</p>
+                      <PhotoStrip photos={s.photos} size="sm" />
+                    </div>
+                  )}
                 </div>
               )}
             </li>

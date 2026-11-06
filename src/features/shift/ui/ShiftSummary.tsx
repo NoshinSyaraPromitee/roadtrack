@@ -1,11 +1,11 @@
-import { CircleCheck, Clock, Construction, Send, TriangleAlert, Users, Wallet } from 'lucide-react';
+import { Camera, CircleCheck, Clock, Construction, Send, TriangleAlert, Users, Wallet } from 'lucide-react';
 import { INCIDENTS, MATERIAL_BY_KEY } from '@/core/catalog';
 import { payrollTotal } from '@/core/payroll';
 import { pctToKm } from '@/core/roads';
 import { useRoad } from '@/features/road';
 import { PayrollList } from '@/features/payroll';
 import { useI18n } from '@/shared/i18n';
-import { Badge, Button, Card, CardHeader, PageHeader, RoadStrip, StackBar, StatCard } from '@/shared/ui';
+import { Badge, Button, Card, CardHeader, PageHeader, PhotoStrip, RoadStrip, StackBar, StatCard } from '@/shared/ui';
 import { useShiftById } from '../model/selectors';
 import { INCIDENT_ICON, MaterialPicto } from './icons';
 
@@ -38,8 +38,7 @@ export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: (
       <div className="flex items-start gap-3 rounded-2xl bg-guide-600 p-4 text-white">
         <Send className="mt-0.5 h-6 w-6 shrink-0" />
         <p className="text-lg">
-          <b>{t('Pay list sent to the office.', 'মজুরির তালিকা অফিসে পাঠানো হয়েছে।')}</b>{' '}
-          {t('Workers see it as waiting until the office approves it.', 'অফিস অনুমোদন না করা পর্যন্ত শ্রমিকরা এটি অপেক্ষায় দেখবেন।')}
+          <b>{t('Pay list sent to the office.', 'মজুরির তালিকা অফিসে পাঠানো হয়েছে।')}</b>
         </p>
       </div>
 
@@ -98,6 +97,12 @@ export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: (
           </div>
           {shift.incidents && <p className="mt-3 rounded-xl bg-paper p-3 text-ink-soft">{shift.incidents}</p>}
         </Card>
+        {!!shift.photos?.length && (
+          <Card>
+            <CardHeader icon={Camera} tone="sign" shape="disc" title={t('Photos of the work', 'কাজের ছবি')} />
+            <PhotoStrip photos={shift.photos} />
+          </Card>
+        )}
         <Card>
           <CardHeader icon={Wallet} title={t('Pay list', 'মজুরির তালিকা')} action={<Badge tone="yellow">{t('Waiting for office', 'অফিসের অপেক্ষায়')}</Badge>} />
           <PayrollList lines={shift.payroll} />

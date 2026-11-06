@@ -17,3 +17,4 @@ export * from './PageHeader';
 export * from './Logo';
 export * from './Field';
 export * from './Sequence';
+export * from './Photos';
