@@ -15,7 +15,7 @@ export function PayFlags({ flags, quiet = false }: { flags: PayFlag[]; quiet?: b
     );
   }
   return (
-    <span className="flex flex-wrap gap-1.5">
+    <span className="flex flex-wrap gap-x-3 gap-y-1">
       {flags.map((f) => (
         <Badge key={f} tone={FLAG_META[f].tone} icon={FLAG_META[f].icon}>
           {FLAG_META[f].label(i)}
@@ -29,7 +29,7 @@ export function PayFlags({ flags, quiet = false }: { flags: PayFlag[]; quiet?: b
 export function PayRules() {
   const i = useI18n();
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl bg-paper p-3 text-sm">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl bg-paper p-3 text-sm">
       <span className="mr-1 font-semibold">{i.t('Pay rules', 'মজুরির নিয়ম')}</span>
       <Badge tone="blue" icon={ElderIcon}>
         {i.t(`Age ${i.num(PAYROLL_RULES.seniorAge)}+`, `বয়স ${i.num(PAYROLL_RULES.seniorAge)}+`)} +{i.num(PAYROLL_RULES.seniorBonusPct)}%
@@ -38,7 +38,7 @@ export function PayRules() {
         {i.t('Sick or hurt', 'অসুস্থ বা আহত')} +{i.num(PAYROLL_RULES.healthBonusPct)}%
       </Badge>
       <Badge tone="red" icon={LogOut}>
-        {i.t('Left early', 'আগে চলে গেলে')} −{i.num(PAYROLL_RULES.earlyLeaveCutPct)}%
+        {i.t('Left early', 'আগে চলে গেলে')} -{i.num(PAYROLL_RULES.earlyLeaveCutPct)}%
       </Badge>
     </div>
   );

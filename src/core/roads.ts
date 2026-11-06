@@ -4,7 +4,7 @@ import type { Road } from './types';
 export const ROADS: Road[] = [
   {
     id: 'r1',
-    name: { en: 'Tongi–Gazipur Link Road', bn: 'টঙ্গী–গাজীপুর সংযোগ সড়ক' },
+    name: { en: 'Tongi-Gazipur Link Road', bn: 'টঙ্গী-গাজীপুর সংযোগ সড়ক' },
     area: { en: 'Gazipur', bn: 'গাজীপুর' },
     from: { en: 'Cherag Ali Market', bn: 'চেরাগ আলী মার্কেট' },
     to: { en: 'Board Bazar', bn: 'বোর্ড বাজার' },
@@ -18,7 +18,7 @@ export const ROADS: Road[] = [
   },
   {
     id: 'r2',
-    name: { en: 'Mirpur 10 – Kalshi Road', bn: 'মিরপুর ১০ – কালশী সড়ক' },
+    name: { en: 'Mirpur 10 - Kalshi Road', bn: 'মিরপুর ১০ - কালশী সড়ক' },
     area: { en: 'Mirpur, Dhaka', bn: 'মিরপুর, ঢাকা' },
     from: { en: 'Mirpur 10 Circle', bn: 'মিরপুর ১০ গোলচত্বর' },
     to: { en: 'Kalshi Flyover', bn: 'কালশী ফ্লাইওভার' },
@@ -32,7 +32,7 @@ export const ROADS: Road[] = [
   },
   {
     id: 'r3',
-    name: { en: 'Savar – Baipail Road', bn: 'সাভার – বাইপাইল সড়ক' },
+    name: { en: 'Savar - Baipail Road', bn: 'সাভার - বাইপাইল সড়ক' },
     area: { en: 'Savar, Dhaka', bn: 'সাভার, ঢাকা' },
     from: { en: 'Savar Bus Stand', bn: 'সাভার বাসস্ট্যান্ড' },
     to: { en: 'Baipail Junction', bn: 'বাইপাইল মোড়' },
@@ -46,7 +46,7 @@ export const ROADS: Road[] = [
   },
   {
     id: 'r4',
-    name: { en: 'Medical More – Modern More Road', bn: 'মেডিকেল মোড় – মডার্ন মোড় সড়ক' },
+    name: { en: 'Medical More - Modern More Road', bn: 'মেডিকেল মোড় - মডার্ন মোড় সড়ক' },
     area: { en: 'Rangpur', bn: 'রংপুর' },
     from: { en: 'Medical More', bn: 'মেডিকেল মোড়' },
     to: { en: 'Modern More', bn: 'মডার্ন মোড়' },

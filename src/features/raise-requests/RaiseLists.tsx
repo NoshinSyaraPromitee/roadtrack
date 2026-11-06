@@ -83,7 +83,7 @@ export function RaiseInbox() {
                 <div className="flex flex-wrap items-center gap-3">
                   {w && <Avatar person={w} size={48} />}
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold leading-tight">{w ? personName(w, i.lang) : '—'}</p>
+                    <p className="font-semibold leading-tight">{w ? personName(w, i.lang) : '-'}</p>
                     <p className="text-sm text-ink-soft">
                       {w ? i.tx(roleOf(w)) : ''} {i.date(r.createdAt)}
                     </p>

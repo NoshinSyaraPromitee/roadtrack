@@ -133,7 +133,7 @@ export function ShiftRecords() {
                     <p className="mb-2 font-semibold">{t('Shift log', 'শিফটের হিসাব')}</p>
                     <ul className="space-y-1.5 text-ink-soft">
                       <li>
-                        {t('From', 'সময়')} {i.time(s.startedAt)} {t('to', 'থেকে')} {s.endedAt ? i.time(s.endedAt) : '—'}
+                        {t('From', 'সময়')} {i.time(s.startedAt)} {t('to', 'থেকে')} {s.endedAt ? i.time(s.endedAt) : '-'}
                       </li>
                       <li className="flex flex-wrap gap-1.5">
                         {s.breaks.map((b) => (

@@ -43,7 +43,7 @@ export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: (
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard icon={Clock} label={t('Shift time', 'শিফটের সময়')} value={i.dur(new Date(shift.endedAt).getTime() - new Date(shift.startedAt).getTime())} hint={`${i.time(shift.startedAt)} – ${i.time(shift.endedAt)}`} />
+        <StatCard icon={Clock} label={t('Shift time', 'শিফটের সময়')} value={i.dur(new Date(shift.endedAt).getTime() - new Date(shift.startedAt).getTime())} hint={`${i.time(shift.startedAt)} - ${i.time(shift.endedAt)}`} />
         <StatCard icon={Users} label={t('Stayed till the end', 'শেষ পর্যন্ত ছিলেন')} value={`${num(stayed)}/${num(started)}`} />
         <StatCard icon={Construction} tone="mark" label={t('Road done today', 'আজকের কাজ')} value={`+${fixed(pctToKm(end, road) - pctToKm(shift.startProgress, road), 2)} ${t('km', 'কিমি')}`} hint={t(`Now ${fixed(end)}% of the road`, `এখন রাস্তার ${fixed(end)}%`)} />
         <StatCard icon={Wallet} label={t('Pay list', 'মজুরি')} value={i.taka(total)} />

@@ -98,9 +98,9 @@ export function PayrollList({ lines, edits = {}, onEdit }: { lines: PayrollLine[
                   {(l.deduction > 0 || l.welfareBonus > 0 || adj !== 0) && (
                     <p className="text-sm tabular-nums text-ink-soft">
                       {i.taka(l.basePay)}
-                      {l.deduction > 0 && <span className="ml-1 text-stop-600">−{i.taka(l.deduction)}</span>}
+                      {l.deduction > 0 && <span className="ml-1 text-stop-600">-{i.taka(l.deduction)}</span>}
                       {l.welfareBonus > 0 && <span className="ml-1 text-guide-700">+{i.taka(l.welfareBonus)}</span>}
-                      {adj !== 0 && <span className={cn('ml-1', adj > 0 ? 'text-guide-700' : 'text-stop-600')}>{adj > 0 ? `+${i.taka(adj)}` : `−${i.taka(-adj)}`}</span>}
+                      {adj !== 0 && <span className={cn('ml-1', adj > 0 ? 'text-guide-700' : 'text-stop-600')}>{adj > 0 ? `+${i.taka(adj)}` : `-${i.taka(-adj)}`}</span>}
                     </p>
                   )}
                 </div>
