@@ -56,5 +56,3 @@ export const RAISE_REASONS: Record<RaiseReason, Text> = {
   other: { en: 'Other reason', bn: 'অন্য কারণ' },
 };
 export const RAISE_KEYS = Object.keys(RAISE_REASONS) as RaiseReason[];
-
-export const SITE_SEGMENTS = ['1+800 – 2+400', '2+400 – 3+000', '3+000 – 3+600', '3+600 – 4+200'];

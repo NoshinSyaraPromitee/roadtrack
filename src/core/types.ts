@@ -62,7 +62,9 @@ export interface PayrollLine {
 
 export interface Shift {
   id: string;
-  site: string;
+  roadId: string;
+  /** A place name or address on the road, never coordinates. */
+  site: Text;
   startedAt: string;
   endedAt?: string;
   status: 'active' | 'completed';
@@ -101,8 +103,38 @@ export interface RaiseRequest {
   status: RaiseStatus;
 }
 
-export interface Project {
+export interface Road {
+  id: string;
   name: Text;
-  section: Text;
+  area: Text;
+  from: Text;
+  to: Text;
   lengthKm: number;
+  /** Named places along the road where a crew can work. */
+  places: Text[];
+}
+
+export type MachineKind = 'roller' | 'excavator' | 'paver' | 'mixer' | 'truck' | 'generator';
+export type MachineStatus = 'working' | 'idle' | 'repair';
+
+export interface Machine {
+  id: string;
+  roadId: string;
+  kind: MachineKind;
+  code: string;
+  status: MachineStatus;
+  fuelPct: number;
+  hoursToday: number;
+  hoursSinceService: number;
+  operatorId?: string;
+  updatedAt: string;
+}
+
+export interface HealthReport {
+  id: string;
+  workerId: string;
+  status: Health;
+  note: string;
+  audio?: string;
+  at: string;
 }
