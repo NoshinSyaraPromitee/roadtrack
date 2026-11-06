@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { cn } from '@/shared/lib/utils';
 
-/** The company logo from public/logo.jpg. If the file is missing, a drawn road sign shows instead. */
 const LOGO = '/logo.jpg';
 
 function DrawnMark() {
@@ -25,7 +24,9 @@ export function Logo({ tone = 'dark', className }: { tone?: 'dark' | 'light'; cl
       ) : (
         <img src={LOGO} alt="" onError={() => setBroken(true)} className="h-10 w-10 shrink-0 rounded-lg bg-white object-contain" />
       )}
-      <span className={cn('font-sign text-2xl leading-none', light ? 'text-white' : 'text-ink')}>RoadTrack</span>
+      <span className={cn('font-sign text-2xl leading-none', light ? 'text-white' : 'text-ink')}>
+        Road<span className="text-[#c89509]">Track</span>
+      </span>
     </span>
   );
 }
