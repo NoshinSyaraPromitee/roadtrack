@@ -28,7 +28,23 @@ const getCtor = (): RecognitionCtor | undefined => {
 
 export const canListen = () => !!getCtor();
 
-export type ListenError = 'blocked' | 'silent' | 'failed';
+/**
+ * Why listening failed, from the browser's own error codes.
+ * blocked: microphone permission refused. service: the browser does not allow its speech service here.
+ * silent: nothing was heard. no-mic: no microphone found. network: the speech service needs the internet.
+ * language: the browser cannot understand this language. busy: the browser could not start listening.
+ */
+export type ListenError = 'blocked' | 'service' | 'silent' | 'no-mic' | 'network' | 'language' | 'busy' | 'failed';
+
+const ERROR_MAP: Record<string, ListenError> = {
+  'not-allowed': 'blocked',
+  'service-not-allowed': 'service',
+  'no-speech': 'silent',
+  'audio-capture': 'no-mic',
+  network: 'network',
+  'language-not-supported': 'language',
+  'bad-grammar': 'failed',
+};
 
 /** Speech to text with the browser's own recogniser. Chrome on Android understands Bangla (bn-BD). */
 export function useListen(lang: Lang, onFinal: (text: string) => void) {
@@ -63,7 +79,10 @@ export function useListen(lang: Lang, onFinal: (text: string) => void) {
         .join(' ');
       setHeard(text);
     };
-    r.onerror = (e) => setError(e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'blocked' : e.error === 'no-speech' ? 'silent' : 'failed');
+    r.onerror = (e) => {
+      // "aborted" only means we stopped it ourselves.
+      if (e.error !== 'aborted') setError(ERROR_MAP[e.error] ?? 'failed');
+    };
     r.onend = () => {
       setListening(false);
       if (text.trim()) finalRef.current(text.trim());
@@ -76,11 +95,13 @@ export function useListen(lang: Lang, onFinal: (text: string) => void) {
       r.start();
     } catch {
       setListening(false);
-      setError('failed');
+      setError('busy');
     }
   }, [lang]);
 
-  return { supported, listening, heard, error, start, stop };
+  const clearError = useCallback(() => setError(null), []);
+
+  return { supported, listening, heard, error, start, stop, clearError };
 }
 
 const WAKE = /(hey\s+)?(apa|appa|aapa|apaa|upper|আপা|আপ্পা)/i;
