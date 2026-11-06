@@ -61,15 +61,13 @@ export function StartShiftWizard() {
     <div className="space-y-5 pb-36">
       <PageHeader
         title={t("Start today's work", 'আজকের কাজ শুরু করুন')}
-        subtitle={t('Three short steps. Tap, do not type.', 'তিনটি ছোট ধাপ। লিখতে হবে না, শুধু চাপ দিন।')}
-        speak={{ en: "Start today's work. Three short steps.", bn: 'আজকের কাজ শুরু করুন। তিনটি ছোট ধাপ।' }}
+        speak={{ en: "Start today's work.", bn: 'আজকের কাজ শুরু করুন।' }}
       />
       <WizardSteps steps={STEPS} current={step} />
 
       {step === 0 && (
         <Card>
           <CardHeader
-            icon={Users}
             title={t('Who came today?', 'আজ কে কে এসেছেন?')}
             subtitle={t(`${num(selected.length)} of ${num(workers.length)} on site`, `${num(workers.length)} জনের মধ্যে ${num(selected.length)} জন এসেছেন`)}
             speak={{ en: 'Who came today? Tap a person to add or remove them.', bn: 'আজ কে কে এসেছেন? যোগ বা বাদ দিতে নামের উপর চাপ দিন।' }}

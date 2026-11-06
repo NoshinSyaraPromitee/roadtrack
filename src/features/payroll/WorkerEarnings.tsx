@@ -1,4 +1,4 @@
-import { CalendarCheck, CircleCheck, HandCoins, HeartHandshake, Hourglass } from 'lucide-react';
+import { CalendarCheck, CircleCheck, HeartHandshake, Hourglass } from 'lucide-react';
 import type { Shift, Worker } from '@/core/types';
 import { Avatar, shortName } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
@@ -23,15 +23,14 @@ export function WorkerEarnings({ shifts, worker }: { shifts: Shift[]; worker: Wo
   const extra = sum(entries.map((e) => e.line.welfareBonus));
 
   const summary = {
-    en: `${worker.name}. You have been paid ${i.numEn(paid)} taka. ${i.numEn(waiting)} taka is waiting for the office. You worked ${days} days. Your daily pay is ${i.numEn(worker.dailyRate)} taka.`,
-    bn: `${worker.nameBn}। আপনি ${i.num(paid)} টাকা পেয়েছেন। ${i.num(waiting)} টাকা অফিসের অনুমোদনের অপেক্ষায়। আপনি ${i.num(days)} দিন কাজ করেছেন। আপনার দৈনিক মজুরি ${i.num(worker.dailyRate)} টাকা।`,
+    en: `${worker.name}. You have been paid ${i.numEn(paid)} taka. You will get ${i.numEn(waiting)} taka after work. You worked ${days} days. Your daily pay is ${i.numEn(worker.dailyRate)} taka.`,
+    bn: `${worker.nameBn}। আপনি ${i.num(paid)} টাকা পেয়েছেন। ${i.num(waiting)} টাকা কাজের পরে পাবেন। আপনি ${i.num(days)} দিন কাজ করেছেন। আপনার দৈনিক মজুরি ${i.num(worker.dailyRate)} টাকা।`,
   };
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:items-start lg:gap-6">
       <div className="space-y-4">
         <section className="relative overflow-hidden rounded-3xl bg-guide-600 p-5 text-white lg:p-6">
-          <div className="pointer-events-none absolute inset-2 rounded-[20px] border-2 border-white/80" />
           <div className="relative">
             <div className="flex items-center gap-3">
               <Avatar person={worker} size={56} />
@@ -43,8 +42,7 @@ export function WorkerEarnings({ shifts, worker }: { shifts: Shift[]; worker: Wo
             </div>
             <p className="mt-5 text-white/85">{i.t('Paid to you', 'আপনি পেয়েছেন')}</p>
             <p className="font-sign text-6xl leading-none tabular-nums">{i.taka(paid)}</p>
-            <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/12 px-3 py-1.5">
-              <HandCoins className="h-5 w-5" />
+            <p className="mt-3 inline-flex rounded-full bg-white/12 px-3 py-1.5">
               {i.t(`Daily pay ${i.taka(worker.dailyRate)}`, `দৈনিক মজুরি ${i.taka(worker.dailyRate)}`)}
             </p>
           </div>
@@ -52,7 +50,7 @@ export function WorkerEarnings({ shifts, worker }: { shifts: Shift[]; worker: Wo
 
         <div className="grid grid-cols-3 gap-2">
           {[
-            { icon: Hourglass, tone: 'mark' as const, label: i.t('Waiting', 'অপেক্ষায়'), value: i.taka(waiting) },
+            { icon: Hourglass, tone: 'mark' as const, label: i.t('After work', 'কাজের পরে পাবেন'), value: i.taka(waiting) },
             { icon: CalendarCheck, tone: 'guide' as const, label: i.t('Days worked', 'কাজের দিন'), value: i.num(days) },
             { icon: HeartHandshake, tone: 'sign' as const, label: i.t('Extra help', 'বাড়তি সহায়তা'), value: i.taka(extra) },
           ].map((s) => (
@@ -86,7 +84,7 @@ export function WorkerEarnings({ shifts, worker }: { shifts: Shift[]; worker: Wo
                   <div className="shrink-0 text-right">
                     <p className={cn('font-sign text-2xl tabular-nums', line.total === 0 && 'text-ink-soft')}>{i.taka(line.total)}</p>
                     <Badge tone={isPaid ? 'green' : 'yellow'} icon={isPaid ? CircleCheck : Hourglass}>
-                      {isPaid ? i.t('Paid', 'পেয়েছেন') : i.t('Waiting', 'অপেক্ষায়')}
+                      {isPaid ? i.t('Paid', 'পেয়েছেন') : i.t('After work', 'কাজের পরে পাবেন')}
                     </Badge>
                   </div>
                 </li>
