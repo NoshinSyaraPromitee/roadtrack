@@ -21,7 +21,6 @@ export interface EndShiftInput {
   incidentTags: IncidentKey[];
   incidents: string;
   photos?: string[];
-  /** The supervisor's changes to the pay list, by worker. */
   payEdits?: Record<string, PayEdit>;
 }
 

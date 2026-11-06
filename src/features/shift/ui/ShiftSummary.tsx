@@ -1,14 +1,13 @@
 import { Camera, CircleCheck, Clock, Construction, Send, TriangleAlert, Users, Wallet } from 'lucide-react';
-import { INCIDENTS, MATERIAL_BY_KEY } from '@/core/catalog';
 import { payrollTotal } from '@/core/payroll';
 import { pctToKm } from '@/core/roads';
 import { useRoad } from '@/features/road';
 import { PayrollList } from '@/features/payroll';
 import { useI18n } from '@/shared/i18n';
-import { Badge, Button, Card, CardHeader, PageHeader, PhotoStrip, RoadStrip, StackBar, StatCard } from '@/shared/ui';
+import { Badge, Button, Card, CardHeader, PageHeader, PhotoStrip, RoadStrip, StatCard } from '@/shared/ui';
 import { useShiftById } from '../model/selectors';
-import { INCIDENT_ICON, MaterialPicto } from './icons';
 import { MaterialTotals } from './MaterialTotals';
+import { IncidentBadges, MaterialUseList } from './ShiftParts';
 
 export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: () => void }) {
   const i = useI18n();
@@ -59,44 +58,9 @@ export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: (
       <div className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
         <Card>
           <CardHeader icon={TriangleAlert} shape="warn" tone="stop" title={t('Materials and problems', 'মালামাল ও সমস্যা')} />
-          <ul className="space-y-3">
-            {shift.materials.map((m) => {
-              const def = MATERIAL_BY_KEY[m.key];
-              return (
-                <li key={m.key} className="flex items-center gap-3">
-                  <MaterialPicto k={m.key} size={36} />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex justify-between gap-2 text-sm">
-                      <span className="font-semibold">{tx(def.name)}</span>
-                      <span className="tabular-nums text-ink-soft">
-                        {num(m.used)} <span className="text-stop-600">+{num(m.wasted)}</span> / {num(m.allocated)} {tx(def.unit)}
-                      </span>
-                    </div>
-                    <StackBar
-                      className="mt-1.5"
-                      total={m.allocated}
-                      parts={[
-                        { value: m.used, className: 'bg-guide-500' },
-                        { value: m.wasted, className: 'bg-stop-500' },
-                      ]}
-                    />
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          <MaterialUseList lines={shift.materials} />
           <div className="mt-4 flex flex-wrap gap-2">
-            {shift.incidentTags.length === 0 ? (
-              <Badge tone="green" icon={CircleCheck}>
-                {t('No problems', 'কোনো সমস্যা নেই')}
-              </Badge>
-            ) : (
-              shift.incidentTags.map((k) => (
-                <Badge key={k} tone="red" icon={INCIDENT_ICON[k]}>
-                  {tx(INCIDENTS[k])}
-                </Badge>
-              ))
-            )}
+            <IncidentBadges tags={shift.incidentTags} none={{ en: 'No problems', bn: 'কোনো সমস্যা নেই' }} />
           </div>
           {shift.incidents && <p className="mt-3 rounded-xl bg-paper p-3 text-ink-soft">{shift.incidents}</p>}
         </Card>

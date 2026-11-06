@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { MaterialKey, Text } from '@/core/types';
 
-/** What the supervisor planned in step 1: who came, the materials, the place and the road done so far. */
 export interface DayPlan {
   site: Text;
   startProgress: number;
@@ -10,7 +9,6 @@ export interface DayPlan {
   materials: Array<{ key: MaterialKey; allocated: number }>;
 }
 
-/** How far the supervisor got in today's steps on one road. */
 export interface DaySetup {
   day: string;
   plan?: DayPlan;
@@ -21,7 +19,6 @@ export interface DaySetup {
 const today = () => new Date().toDateString();
 const blank = (): DaySetup => ({ day: today(), machinesOk: false, healthOk: false });
 
-/** Today's progress on this road, or a fresh start when the saved one is from another day. */
 export const setupFor = (byRoad: Record<string, DaySetup>, roadId: string): DaySetup => {
   const s = byRoad[roadId];
   return s && s.day === today() ? s : blank();
@@ -33,7 +30,6 @@ interface DaySetupState {
   clear: (roadId: string) => void;
 }
 
-/** Saved on the phone, so closing the app halfway keeps the steps already done today. */
 export const useDaySetupStore = create<DaySetupState>()(
   persist(
     (set) => ({

@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { ChevronDown, CircleCheck, Coffee, Cookie, Download, FileText, Hourglass } from 'lucide-react';
-import { INCIDENTS, MATERIAL_BY_KEY } from '@/core/catalog';
+import { ChevronDown, CircleCheck, Download, FileText, Hourglass } from 'lucide-react';
+import { INCIDENTS } from '@/core/catalog';
 import { payrollTotal } from '@/core/payroll';
 import { pctToKm } from '@/core/roads';
 import { useRoad } from '@/features/road';
-import { INCIDENT_ICON, MaterialPicto, useCompletedShifts } from '@/features/shift';
+import { IncidentBadges, MaterialUseList, useCompletedShifts } from '@/features/shift';
 import { useI18n } from '@/shared/i18n';
-import { Badge, Button, Card, CardHeader, PhotoStrip, StackBar } from '@/shared/ui';
+import { Badge, Button, Card, CardHeader, DateTile, PhotoStrip } from '@/shared/ui';
 import { cn, pct, sum } from '@/shared/lib/utils';
+import { BreakBadges } from '@/features/reminders';
 
 export function ShiftRecords() {
   const i = useI18n();
@@ -74,13 +75,9 @@ export function ShiftRecords() {
                 type="button"
                 aria-expanded={isOpen}
                 onClick={() => setOpen(isOpen ? null : s.id)}
-                className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-3 text-left hover:bg-paper/60 sm:gap-4 sm:p-4"
+                className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-3 text-left hover:bg-guide-50 sm:gap-4 sm:p-4"
               >
-                <div className="grid w-14 place-items-center rounded-xl bg-paper py-1.5 text-center leading-none">
-                  <span className="text-xs text-ink-soft">{i.weekday(s.startedAt)}</span>
-                  <span className="font-sign text-2xl">{i.day(s.startedAt)}</span>
-                  <span className="text-xs text-ink-soft">{i.month(s.startedAt)}</span>
-                </div>
+                <DateTile at={s.startedAt} />
                 <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
                   <span className="text-ink-soft">{tx(s.site)}</span>
                   <span>
@@ -105,29 +102,7 @@ export function ShiftRecords() {
                 <div className="grid gap-5 bg-paper/50 p-4 md:grid-cols-3">
                   <div>
                     <p className="mb-2 font-semibold">{t('Materials', 'মালামাল')}</p>
-                    <ul className="space-y-2.5">
-                      {s.materials.map((m) => (
-                        <li key={m.key} className="flex items-center gap-2.5">
-                          <MaterialPicto k={m.key} size={30} />
-                          <div className="min-w-0 flex-1">
-                            <div className="flex justify-between gap-2 text-sm">
-                              <span>{tx(MATERIAL_BY_KEY[m.key].name)}</span>
-                              <span className="tabular-nums text-ink-soft">
-                                {num(m.used)} <span className="text-stop-600">+{num(m.wasted)}</span> / {num(m.allocated)}
-                              </span>
-                            </div>
-                            <StackBar
-                              className="mt-1 h-2"
-                              total={m.allocated}
-                              parts={[
-                                { value: m.used, className: 'bg-guide-500' },
-                                { value: m.wasted, className: 'bg-stop-500' },
-                              ]}
-                            />
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
+                    <MaterialUseList lines={s.materials} compact />
                   </div>
                   <div>
                     <p className="mb-2 font-semibold">{t('Shift log', 'শিফটের হিসাব')}</p>
@@ -136,11 +111,7 @@ export function ShiftRecords() {
                         {t('From', 'সময়')} {i.time(s.startedAt)} {t('to', 'থেকে')} {s.endedAt ? i.time(s.endedAt) : '-'}
                       </li>
                       <li className="flex flex-wrap gap-1.5">
-                        {s.breaks.map((b) => (
-                          <Badge key={b.id} tone={b.type === 'snack' ? 'yellow' : 'blue'} icon={b.type === 'snack' ? Cookie : Coffee}>
-                            {i.time(b.at)}
-                          </Badge>
-                        ))}
+                        <BreakBadges breaks={s.breaks} />
                       </li>
                       <li>{t(`${num(stayed)} of ${num(present)} stayed till the end`, `${num(present)} জনের মধ্যে ${num(stayed)} জন শেষ পর্যন্ত ছিলেন`)}</li>
                     </ul>
@@ -148,17 +119,7 @@ export function ShiftRecords() {
                   <div>
                     <p className="mb-2 font-semibold">{t('Problems', 'সমস্যা')}</p>
                     <div className="flex flex-wrap gap-1.5">
-                      {s.incidentTags.length === 0 ? (
-                        <Badge tone="green" icon={CircleCheck}>
-                          {t('None', 'নেই')}
-                        </Badge>
-                      ) : (
-                        s.incidentTags.map((k) => (
-                          <Badge key={k} tone="red" icon={INCIDENT_ICON[k]}>
-                            {tx(INCIDENTS[k])}
-                          </Badge>
-                        ))
-                      )}
+                      <IncidentBadges tags={s.incidentTags} none={{ en: 'None', bn: 'নেই' }} />
                     </div>
                     {s.incidents && <p className="mt-2 text-ink-soft">{s.incidents}</p>}
                   </div>

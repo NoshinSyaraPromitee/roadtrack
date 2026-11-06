@@ -9,7 +9,6 @@ import type { DayPlan } from '../model/daySetup';
 import { useShiftStore } from '../model/store';
 import { MaterialPicto } from './icons';
 
-/** The last step of the supervisor's day: check the plan once more and start the work. */
 export function StartWork({ plan, onBack, onStarted }: { plan: DayPlan; onBack: () => void; onStarted: () => void }) {
   const i = useI18n();
   const { t, tx, num, fixed } = i;

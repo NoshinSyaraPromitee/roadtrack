@@ -6,10 +6,12 @@ import { kmToPct, pctToKm } from '@/core/roads';
 import { useRoad } from '@/features/road';
 import { PeoplePicker, POST_ICON, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
-import { ActionBar, Badge, Button, Card, CardHeader, Chip, Field, Input, RoadStrip, Stepper, WizardSteps } from '@/shared/ui';
+import { ActionBar, Badge, Button, Card, CardHeader, RoadStrip, Stepper, WizardSteps } from '@/shared/ui';
 import type { DayPlan } from '../model/daySetup';
 import { useProjectProgress } from '../model/selectors';
 import { MaterialPicto } from './icons';
+import { KmStepper } from './ShiftParts';
+import { PlaceCard } from './PlaceCard';
 
 const STEPS = [
   { icon: Users, label: { en: 'Workers', bn: 'শ্রমিক' } },
@@ -17,10 +19,6 @@ const STEPS = [
   { icon: MapPin, label: { en: 'Place', bn: 'স্থান' } },
 ];
 
-/**
- * Step 1 of the supervisor's day: who came, the materials, and where the crew works.
- * It only saves the plan; work starts later, after the machines and the crew's health are checked.
- */
 export function StartShiftWizard({ initial, onDone }: { initial?: DayPlan; onDone: (plan: DayPlan) => void }) {
   const { t, tx, num, fixed } = useI18n();
   const road = useRoad();
@@ -120,34 +118,7 @@ export function StartShiftWizard({ initial, onDone }: { initial?: DayPlan; onDon
 
       {step === 2 && (
         <>
-          <Card>
-            <CardHeader
-              icon={MapPin}
-              title={t('Where is the crew working?', 'কোথায় কাজ হচ্ছে?')}
-              speak={{ en: 'Where is the crew working? Tap a place.', bn: 'কোথায় কাজ হচ্ছে? একটি জায়গায় চাপ দিন।' }}
-            />
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {road.places.map((p) => (
-                <Chip
-                  key={p.en}
-                  selected={!other.trim() && site.en === p.en}
-                  onClick={() => {
-                    setOther('');
-                    setSite(p);
-                  }}
-                  className="justify-start text-left text-lg"
-                >
-                  <MapPin />
-                  {tx(p)}
-                </Chip>
-              ))}
-            </div>
-            <div className="mt-4 max-w-md">
-              <Field label={t('Somewhere else? Write the place or address', 'অন্য কোথাও? জায়গা বা ঠিকানা লিখুন')}>
-                <Input value={other} onChange={(e) => setOther(e.target.value)} placeholder={t('For example: in front of Ali Hardware, Station Road', 'যেমন: আলী হার্ডওয়্যারের সামনে, স্টেশন রোড')} />
-              </Field>
-            </div>
-          </Card>
+          <PlaceCard places={road.places} site={site} other={other} onSite={setSite} onOther={setOther} />
           <Card>
             <CardHeader
               icon={Construction}
@@ -157,12 +128,7 @@ export function StartShiftWizard({ initial, onDone }: { initial?: DayPlan; onDon
               speak={{ en: 'How many kilometres of the road are done? Use plus and minus.', bn: 'রাস্তার কত কিলোমিটার হয়েছে? যোগ আর বিয়োগ চিহ্ন ব্যবহার করুন।' }}
             />
             <RoadStrip progress={progress} lengthKm={road.lengthKm} />
-            <div className="mt-5 flex flex-wrap items-center gap-4">
-              <div className="w-full max-w-xs">
-                <Stepper value={km} step={0.05} decimals={2} min={0} max={road.lengthKm} unit={t('km', 'কিমি')} size="lg" label={t('Road done in km', 'কত কিমি হয়েছে')} onChange={setKm} />
-              </div>
-              <p className="font-sign text-3xl text-guide-700">= {fixed(progress)}%</p>
-            </div>
+            <KmStepper km={km} min={0} max={road.lengthKm} progress={progress} onChange={setKm} />
           </Card>
         </>
       )}
