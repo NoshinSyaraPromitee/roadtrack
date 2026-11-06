@@ -23,18 +23,26 @@ Road construction crews in Bangladesh are tracked on paper. Headcounts drift, wa
 - **Worker phone view.** My money, my health (workers tell the supervisor if they are sick or hurt, by tapping or by voice), ask for a raise, make a complaint (by voice or text, optionally anonymous).
 - **Ask Apa.** A drawn Bangladeshi site helper on every screen. Her speech bubble says what to do now and when (break due, a sick worker, a broken machine, time to finish). Tap a question, speak (Bangla or English) or type, and she answers out loud from the app's own data. Turn on "Call me by saying Apa" to open her hands-free.
 
-## Architecture (feature-based "lego")
+## Architecture (clean, layered)
 ```
 src/app       routing, shell, role guard
 src/pages     thin pages that only compose features
 src/features  self-contained bricks: road, session, workforce, shift, reminders, payroll, complaints, raise-requests, equipment, health, dashboard, assistant
-src/core      pure domain: types, roads, catalog, pay rules, break policy, seed data
 src/shared    i18n, voice, UI kit (pictograms, steppers, wizard, road strip), utils
+src/data      demo seed data
+src/core      pure business rules and types: pay, breaks, health, roads, materials, complaints, accounts
 ```
-Each feature exposes its public API through `index.ts`. Features talk to each other only through those files.
+Dependencies point inwards only: `app -> pages -> features -> shared / data -> core`. `core` imports nothing outside itself, not even React.
+Each feature exposes its public API through `index.ts`; other code may not import its inner files.
+ESLint enforces these boundaries and a 160-line limit per file (`npm run lint`).
+
+## Privacy
+A complaint sent with "Hide my name" is stored without the sender. Only the sender's own device keeps a receipt so they can follow it.
 
 ## Run
 ```
 npm install
 npm run dev
+npm test        # unit tests for the core rules (Vitest)
+npm run check   # type check, lint and tests together
 ```
