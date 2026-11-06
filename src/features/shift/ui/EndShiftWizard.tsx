@@ -15,6 +15,7 @@ import type { SegmentOption } from '@/shared/ui';
 import { cn, pct } from '@/shared/lib/utils';
 import { useShiftStore } from '../model/store';
 import { INCIDENT_ICON, MaterialPicto } from './icons';
+import { MaterialTotals } from './MaterialTotals';
 
 const STEPS = [
   { icon: Users, label: { en: 'Count', bn: 'গণনা' } },
@@ -150,6 +151,8 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
           </ul>
         </Card>
       )}
+
+      {step === 1 && <MaterialTotals lines={mats} />}
 
       {step === 1 && (
         <Card>
