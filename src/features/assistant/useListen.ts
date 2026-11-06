@@ -28,12 +28,6 @@ const getCtor = (): RecognitionCtor | undefined => {
 
 export const canListen = () => !!getCtor();
 
-/**
- * Why listening failed, from the browser's own error codes.
- * blocked: microphone permission refused. service: the browser does not allow its speech service here.
- * silent: nothing was heard. no-mic: no microphone found. network: the speech service needs the internet.
- * language: the browser cannot understand this language. busy: the browser could not start listening.
- */
 export type ListenError = 'blocked' | 'service' | 'silent' | 'no-mic' | 'network' | 'language' | 'busy' | 'failed';
 
 const ERROR_MAP: Record<string, ListenError> = {
@@ -46,7 +40,6 @@ const ERROR_MAP: Record<string, ListenError> = {
   'bad-grammar': 'failed',
 };
 
-/** Speech to text with the browser's own recogniser. Chrome on Android understands Bangla (bn-BD). */
 export function useListen(lang: Lang, onFinal: (text: string) => void) {
   const supported = !!getCtor();
   const [listening, setListening] = useState(false);
@@ -80,7 +73,6 @@ export function useListen(lang: Lang, onFinal: (text: string) => void) {
       setHeard(text);
     };
     r.onerror = (e) => {
-      // "aborted" only means we stopped it ourselves.
       if (e.error !== 'aborted') setError(ERROR_MAP[e.error] ?? 'failed');
     };
     r.onend = () => {
@@ -106,10 +98,6 @@ export function useListen(lang: Lang, onFinal: (text: string) => void) {
 
 const WAKE = /(hey\s+)?(apa|appa|aapa|apaa|upper|আপা|আপ্পা)/i;
 
-/**
- * Hands-free: keeps listening quietly and calls `onWake` when someone says "Apa" (আপা).
- * Whatever is said after the name is passed on as the question. Chrome needs the internet for this.
- */
 export function useWakeWord(enabled: boolean, lang: Lang, onWake: (rest: string) => void) {
   const [blocked, setBlocked] = useState(false);
   const wakeRef = useRef(onWake);

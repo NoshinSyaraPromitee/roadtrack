@@ -3,7 +3,6 @@ import type { SpeakIssue } from '@/shared/voice';
 import type { PhotoProblem } from './photo';
 import type { ListenError } from './useListen';
 
-/** Every error Apa can show. Each one says what went wrong, why it happened and how to fix it. */
 export type ProblemKey =
   | `photo-${PhotoProblem}`
   | `mic-${ListenError}`
@@ -16,7 +15,6 @@ export interface Problem {
   title: Text;
   why: Text;
   fix: Text;
-  /** Warnings are softer than errors: Apa still answered, just not the best way. */
   tone: 'error' | 'warn';
 }
 

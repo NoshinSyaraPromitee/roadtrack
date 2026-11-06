@@ -11,10 +11,6 @@ const RING: Record<ApaMood, string> = {
   listening: 'ring-stop-500',
 };
 
-/**
- * Apa's photo in a circle. A grey circle shows while it loads; if it cannot load, her name shows instead.
- * The ring colour tells what she is doing: yellow while talking, red while listening.
- */
 export function ApaAvatar({ size = 52, mood = 'idle', className }: { size?: number; mood?: ApaMood; className?: string }) {
   const i = useI18n();
   const status = useApaPhoto((s) => s.status);
