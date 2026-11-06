@@ -75,7 +75,6 @@ export function HealthCheckIn({ worker }: { worker: Worker }) {
           tone="stop"
           shape="disc"
           title={i.t('How do you feel today?', 'আজ কেমন আছেন?')}
-          subtitle={i.t('Your supervisor sees this before work starts.', 'কাজ শুরুর আগে সুপারভাইজার এটি দেখবেন।')}
           speak={{ en: 'How do you feel today? Tap one sign.', bn: 'আজ কেমন আছেন? একটি চিহ্নে চাপ দিন।' }}
         />
         <div className="grid grid-cols-3 gap-2">

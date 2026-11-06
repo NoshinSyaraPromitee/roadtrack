@@ -64,7 +64,7 @@ export function WorkerEarnings({ shifts, worker }: { shifts: Shift[]; worker: Wo
       </div>
 
       <Card>
-        <CardHeader icon={CalendarCheck} title={i.t('Day by day', 'দিন অনুযায়ী')} subtitle={i.t('Newest first', 'নতুন আগে')} />
+        <CardHeader icon={CalendarCheck} title={i.t('Day by day', 'দিন অনুযায়ী')} />
         {entries.length === 0 ? (
           <EmptyState icon={CalendarCheck} title={i.t('No pay yet', 'এখনো কোনো মজুরি নেই')} text={i.t('Your pay shows here after the supervisor ends a shift.', 'সুপারভাইজার শিফট শেষ করলে মজুরি এখানে দেখাবে।')} />
         ) : (

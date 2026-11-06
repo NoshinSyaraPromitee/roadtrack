@@ -433,11 +433,6 @@ export function ApaAssistant() {
                       </span>
                     ))}
                   </span>
-                  {wakeOn && !wake.blocked && (
-                    <p className="w-full text-sm text-ink-soft">
-                      {i.t('Close this panel and say "Apa, when is the break?" I will open and answer. Needs internet.', 'এই প্যানেল বন্ধ করে বলুন "আপা, বিরতি কখন?" আমি খুলে উত্তর দেব। ইন্টারনেট লাগবে।')}
-                    </p>
-                  )}
                   {wakeOn && wake.blocked && (
                     <div className="w-full pt-1">
                       <ProblemCard k="mic-blocked" />

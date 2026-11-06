@@ -99,7 +99,6 @@ export function StartShiftWizard({ initial, onDone }: { initial?: DayPlan; onDon
             icon={Package}
             tone="plain"
             title={t('Materials for today', 'আজকের মালামাল')}
-            subtitle={t('How much was given to the site?', 'সাইটে কতটা মাল দেওয়া হয়েছে?')}
             speak={{ en: 'Materials for today. Use plus and minus.', bn: 'আজকের মালামাল। যোগ আর বিয়োগ চিহ্ন ব্যবহার করুন।' }}
           />
           <ul className="space-y-1">
@@ -125,7 +124,6 @@ export function StartShiftWizard({ initial, onDone }: { initial?: DayPlan; onDon
             <CardHeader
               icon={MapPin}
               title={t('Where is the crew working?', 'কোথায় কাজ হচ্ছে?')}
-              subtitle={t(`On ${road.name.en}`, `${road.name.bn}-এ`)}
               speak={{ en: 'Where is the crew working? Tap a place.', bn: 'কোথায় কাজ হচ্ছে? একটি জায়গায় চাপ দিন।' }}
             />
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">

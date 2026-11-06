@@ -65,7 +65,6 @@ export function RaiseInbox() {
       <CardHeader
         icon={HandCoins}
         title={i.t('Pay raise requests', 'বেতন বৃদ্ধির আবেদন')}
-        subtitle={i.t("Approving changes the worker's daily pay.", 'অনুমোদন করলে শ্রমিকের দৈনিক মজুরি বদলে যাবে।')}
         action={
           <Badge tone={pending ? 'yellow' : 'green'} icon={RAISE_STATUS.pending.icon}>
             {i.t(`${i.num(pending)} waiting`, `${i.num(pending)}টি অপেক্ষায়`)}

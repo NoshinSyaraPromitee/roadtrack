@@ -18,7 +18,6 @@ export function PayrollApprovals({ shifts, onApprove }: { shifts: Shift[]; onApp
       <CardHeader
         icon={Wallet}
         title={i.t('Pay lists to approve', 'অনুমোদনের অপেক্ষায় মজুরি')}
-        subtitle={i.t('Sent by the supervisor at the end of each shift.', 'প্রতি শিফট শেষে সুপারভাইজার পাঠান।')}
         action={
           <Badge tone={pending.length ? 'yellow' : 'green'} icon={pending.length ? Wallet : BadgeCheck}>
             {i.t(`${i.num(pending.length)} waiting`, `${i.num(pending.length)}টি অপেক্ষায়`)}

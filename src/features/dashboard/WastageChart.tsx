@@ -25,7 +25,6 @@ export function WastageChart() {
         tone="stop"
         shape="warn"
         title={i.t('Material wasted', 'কতটা মাল নষ্ট')}
-        subtitle={i.t(`Red bars are over the ${i.num(LIMIT)}% limit`, `লাল দাগ ${i.num(LIMIT)}% সীমার বেশি`)}
       />
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">

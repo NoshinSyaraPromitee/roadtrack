@@ -44,7 +44,7 @@ export function MyComplaints({ workerId }: { workerId: string }) {
 
   return (
     <Card>
-      <CardHeader icon={Inbox} title={i.t('My complaints', 'আমার অভিযোগ')} subtitle={i.t('See what the office is doing', 'অফিস কী করছে দেখুন')} />
+      <CardHeader icon={Inbox} title={i.t('My complaints', 'আমার অভিযোগ')} />
       {mine.length === 0 ? (
         <EmptyState icon={Inbox} title={i.t('No complaints yet', 'এখনো কোনো অভিযোগ নেই')} />
       ) : (
@@ -98,7 +98,6 @@ export function ComplaintsInbox() {
         tone="stop"
         shape="warn"
         title={i.t('Worker complaints', 'শ্রমিকদের অভিযোগ')}
-        subtitle={i.t('Sent from workers’ phones, by voice or text.', 'শ্রমিকদের ফোন থেকে, কণ্ঠে বা লিখে পাঠানো।')}
         action={
           <Badge tone={unresolved ? 'red' : 'green'} icon={Megaphone}>
             {i.t(`${i.num(unresolved)} not solved`, `${i.num(unresolved)}টি সমাধান হয়নি`)}
