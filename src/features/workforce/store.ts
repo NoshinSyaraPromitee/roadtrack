@@ -20,6 +20,5 @@ export const useWorkforce = create<WorkforceState>()(
 
 export const useWorker = (id: string | null) => useWorkforce((s) => s.workers.find((w) => w.id === id));
 
-/** The supervisor or a worker, looked up by id. */
 export const usePerson = (id: string | null): Person | undefined =>
   useWorkforce((s) => (id === SUPERVISOR.id ? SUPERVISOR : s.workers.find((w) => w.id === id)));

@@ -1,6 +1,5 @@
 import type { Road } from './types';
 
-/** The project's roads. Places are names a crew would say out loud, not chainage or coordinates. */
 export const ROADS: Road[] = [
   {
     id: 'r1',
@@ -64,6 +63,5 @@ export const ROAD_BY_ID: Record<string, Road> = Object.fromEntries(ROADS.map((r)
 
 export const roadById = (id: string | null | undefined): Road => ROAD_BY_ID[id ?? ''] ?? ROADS[0];
 
-/** Kilometres done to percent of the whole road, kept to two decimals. */
 export const kmToPct = (km: number, road: Road) => Math.round((km / road.lengthKm) * 10000) / 100;
 export const pctToKm = (pct: number, road: Road) => Math.round(((pct * road.lengthKm) / 100) * 100) / 100;

@@ -1,13 +1,8 @@
 import type { Role } from './types';
 
-/**
- * People who must sign in: the supervisor and the head office. Workers do not sign in; they tap their name.
- * Only a salted SHA-256 of each password is kept here, never the password itself.
- */
 export interface Account {
   id: string;
   role: Exclude<Role, 'worker'>;
-  /** 11-digit Bangladeshi mobile number, digits only. */
   phone: string;
   passwordHash: string;
 }
@@ -19,7 +14,6 @@ export const ACCOUNTS: Account[] = [
 
 const BN = '০১২৩৪৫৬৭৮৯';
 
-/** Reads a phone number typed with Bangla or English digits, spaces, dashes or +880, and keeps 11 digits. */
 export function normalizePhone(input: string): string {
   const ascii = input.replace(/[০-৯]/g, (d) => String(BN.indexOf(d)));
   let digits = ascii.replace(/\D/g, '');
@@ -39,10 +33,8 @@ export async function hashPassword(accountId: string, password: string): Promise
 
 export type SignInResult = { ok: true; account: Account } | { ok: false; reason: 'wrong' };
 
-/** Checks a phone and password for one role. A wrong phone and a wrong password give the same answer. */
 export async function checkSignIn(role: Account['role'], phone: string, password: string): Promise<SignInResult> {
   const account = ACCOUNTS.find((a) => a.role === role && a.phone === normalizePhone(phone));
-  // Hash even when no account matches, so both cases take the same time.
   const hash = await hashPassword(account?.id ?? 'none', password);
   return account && hash === account.passwordHash ? { ok: true, account } : { ok: false, reason: 'wrong' };
 }

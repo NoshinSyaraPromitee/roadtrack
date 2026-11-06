@@ -19,7 +19,6 @@ export interface Person {
   id: string;
   name: string;
   nameBn: string;
-  /** Each person has their own colour, so the same work icon still looks different for two people. */
   color: string;
 }
 
@@ -56,9 +55,7 @@ export interface PayrollLine {
   basePay: number;
   deduction: number;
   welfareBonus: number;
-  /** Money the supervisor added (or cut, when below zero) by hand. */
   adjustment?: number;
-  /** The supervisor's comment on this worker's pay. */
   note?: string;
   total: number;
   flags: PayFlag[];
@@ -67,7 +64,6 @@ export interface PayrollLine {
 export interface Shift {
   id: string;
   roadId: string;
-  /** A place name or address on the road, never coordinates. */
   site: Text;
   startedAt: string;
   endedAt?: string;
@@ -79,7 +75,6 @@ export interface Shift {
   breaks: BreakLog[];
   incidentTags: IncidentKey[];
   incidents: string;
-  /** Photos of the work, taken when the shift ends. Saved as small JPEG data URLs. */
   photos?: string[];
   payroll: PayrollLine[];
   payrollStatus?: PayrollStatus;
@@ -116,7 +111,6 @@ export interface Road {
   from: Text;
   to: Text;
   lengthKm: number;
-  /** Named places along the road where a crew can work. */
   places: Text[];
 }
 

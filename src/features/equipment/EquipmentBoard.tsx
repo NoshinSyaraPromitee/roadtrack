@@ -94,7 +94,6 @@ function MachineCard({ m }: { m: Machine }) {
   );
 }
 
-/** Every machine on the chosen road: is it working, fuel, hours and service. */
 export function EquipmentBoard() {
   const i = useI18n();
   const road = useRoad();

@@ -8,13 +8,10 @@ const dayStart = (d: Date) => {
 };
 
 export interface SickDays {
-  /** Days in a row the worker has been sick or hurt, counting today. 0 when they are well. */
   streak: number;
-  /** Days in the last 30 the worker said they were sick or hurt. */
   month: number;
 }
 
-/** How many days a worker has been unwell, from their own daily reports. The last report of a day counts for that day. */
 export function sickDays(reports: HealthReport[], workerId: string, now = new Date()): SickDays {
   const byDay = new Map<number, HealthReport['status']>();
   reports
@@ -25,7 +22,6 @@ export function sickDays(reports: HealthReport[], workerId: string, now = new Da
   const today = dayStart(now);
 
   let streak = 0;
-  // Only a recent report counts: sick yesterday and nothing sent today still means sick.
   if (days.length && days[0][1] !== 'fit' && today - days[0][0] <= DAY) {
     let first = days[0][0];
     for (const [d, s] of days) {

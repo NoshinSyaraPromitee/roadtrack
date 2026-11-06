@@ -13,7 +13,6 @@ export const isWorker = (p: Person): p is Worker => 'post' in p;
 
 export const roleOf = (p: Person): Text => (isWorker(p) ? POSTS[p.post] : { en: 'Supervisor', bn: 'সুপারভাইজার' });
 
-/** "Rahim Uddin, Mason" in either language, for reading aloud. */
 export const spokenName = (p: Person): Text => ({
   en: `${p.name}, ${roleOf(p).en}`,
   bn: `${p.nameBn}, ${roleOf(p).bn}`,

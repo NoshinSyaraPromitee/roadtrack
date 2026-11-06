@@ -5,7 +5,6 @@ export interface BreakPolicy {
   snackEveryMin: number;
 }
 
-/** Rest every 2 hours, snacks every 4 hours. */
 export const BREAK_POLICY: BreakPolicy = { restEveryMin: 120, snackEveryMin: 240 };
 
 export interface BreakStatus {

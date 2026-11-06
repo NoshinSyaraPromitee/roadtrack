@@ -1,24 +1,19 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
 import type { Person } from '@/core/types';
+import { ICON_COLOR } from '@/shared/ui';
 import type { IconType } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { roleIcon } from './postIcons';
 
 function Glyph({ icon: Icon, size }: { icon: IconType; size: number }) {
-  return <Icon strokeWidth={2.2} style={{ width: size, height: size }} />;
+  return <Icon strokeWidth={2.2} style={{ width: size, height: size, color: '#ffffff' }} />;
 }
 
-/** Photos the browser could not load, so each missing photo is asked for only once. */
 const missing = new Set<string>();
 
-/** Where a person's photo lives: public/workers/<id>.jpg. */
 const photoOf = (person: Person) => `/workers/${person.id}.jpg`;
 
-/**
- * A person shown by their real photo. Until the photo loads, or if there is no photo,
- * their work icon on their own colour shows instead, like a round sign.
- */
 export function Avatar({ person, size = 56, selected, dim, className }: { person: Person; size?: number; selected?: boolean; dim?: boolean; className?: string }) {
   const mark = Math.max(18, Math.round(size * 0.36));
   const src = photoOf(person);
@@ -32,7 +27,7 @@ export function Avatar({ person, size = 56, selected, dim, className }: { person
         dim && 'opacity-50 grayscale',
         className,
       )}
-      style={{ width: size, height: size, backgroundColor: person.color }}
+      style={{ width: size, height: size, backgroundColor: ICON_COLOR }}
     >
       <Glyph icon={roleIcon(person)} size={size * 0.46} />
       {!broken && (

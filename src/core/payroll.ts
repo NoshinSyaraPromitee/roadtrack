@@ -49,13 +49,11 @@ export function calculatePayroll(workers: Worker[], attendance: Attendance[]): P
 
 export const payrollTotal = (lines: PayrollLine[]) => lines.reduce((s, l) => s + l.total, 0);
 
-/** A supervisor's change to one worker's pay, with the reason. */
 export interface PayEdit {
   adjustment: number;
   note: string;
 }
 
-/** Applies the supervisor's changes on top of the worked-out pay. Pay never goes below zero. */
 export function applyPayEdits(lines: PayrollLine[], edits: Record<string, PayEdit>): PayrollLine[] {
   return lines.map((l) => {
     const e = edits[l.workerId];
