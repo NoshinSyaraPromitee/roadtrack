@@ -1,11 +1,11 @@
 import { FileText, Gauge, HandCoins, Megaphone, Tractor, Wallet } from 'lucide-react';
 import { ComplaintsInbox, useComplaints } from '@/features/complaints';
-import { ProgressChart, ProjectOverview, ShiftRecords, WastageChart } from '@/features/dashboard';
+import { ProgressChart, ProjectOverview, ShiftRecords } from '@/features/dashboard';
 import { EquipmentBoard, useEquipment } from '@/features/equipment';
 import { useRoad } from '@/features/road';
 import { PayrollApprovals } from '@/features/payroll';
 import { RaiseInbox, useRaiseRequests } from '@/features/raise-requests';
-import { useCompletedShifts, useShiftStore } from '@/features/shift';
+import { MaterialTotals, sumMaterials, useCompletedShifts, useShiftStore } from '@/features/shift';
 import { useI18n } from '@/shared/i18n';
 import { PageHeader, TabBar } from '@/shared/ui';
 import type { TabItem } from '@/shared/ui';
@@ -44,10 +44,8 @@ export function AdminPage() {
       {tab === 'overview' && (
         <>
           <ProjectOverview />
-          <div className="grid gap-5 lg:grid-cols-2">
-            <ProgressChart />
-            <WastageChart />
-          </div>
+          <MaterialTotals lines={sumMaterials(shifts.map((s) => s.materials))} title={i.t('Materials on this road, all shifts', 'এই রাস্তার সব শিফটের মালামাল')} filterable />
+          <ProgressChart />
         </>
       )}
       {tab === 'pay' && <PayrollApprovals shifts={shifts} onApprove={approve} />}

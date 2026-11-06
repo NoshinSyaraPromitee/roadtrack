@@ -21,7 +21,6 @@ const TABS: TabItem<Tab>[] = [
   { key: 'complain', icon: Megaphone, label: { en: 'Complain', bn: 'অভিযোগ' } },
 ];
 
-/** Phone: one column with big tabs at the bottom. Laptop: tabs on top and two columns side by side. */
 export function WorkerPage() {
   const workerId = useSession((s) => s.workerId);
   const worker = useWorker(workerId);

@@ -1,24 +1,17 @@
 import { useSearchParams } from 'react-router-dom';
-import { ChevronRight, HardHat, HeartPulse, Tractor } from 'lucide-react';
+import { HardHat, HeartPulse, Tractor } from 'lucide-react';
+import { SUPERVISOR } from '@/core/seed';
+import { ComplaintWizard, MyComplaints } from '@/features/complaints';
 import { EquipmentBoard } from '@/features/equipment';
 import { CrewHealth } from '@/features/health';
 import { BreakReminder } from '@/features/reminders';
 import { useRoad } from '@/features/road';
-import {
-  ActiveShiftPanel,
-  EndShiftWizard,
-  ShiftSummary,
-  StartShiftWizard,
-  StartWork,
-  setupFor,
-  useActiveShift,
-  useDaySetupStore,
-  useShiftStore,
-} from '@/features/shift';
+import { ActiveShiftPanel, EndShiftWizard, ShiftSummary, useActiveShift, useShiftStore } from '@/features/shift';
 import { useI18n } from '@/shared/i18n';
-import { ActionBar, Sequence, TabBar } from '@/shared/ui';
-import type { SequenceStep, TabItem } from '@/shared/ui';
+import { PageHeader, TabBar } from '@/shared/ui';
+import type { TabItem } from '@/shared/ui';
 import { useUrlState } from '@/shared/lib/useUrlState';
+import { DaySetupFlow } from './supervisor/DaySetupFlow';
 
 const TAB_KEYS = ['work', 'machines', 'health'] as const;
 type Tab = (typeof TAB_KEYS)[number];
@@ -29,101 +22,15 @@ const TABS: TabItem<Tab>[] = [
   { key: 'health', icon: HeartPulse, label: { en: 'Crew health', bn: 'শ্রমিকদের স্বাস্থ্য' } },
 ];
 
-/** Before work starts the supervisor goes through these in order. A step opens only when the one before it is done. */
-const SETUP_KEYS = ['plan', 'machines', 'health', 'start'] as const;
-type SetupKey = (typeof SETUP_KEYS)[number];
-
-const SETUP_LABEL: Record<SetupKey, { en: string; bn: string }> = {
-  plan: { en: "Today's work", bn: 'আজকের কাজ' },
-  machines: { en: 'Machines', bn: 'মেশিন' },
-  health: { en: 'Crew health', bn: 'আজ শ্রমিকদের স্বাস্থ্য' },
-  start: { en: 'Start work', bn: 'কাজ শুরু' },
-};
-
-/** The supervisor's day before work starts: plan, machines, health, then start. */
-function DaySetupFlow() {
-  const i = useI18n();
-  const road = useRoad();
-  const byRoad = useDaySetupStore((s) => s.byRoad);
-  const update = useDaySetupStore((s) => s.update);
-  const clear = useDaySetupStore((s) => s.clear);
-  const setup = setupFor(byRoad, road.id);
-
-  const done: Record<SetupKey, boolean> = { plan: !!setup.plan, machines: setup.machinesOk, health: setup.healthOk, start: false };
-  const firstOpen = SETUP_KEYS.find((k) => !done[k]) ?? 'start';
-  const [asked, setStep] = useUrlState<SetupKey>('step', firstOpen, SETUP_KEYS);
-  // Nobody can jump past a step that is not finished, even from an old link.
-  const step = SETUP_KEYS.indexOf(asked) <= SETUP_KEYS.indexOf(firstOpen) ? asked : firstOpen;
-
-  const steps: SequenceStep<SetupKey>[] = SETUP_KEYS.map((k) => ({
-    key: k,
-    label: SETUP_LABEL[k],
-    state: done[k] ? 'done' : SETUP_KEYS.indexOf(k) <= SETUP_KEYS.indexOf(firstOpen) ? 'todo' : 'locked',
-  }));
-
-  const go = (k: SetupKey) => {
-    setStep(k);
-    window.scrollTo({ top: 0 });
-  };
-
-  return (
-    <div className="space-y-5">
-      <Sequence steps={steps} current={step} onOpen={go} />
-
-      {step === 'plan' && (
-        <StartShiftWizard
-          key={road.id}
-          initial={setup.plan}
-          onDone={(plan) => {
-            update(road.id, { plan });
-            go('machines');
-          }}
-        />
-      )}
-
-      {step === 'machines' && (
-        <div className="space-y-5 pb-36">
-          <EquipmentBoard />
-          <ActionBar
-            onBack={() => go('plan')}
-            onNext={() => {
-              update(road.id, { machinesOk: true });
-              go('health');
-            }}
-            nextIcon={ChevronRight}
-            nextLabel={i.t('Machines checked', 'মেশিন দেখা শেষ')}
-          />
-        </div>
-      )}
-
-      {step === 'health' && (
-        <div className="space-y-5 pb-36">
-          <CrewHealth />
-          <ActionBar
-            onBack={() => go('machines')}
-            onNext={() => {
-              update(road.id, { healthOk: true });
-              go('start');
-            }}
-            nextIcon={ChevronRight}
-            nextLabel={i.t('Health checked', 'স্বাস্থ্য দেখা শেষ')}
-          />
-        </div>
-      )}
-
-      {step === 'start' && setup.plan && <StartWork plan={setup.plan} onBack={() => go('health')} onStarted={() => clear(road.id)} />}
-    </div>
-  );
-}
-
 export function SupervisorPage() {
+  const i = useI18n();
   const road = useRoad();
   const active = useActiveShift();
   const logBreak = useShiftStore((s) => s.logBreak);
   const [tab, setTab] = useUrlState<Tab>('tab', 'work', TAB_KEYS);
   const [params, setParams] = useSearchParams();
-  // "Finish work" and the finished-shift summary are their own screens, so Back leaves them.
   const ending = params.get('view') === 'finish' && !!active;
+  const complaining = params.get('view') === 'complain';
   const summaryId = params.get('summary');
 
   const setView = (view: { finish?: boolean; summary?: string }, replace = false) => {
@@ -142,6 +49,17 @@ export function SupervisorPage() {
     window.scrollTo({ top: 0 });
   };
 
+  if (complaining) {
+    return (
+      <div className="space-y-5">
+        <PageHeader title={i.t('Make a complaint', 'অভিযোগ করুন')} speak={{ en: 'Make a complaint. Tap who it is about.', bn: 'অভিযোগ করুন। কার বিষয়ে, তার নামে চাপ দিন।' }} />
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
+          <ComplaintWizard workerId={SUPERVISOR.id} />
+          <MyComplaints workerId={SUPERVISOR.id} />
+        </div>
+      </div>
+    );
+  }
   if (summaryId) return <ShiftSummary shiftId={summaryId} onClose={() => setView({}, true)} />;
   if (!active) return <DaySetupFlow key={road.id} />;
   if (ending) {

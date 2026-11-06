@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { Building2, LogOut, RotateCcw } from 'lucide-react';
+import { Building2, LogOut, Megaphone, RotateCcw } from 'lucide-react';
 import { SUPERVISOR } from '@/core/seed';
 import { ApaAssistant } from '@/features/assistant';
 import { RoadSelect } from '@/features/road';
@@ -51,12 +51,24 @@ export function AppShell() {
               </span>
             ) : role === 'admin' ? (
               <span className="mr-1 hidden items-center gap-2 lg:flex">
-                <Pictogram icon={Building2} tone="sign" shape="disc" size={36} />
+                <Pictogram icon={Building2} shape="disc" size={36} onDark />
                 <span className="font-semibold">{i.t('Head office', 'প্রধান কার্যালয়')}</span>
               </span>
             ) : null}
+            {role === 'supervisor' && (
+              <button
+                type="button"
+                onClick={() => navigate('/supervisor?view=complain')}
+                title={i.t('Make a complaint', 'অভিযোগ করুন')}
+                aria-label={i.t('Make a complaint', 'অভিযোগ করুন')}
+                className="flex h-10 items-center justify-center gap-2 rounded-full bg-white/10 px-2.5 font-semibold transition hover:bg-white/20 lg:px-3"
+              >
+                <Megaphone className="h-5 w-5" />
+                <span className="hidden lg:inline">{i.t('Complain', 'অভিযোগ')}</span>
+              </button>
+            )}
             <LangToggle tone="dark" />
-            <VoiceGuideToggle />
+            <VoiceGuideToggle withLabel />
             <button
               type="button"
               onClick={resetData}
