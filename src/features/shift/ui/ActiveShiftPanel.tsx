@@ -1,4 +1,3 @@
-import { Flag } from 'lucide-react';
 import type { Shift, Worker } from '@/core/types';
 import { MATERIAL_BY_KEY } from '@/core/catalog';
 import { AvatarStack, useWorkforce } from '@/features/workforce';
@@ -20,10 +19,6 @@ export function ActiveShiftPanel({ shift, onFinish }: { shift: Shift; onFinish: 
         <div className="relative grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-end">
           <div>
             <div className="flex items-center gap-3">
-              <span className="relative flex h-3 w-3">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mark-400 opacity-75" />
-                <span className="relative inline-flex h-3 w-3 rounded-full bg-mark-400" />
-              </span>
               <p className="text-xl font-semibold">{i.t('Work is going on', 'কাজ চলছে')}</p>
               <SpeakButton
                 tone="dark"
@@ -50,7 +45,6 @@ export function ActiveShiftPanel({ shift, onFinish }: { shift: Shift; onFinish: 
               </span>
             </div>
             <Button variant="mark" size="xl" onClick={onFinish} className="w-full">
-              <Flag />
               {i.t('Finish work', 'কাজ শেষ করুন')}
             </Button>
           </div>
