@@ -25,7 +25,6 @@ const PROBLEM: Record<PhotoError | 'full', { why: Text; fix: Text }> = {
   },
 };
 
-/** Shows saved photos in a row. Tap one to see it large. */
 export function PhotoStrip({ photos, size = 'md' }: { photos: string[]; size?: 'sm' | 'md' }) {
   const i = useI18n();
   const [open, setOpen] = useState<string | null>(null);
@@ -51,7 +50,6 @@ export function PhotoStrip({ photos, size = 'md' }: { photos: string[]; size?: '
   );
 }
 
-/** Add photos from the camera or gallery, see them, and remove them. Each photo is shrunk before it is kept. */
 export function PhotoPicker({ photos, onChange, max = 4 }: { photos: string[]; onChange: (photos: string[]) => void; max?: number }) {
   const i = useI18n();
   const input = useRef<HTMLInputElement>(null);
@@ -111,7 +109,7 @@ export function PhotoPicker({ photos, onChange, max = 4 }: { photos: string[]; o
           <button
             type="button"
             onClick={() => input.current?.click()}
-            className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-line bg-white px-2 text-center font-semibold text-sign-600 transition hover:border-sign-500"
+            className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-line bg-white px-2 text-center font-semibold text-guide-700 transition hover:border-guide-600 hover:bg-guide-50"
           >
             <Camera className="h-8 w-8" />
             <span className="text-sm leading-tight">{i.t('Add photo', 'ছবি যোগ করুন')}</span>

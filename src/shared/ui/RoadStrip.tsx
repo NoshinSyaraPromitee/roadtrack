@@ -11,7 +11,6 @@ interface RoadStripProps {
   className?: string;
 }
 
-/** Progress drawn as the road itself: laid asphalt, gravel still to do, and the roller at the paving front. */
 export function RoadStrip({ progress, lengthKm, today, size = 'md', showScale = true, className }: RoadStripProps) {
   const { t, num, fixed } = useI18n();
   const p = clamp(progress, 0, 100);

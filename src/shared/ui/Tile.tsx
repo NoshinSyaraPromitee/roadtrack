@@ -20,7 +20,6 @@ interface TileProps {
   className?: string;
 }
 
-/** A large choice button: pictogram first, short label second. Reads its label aloud when voice help is on. */
 export function Tile({ icon, label, sub, tone, shape, selected, onPress, layout = 'stack', size = 'md', className }: TileProps) {
   const { tx } = useI18n();
   const { hint } = useSay();
@@ -35,9 +34,9 @@ export function Tile({ icon, label, sub, tone, shape, selected, onPress, layout 
         onPress();
       }}
       className={cn(
-        'relative flex rounded-2xl border-2 bg-white transition active:scale-[0.98]',
+        'relative flex rounded-2xl border-2 bg-white transition',
         stack ? 'flex-col items-center justify-center gap-2.5 px-3 py-4 text-center' : 'items-center gap-3 p-3 pr-10 text-left',
-        selected ? 'border-guide-600' : 'border-line hover:border-ink-soft/40',
+        selected ? 'border-guide-600 hover:bg-guide-50' : 'border-line hover:border-guide-600 hover:bg-guide-50',
         className,
       )}
     >

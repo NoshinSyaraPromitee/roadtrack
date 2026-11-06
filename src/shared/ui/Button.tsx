@@ -6,15 +6,13 @@ type Size = 'sm' | 'md' | 'lg' | 'xl';
 
 const variants: Record<Variant, string> = {
   primary: 'bg-guide-600 text-white hover:bg-guide-700',
-  secondary: 'bg-white text-ink ring-1 ring-inset ring-line hover:bg-paper',
-  ghost: 'text-ink-soft hover:bg-black/5 hover:text-ink',
+  secondary: 'bg-white text-ink ring-1 ring-inset ring-line hover:bg-guide-50 hover:ring-guide-600',
+  ghost: 'text-ink-soft hover:bg-guide-50 hover:text-ink',
   danger: 'bg-stop-500 text-white hover:bg-stop-600',
   mark: 'bg-mark-400 text-ink hover:bg-mark-300',
   sign: 'bg-sign-500 text-white hover:bg-sign-600',
   onDark: 'bg-white/12 text-white hover:bg-white/20',
-  /** One of a pair of choices, not picked yet: plain, with no hover colour. */
   choice: 'bg-white text-ink ring-1 ring-inset ring-line',
-  /** The picked choice: coloured, and only this one reacts to hover. */
   chosen: 'bg-guide-600 text-white hover:bg-guide-700',
 };
 

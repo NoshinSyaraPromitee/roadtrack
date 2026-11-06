@@ -10,7 +10,6 @@ export const clamp = (n: number, min: number, max: number) => Math.min(max, Math
 
 const BN_DIGITS = '০১২৩৪৫৬৭৮৯';
 
-/** Reads a number typed with English or Bangla digits. Returns NaN for empty input. */
 export function parseNum(input: string) {
   const ascii = input
     .replace(/[০-৯]/g, (d) => String(BN_DIGITS.indexOf(d)))

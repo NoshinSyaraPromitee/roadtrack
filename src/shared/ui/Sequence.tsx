@@ -8,11 +8,9 @@ import { cn } from '@/shared/lib/utils';
 export interface SequenceStep<K extends string> {
   key: K;
   label: Text;
-  /** done: finished. locked: cannot open until the step before it is finished. */
   state: 'done' | 'todo' | 'locked';
 }
 
-/** Steps that must be done in order. Finished steps can be opened again; locked ones cannot. */
 export function Sequence<K extends string>({ steps, current, onOpen }: { steps: SequenceStep<K>[]; current: K; onOpen: (key: K) => void }) {
   const i = useI18n();
   const { hint } = useSay();
@@ -32,7 +30,7 @@ export function Sequence<K extends string>({ steps, current, onOpen }: { steps: 
                 hint(s.label);
                 onOpen(s.key);
               }}
-              className={cn('flex w-full flex-col items-center gap-1.5 rounded-2xl px-1 py-2 text-center transition', !locked && !on && 'hover:bg-black/5', locked && 'cursor-not-allowed')}
+              className={cn('flex w-full flex-col items-center gap-1.5 rounded-2xl px-1 py-2 text-center transition', !locked && !on && 'hover:bg-guide-50', locked && 'cursor-not-allowed')}
             >
               <span
                 className={cn(

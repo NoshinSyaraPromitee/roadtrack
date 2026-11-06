@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Kalpurush draws Bangla smaller than the Latin font. Scaling only the Bangla glyphs keeps every box the same size in both languages. */
 @font-face {
   font-family: 'Kalpurush RT';
   font-style: normal;
@@ -12,7 +11,6 @@
 }
 
 @theme {
-  /* English in Times New Roman; Bangla letters fall through to Kalpurush, which only covers Bangla. */
   --font-sans: "Kalpurush RT", "Times New Roman", Times, serif;
 
   --color-paper: #eceeea;
@@ -21,7 +19,6 @@
   --color-line: #d5dad4;
   --color-asphalt: #2c3330;
 
-  /* The brand green is #09400E (guide-600). The others are lighter and darker steps of it. */
   --color-guide-50: #e9f2ea;
   --color-guide-100: #cfe3d1;
   --color-guide-200: #a3c8a7;
@@ -127,4 +124,25 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+svg.lucide {
+  color: var(--color-guide-600);
+}
+:is(
+    [class*='bg-guide-600'],
+    [class*='bg-guide-700'],
+    [class*='bg-guide-800'],
+    [class*='bg-stop-500'],
+    [class*='bg-stop-600'],
+    [class*='bg-sign-500'],
+    [class*='bg-sign-600'],
+    [class*='bg-black/'],
+    [class*='bg-ink/']
+  )
+  svg.lucide {
+  color: #ffffff;
+}
+.icon-inherit svg.lucide {
+  color: inherit;
 }

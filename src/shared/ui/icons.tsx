@@ -2,7 +2,6 @@ import type { ComponentType, CSSProperties } from 'react';
 
 export type IconType = ComponentType<{ className?: string; style?: CSSProperties; strokeWidth?: number }>;
 
-/** The bent figure with a walking stick used on "elderly people" road signs. */
 export function ElderIcon({ className, style, strokeWidth = 2 }: { className?: string; style?: CSSProperties; strokeWidth?: number }) {
   return (
     <svg

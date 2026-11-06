@@ -13,10 +13,8 @@ const PALETTE: Record<PictoTone, { fill: string; edge: string; icon: string }> =
   muted: { fill: '#e1e5e0', edge: '#e1e5e0', icon: '#7a847e' },
 };
 
-/**
- * A pictogram drawn like a road sign: a guide plate, a round "do this" disc or a warning triangle.
- * Meaning is carried by shape and colour so the label is optional.
- */
+export const ICON_COLOR = '#09400e';
+
 export function Pictogram({
   icon: Icon,
   tone = 'guide',
@@ -24,6 +22,8 @@ export function Pictogram({
   size = 48,
   label,
   className,
+  keepTone = false,
+  onDark = false,
 }: {
   icon: IconType;
   tone?: PictoTone;
@@ -31,11 +31,18 @@ export function Pictogram({
   size?: number;
   label?: string;
   className?: string;
+  keepTone?: boolean;
+  onDark?: boolean;
 }) {
-  const p = PALETTE[tone];
+  const p = keepTone
+    ? PALETTE[tone]
+    : onDark
+      ? { fill: 'none', edge: '#ffffff', icon: '#ffffff' }
+      : { fill: ICON_COLOR, edge: ICON_COLOR, icon: '#ffffff' };
+  const toneKey: PictoTone = keepTone ? tone : onDark ? 'plain' : 'guide';
   const warn = shape === 'warn';
   const iconSize = Math.round(size * (warn ? 0.42 : 0.5));
-  const ringed = tone === 'stop' || tone === 'plain' || tone === 'mark';
+  const ringed = onDark || toneKey === 'stop' || toneKey === 'plain' || toneKey === 'mark';
 
   return (
     <span
@@ -51,8 +58,8 @@ export function Pictogram({
         {warn && (
           <path
             d="M50 9 L93 85 H7 Z"
-            fill={tone === 'mark' ? '#ffc930' : '#ffffff'}
-            stroke={tone === 'mark' ? '#1f2623' : tone === 'sign' ? '#1c5fb0' : '#d3263a'}
+            fill={!keepTone ? (onDark ? 'none' : '#ffffff') : tone === 'mark' ? '#ffc930' : '#ffffff'}
+            stroke={!keepTone ? (onDark ? '#ffffff' : ICON_COLOR) : tone === 'mark' ? '#1f2623' : tone === 'sign' ? '#1c5fb0' : '#d3263a'}
             strokeWidth="11"
             strokeLinejoin="round"
           />
@@ -61,7 +68,7 @@ export function Pictogram({
       <Icon
         className="relative"
         strokeWidth={2.4}
-        style={{ width: iconSize, height: iconSize, color: warn ? '#1f2623' : p.icon, transform: warn ? `translateY(${size * 0.11}px)` : undefined }}
+        style={{ width: iconSize, height: iconSize, color: warn ? (keepTone ? '#1f2623' : onDark ? '#ffffff' : ICON_COLOR) : p.icon, transform: warn ? `translateY(${size * 0.11}px)` : undefined }}
       />
     </span>
   );

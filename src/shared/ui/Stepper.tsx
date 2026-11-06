@@ -14,11 +14,9 @@ interface StepperProps {
   label?: string;
   decimals?: number;
   size?: 'md' | 'lg';
-  /** 'stop' turns the buttons and the number red, for things that are lost or wasted. */
   tone?: 'plain' | 'stop';
 }
 
-/** Big minus and plus buttons so nobody has to type a number. Tap the number to type it instead. */
 export function Stepper({ value, onChange, step = 1, min = 0, max = Number.POSITIVE_INFINITY, unit, prefix, label, decimals = 0, size = 'md', tone = 'plain' }: StepperProps) {
   const { t, num, fixed } = useI18n();
   const [draft, setDraft] = useState<string | null>(null);
@@ -36,7 +34,7 @@ export function Stepper({ value, onChange, step = 1, min = 0, max = Number.POSIT
 
   const red = tone === 'stop';
   const btn = cn(
-    'grid shrink-0 place-items-center rounded-xl bg-white ring-1 ring-inset transition disabled:opacity-35',
+    'grid shrink-0 place-items-center rounded-xl bg-white ring-1 ring-inset transition hover:bg-guide-50 disabled:opacity-35 disabled:hover:bg-white',
     red ? 'text-stop-600 ring-stop-500/40' : 'text-ink ring-line',
     big ? 'h-14 w-14 [&_svg]:size-7' : 'h-12 w-12 [&_svg]:size-6',
   );
@@ -62,7 +60,7 @@ export function Stepper({ value, onChange, step = 1, min = 0, max = Number.POSIT
           <button
             type="button"
             onClick={() => setDraft(String(value))}
-            className="w-full rounded-lg px-1 py-1 leading-none hover:bg-black/5"
+            className="w-full rounded-lg px-1 py-1 leading-none hover:bg-guide-50"
             title={t('Tap to type a number', 'সংখ্যা লিখতে চাপ দিন')}
           >
             <span className={cn('font-sign tabular-nums', red && 'text-stop-600', big ? 'text-4xl' : 'text-[1.7rem]')}>

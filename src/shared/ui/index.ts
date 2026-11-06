@@ -18,3 +18,5 @@ export * from './Logo';
 export * from './Field';
 export * from './Sequence';
 export * from './Photos';
+export * from './VoiceOrWrite';
+export * from './DateTile';

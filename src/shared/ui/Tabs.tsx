@@ -60,7 +60,6 @@ export function TabBar<K extends string>({
 
   return (
     <nav>
-      {/* Equal columns, so tabs keep their place when the language changes. */}
       <div
         className="grid grid-cols-[repeat(var(--cols-sm),minmax(0,1fr))] gap-x-2 lg:max-w-[calc(var(--cols)*12rem)] lg:grid-cols-[repeat(var(--cols),minmax(0,1fr))]"
         style={{ '--cols': items.length, '--cols-sm': Math.min(items.length, 3) } as CSSProperties}
