@@ -6,7 +6,7 @@ import { SpeakButton, VoiceNote, VoiceRecorder } from '@/shared/voice';
 import { ActionBar, Button, Card, CardHeader, EmptyState, Field, Pictogram, Textarea, Tile } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { HEALTH_ICON } from './meta';
-import { HEALTH_LABEL, todaysReport } from './model';
+import { HEALTH_LABEL, sickDays, todaysReport } from './model';
 import { useHealthReports } from './store';
 
 const CHOICES: Health[] = ['fit', 'sick', 'injured'];
@@ -25,15 +25,21 @@ export function HealthCheckIn({ worker }: { worker: Worker }) {
 
   if (today && !editing) {
     const m = HEALTH_ICON[today.status];
+    const { streak } = sickDays(reports, worker.id);
     const text = {
-      en: `Today you said: ${HEALTH_LABEL[today.status].en}. The supervisor can see it.`,
-      bn: `আজ আপনি জানিয়েছেন: ${HEALTH_LABEL[today.status].bn}। সুপারভাইজার এটি দেখতে পাবেন।`,
+      en: `Today you said: ${HEALTH_LABEL[today.status].en}.${streak > 0 ? ` You have been unwell for ${i.numEn(streak)} ${streak === 1 ? 'day' : 'days'} in a row.` : ''} The supervisor can see it.`,
+      bn: `আজ আপনি জানিয়েছেন: ${HEALTH_LABEL[today.status].bn}।${streak > 0 ? ` আপনি টানা ${i.num(streak)} দিন ধরে ভালো নেই।` : ''} সুপারভাইজার এটি দেখতে পাবেন।`,
     };
     return (
       <Card className="flex flex-col items-center py-7 text-center">
         <Pictogram icon={m.icon} tone={m.tone} shape="disc" size={88} />
         <p className="mt-3 text-ink-soft">{i.t(`Sent at ${i.time(today.at)}`, `${i.time(today.at)}-এ পাঠানো`)}</p>
         <h2 className={cn('font-sign text-3xl', m.text)}>{i.tx(HEALTH_LABEL[today.status])}</h2>
+        {streak > 0 && (
+          <p className="mt-1 text-xl font-semibold text-stop-600">
+            {i.t(`${i.num(streak)} ${streak === 1 ? 'day' : 'days in a row'}`, `টানা ${i.num(streak)} দিন ধরে`)}
+          </p>
+        )}
         {today.note && <p className="mt-2 max-w-sm text-lg">{today.note}</p>}
         {today.audio && <VoiceNote src={today.audio} />}
         <div className="mt-3 flex items-center gap-2">
@@ -99,10 +105,29 @@ export function MyHealthHistory({ workerId }: { workerId: string }) {
   const i = useI18n();
   const reports = useHealthReports((s) => s.reports);
   const mine = reports.filter((r) => r.workerId === workerId).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 7);
+  const { streak, month } = sickDays(reports, workerId);
 
   return (
     <Card>
-      <CardHeader icon={CalendarDays} tone="plain" title={i.t('What I told before', 'আগে যা জানিয়েছি')} />
+      <CardHeader
+        icon={CalendarDays}
+        tone="plain"
+        title={i.t('What I told before', 'আগে যা জানিয়েছি')}
+        speak={{
+          en: `${streak > 0 ? `You have been unwell for ${i.numEn(streak)} days in a row. ` : 'You are well now. '}In the last 30 days you were unwell on ${i.numEn(month)} days.`,
+          bn: `${streak > 0 ? `আপনি টানা ${i.num(streak)} দিন ধরে ভালো নেই। ` : 'এখন আপনি ভালো আছেন। '}গত ৩০ দিনে ${i.num(month)} দিন ভালো ছিলেন না।`,
+        }}
+      />
+      <div className="mb-4 grid grid-cols-2 gap-2">
+        <div className="rounded-2xl border border-line bg-white px-3 py-3 text-center">
+          <p className={cn('font-sign text-3xl leading-none tabular-nums', streak > 0 ? 'text-stop-600' : 'text-guide-700')}>{i.t(`${i.num(streak)} days`, `${i.num(streak)} দিন`)}</p>
+          <p className="mt-1.5 text-sm leading-tight text-ink-soft">{i.t('Sick in a row', 'টানা অসুস্থ')}</p>
+        </div>
+        <div className="rounded-2xl border border-line bg-white px-3 py-3 text-center">
+          <p className="font-sign text-3xl leading-none tabular-nums">{i.t(`${i.num(month)} days`, `${i.num(month)} দিন`)}</p>
+          <p className="mt-1.5 text-sm leading-tight text-ink-soft">{i.t('Sick in last 30 days', 'গত ৩০ দিনে অসুস্থ')}</p>
+        </div>
+      </div>
       {mine.length === 0 ? (
         <EmptyState icon={HeartPulse} title={i.t('Nothing sent yet', 'এখনো কিছু পাঠানো হয়নি')} />
       ) : (

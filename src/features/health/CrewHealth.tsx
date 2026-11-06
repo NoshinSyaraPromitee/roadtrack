@@ -5,7 +5,7 @@ import { VoiceNote } from '@/shared/voice';
 import { Card, CardHeader, EmptyState } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { HEALTH_ICON } from './meta';
-import { HEALTH_LABEL, todaysReports } from './model';
+import { HEALTH_LABEL, sickDays, todaysReports } from './model';
 import { useHealthReports } from './store';
 
 /** What the crew told the app about their health today. Sick and hurt first. */
@@ -51,9 +51,11 @@ export function CrewHealth() {
                     <p className="truncate font-semibold">{personName(w, i.lang)}</p>
                     <p className="truncate text-sm text-ink-soft">{i.tx(roleOf(w))}</p>
                   </div>
-                  <span className={cn('inline-flex items-center gap-1.5 font-semibold', m.text)}>
-                    <m.icon className="h-5 w-5" />
+                  <span className={cn('text-right font-semibold leading-tight', m.text)}>
                     {i.tx(HEALTH_LABEL[r.status])}
+                    {r.status !== 'fit' && sickDays(reports, r.workerId).streak > 1 && (
+                      <span className="block text-sm">{i.t(`${i.num(sickDays(reports, r.workerId).streak)} days in a row`, `টানা ${i.num(sickDays(reports, r.workerId).streak)} দিন`)}</span>
+                    )}
                   </span>
                 </div>
                 {(r.note || r.audio) && (

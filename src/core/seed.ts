@@ -143,6 +143,10 @@ export const SEED_MACHINES: Machine[] = [
 ];
 
 export const SEED_HEALTH: HealthReport[] = [
+  { id: 'h0', workerId: 'w4', status: 'sick', note: 'Cough and fever.', at: at(12, 7, 5) },
+  { id: 'h0b', workerId: 'w4', status: 'fit', note: '', at: at(10, 7, 0) },
+  { id: 'h0c', workerId: 'w4', status: 'sick', note: 'Fever.', at: at(2, 7, 20) },
+  { id: 'h0d', workerId: 'w4', status: 'sick', note: 'Still have fever.', at: at(1, 7, 5) },
   { id: 'h1', workerId: 'w4', status: 'sick', note: 'Fever since last night.', at: at(0, 7, 10) },
   { id: 'h2', workerId: 'w2', status: 'fit', note: '', at: at(0, 7, 25) },
   { id: 'h3', workerId: 'w1', status: 'fit', note: '', at: at(1, 7, 15) },

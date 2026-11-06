@@ -1,6 +1,9 @@
 import type { Health, HealthReport } from '@/core/types';
 import type { Text } from '@/shared/i18n';
 
+export { sickDays } from '@/core/health';
+export type { SickDays } from '@/core/health';
+
 const sameDay = (iso: string, now = new Date()) => new Date(iso).toDateString() === now.toDateString();
 
 /** The newest report a worker sent today, if any. */

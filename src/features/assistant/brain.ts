@@ -3,6 +3,7 @@ import type { Complaint, HealthReport, Machine, RaiseRequest, Road, Role, Shift,
 import { COMPLAINT_CATEGORIES, MATERIAL_BY_KEY, MATERIALS } from '@/core/catalog';
 import { PAYROLL_RULES } from '@/core/payroll';
 import { DEMO_POLICY, REAL_POLICY, getBreakStatus } from '@/core/reminderPolicy';
+import { sickDays } from '@/core/health';
 import { pctToKm } from '@/core/roads';
 import { makeI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
@@ -261,15 +262,15 @@ export function answer(key: QuestionKey, ctx: ApaContext): Text {
       const lastPaid = last.s.payrollStatus === 'approved';
       if (last.line.flags.includes('absent')) {
         return {
-          en: `You were not at work on ${en.date(last.s.startedAt)}, so there is no pay for that day. In total you have been paid ${en.num(paid)} taka, and ${en.num(waiting)} taka is waiting.`,
-          bn: `${bn.date(last.s.startedAt)} তারিখে আপনি কাজে ছিলেন না, তাই সেদিনের মজুরি নেই। মোট ${bn.num(paid)} টাকা পেয়েছেন, আর ${bn.num(waiting)} টাকা অপেক্ষায় আছে।`,
+          en: `You were not at work on ${en.date(last.s.startedAt)}, so there is no pay for that day. In total you have been paid ${en.num(paid)} taka, and you will get ${en.num(waiting)} taka after work.`,
+          bn: `${bn.date(last.s.startedAt)} তারিখে আপনি কাজে ছিলেন না, তাই সেদিনের মজুরি নেই। মোট ${bn.num(paid)} টাকা পেয়েছেন, আর ${bn.num(waiting)} টাকা কাজের পরে পাবেন।`,
         };
       }
       const extra = last.line.welfareBonus > 0 ? both((i) => (i.lang === 'bn' ? ` এর মধ্যে ${i.num(last.line.welfareBonus)} টাকা বাড়তি সহায়তা।` : ` That includes ${i.num(last.line.welfareBonus)} taka extra help.`)) : { en: '', bn: '' };
       const cut = last.line.deduction > 0 ? both((i) => (i.lang === 'bn' ? ` আগে চলে যাওয়ায় ${i.num(last.line.deduction)} টাকা কাটা হয়েছে।` : ` ${i.num(last.line.deduction)} taka was cut because you left early.`)) : { en: '', bn: '' };
       return {
-        en: `On ${en.date(last.s.startedAt)} you earned ${en.num(last.line.total)} taka, ${lastPaid ? 'and it is paid' : 'and it is waiting for the office'}.${extra.en}${cut.en} In total you have been paid ${en.num(paid)} taka, and ${en.num(waiting)} taka is waiting.`,
-        bn: `${bn.date(last.s.startedAt)} তারিখে আপনি ${bn.num(last.line.total)} টাকা আয় করেছেন, ${lastPaid ? 'টাকা দেওয়া হয়েছে' : 'অফিসের অনুমোদনের অপেক্ষায়'}।${extra.bn}${cut.bn} মোট ${bn.num(paid)} টাকা পেয়েছেন, আর ${bn.num(waiting)} টাকা অপেক্ষায় আছে।`,
+        en: `On ${en.date(last.s.startedAt)} you earned ${en.num(last.line.total)} taka, ${lastPaid ? 'and it is paid' : 'and you will get it after work'}.${extra.en}${cut.en} In total you have been paid ${en.num(paid)} taka, and you will get ${en.num(waiting)} taka after work.`,
+        bn: `${bn.date(last.s.startedAt)} তারিখে আপনি ${bn.num(last.line.total)} টাকা আয় করেছেন, ${lastPaid ? 'টাকা দেওয়া হয়েছে' : 'কাজের পরে পাবেন'}।${extra.bn}${cut.bn} মোট ${bn.num(paid)} টাকা পেয়েছেন, আর ${bn.num(waiting)} টাকা কাজের পরে পাবেন।`,
       };
     }
 
@@ -442,9 +443,15 @@ export function answer(key: QuestionKey, ctx: ApaContext): Text {
         const told = mine
           ? { en: ` Today you said you are ${mine.status === 'fit' ? 'well' : mine.status === 'sick' ? 'sick' : 'hurt'}.`, bn: ` আজ আপনি জানিয়েছেন: ${mine.status === 'fit' ? 'ভালো আছেন' : mine.status === 'sick' ? 'অসুস্থ' : 'আহত'}।` }
           : { en: ' You have not told us today.', bn: ' আজ আপনি এখনো জানাননি।' };
+        const days = sickDays(ctx.health, w.id, new Date(now));
+        const run =
+          days.streak > 0
+            ? { en: ` You have been unwell for ${en.num(days.streak)} ${days.streak === 1 ? 'day' : 'days'} in a row.`, bn: ` আপনি টানা ${bn.num(days.streak)} দিন ধরে ভালো নেই।` }
+            : { en: '', bn: '' };
+        const month = days.month > 0 ? { en: ` In the last 30 days you were unwell on ${en.num(days.month)} days.`, bn: ` গত ৩০ দিনে ${bn.num(days.month)} দিন ভালো ছিলেন না।` } : { en: '', bn: '' };
         return {
-          en: `Tap My health, then tap how you feel: well, sick or hurt. You can also say it with your voice. The supervisor sees it.${told.en}`,
-          bn: `"আমার শরীর" চাপুন, তারপর কেমন আছেন চাপুন: ভালো, অসুস্থ বা আহত। চাইলে কণ্ঠেও বলতে পারেন। সুপারভাইজার দেখতে পাবেন।${told.bn}`,
+          en: `Tap My health, then tap how you feel: well, sick or hurt. You can also say it with your voice. The supervisor sees it.${told.en}${run.en}${month.en}`,
+          bn: `"আমার শরীর" চাপুন, তারপর কেমন আছেন চাপুন: ভালো, অসুস্থ বা আহত। চাইলে কণ্ঠেও বলতে পারেন। সুপারভাইজার দেখতে পাবেন।${told.bn}${run.bn}${month.bn}`,
         };
       }
       const today = healthToday(ctx, now).filter((r) => r.status !== 'fit');

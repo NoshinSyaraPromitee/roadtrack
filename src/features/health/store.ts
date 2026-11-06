@@ -17,6 +17,6 @@ export const useHealthReports = create<HealthState>()(
       reports: SEED_HEALTH,
       report: (r) => set((s) => ({ reports: [...s.reports, { ...r, id: uid('h'), at: new Date().toISOString() }] })),
     }),
-    { name: 'roadtrack-v3-health' },
+    { name: 'roadtrack-v4-health' },
   ),
 );
