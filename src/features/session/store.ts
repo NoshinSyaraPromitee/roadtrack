@@ -5,7 +5,9 @@ import type { Role } from '@/core/types';
 interface SessionState {
   role: Role | null;
   workerId: string | null;
-  login: (role: Role, workerId?: string | null) => void;
+  /** Set only for the supervisor and the head office, after they sign in. */
+  accountId: string | null;
+  login: (role: Role, ids?: { workerId?: string | null; accountId?: string | null }) => void;
   logout: () => void;
 }
 
@@ -14,8 +16,9 @@ export const useSession = create<SessionState>()(
     (set) => ({
       role: null,
       workerId: null,
-      login: (role, workerId = null) => set({ role, workerId }),
-      logout: () => set({ role: null, workerId: null }),
+      accountId: null,
+      login: (role, ids = {}) => set({ role, workerId: ids.workerId ?? null, accountId: ids.accountId ?? null }),
+      logout: () => set({ role: null, workerId: null, accountId: null }),
     }),
     { name: 'roadtrack-v3-session' },
   ),
