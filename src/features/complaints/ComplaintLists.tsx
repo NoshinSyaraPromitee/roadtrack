@@ -3,18 +3,19 @@ import { useMemo } from 'react';
 import { EyeOff, Inbox, Megaphone, UserRound } from 'lucide-react';
 import type { Complaint, ComplaintStatus, Person } from '@/core/types';
 import { COMPLAINT_CATEGORIES } from '@/core/catalog';
-import { SUPERVISOR } from '@/core/seed';
+import { isOwnComplaint } from '@/core/complaints';
+import { SUPERVISOR } from '@/data/seed';
 import { Avatar, personName, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import { VoiceNote } from '@/shared/voice';
 import { Badge, Card, CardHeader, EmptyState, Pictogram, Segmented } from '@/shared/ui';
 import type { SegmentOption } from '@/shared/ui';
 import { CATEGORY_ICON, STATUS_META } from './meta';
-import { useComplaints } from './store';
+import { useComplaints, useReceipts } from './store';
 
 function useFindPerson() {
   const workers = useWorkforce((s) => s.workers);
-  return (id: string): Person | undefined => (id === SUPERVISOR.id ? SUPERVISOR : workers.find((w) => w.id === id));
+  return (id?: string): Person | undefined => (id === SUPERVISOR.id ? SUPERVISOR : workers.find((w) => w.id === id));
 }
 
 function Against({ id, size = 36 }: { id: string; size?: number }) {
@@ -55,7 +56,8 @@ function Body({ c }: { c: Complaint }) {
 export function MyComplaints({ workerId }: { workerId: string }) {
   const i = useI18n();
   const all = useComplaints((s) => s.complaints);
-  const mine = useMemo(() => all.filter((c) => c.fromWorkerId === workerId).reverse(), [all, workerId]);
+  const receipts = useReceipts(workerId);
+  const mine = useMemo(() => all.filter((c) => isOwnComplaint(c, workerId, receipts)).reverse(), [all, workerId, receipts]);
 
   return (
     <Card>

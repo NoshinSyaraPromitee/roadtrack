@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { ChevronRight, EyeOff, Megaphone, MessageCircleWarning, UserRound } from 'lucide-react';
 import type { ComplaintCategory } from '@/core/types';
 import { COMPLAINT_CATEGORIES, COMPLAINT_KEYS } from '@/core/catalog';
-import { SUPERVISOR } from '@/core/seed';
+import { SUPERVISOR } from '@/data/seed';
 import { PeoplePicker, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import { useSay } from '@/shared/voice';
 import { ActionBar, Card, CardHeader, Pictogram, Tile, VoiceOrWrite, WizardSteps } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { CATEGORY_ICON } from './meta';
-import { useComplaints } from './store';
+import { useComplaintReceipts, useComplaints } from './store';
 import { ComplaintSent } from './ComplaintSent';
 
 const STEPS = [
@@ -24,6 +24,7 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
   const { hint } = useSay();
   const workers = useWorkforce((s) => s.workers);
   const file = useComplaints((s) => s.file);
+  const keepReceipt = useComplaintReceipts((s) => s.keep);
 
   const [step, setStep] = useState(0);
   const [against, setAgainst] = useState<string | null>(null);
@@ -53,7 +54,8 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
     if (step === 2) {
       if (!audio && message.trim().length < 10) return setError(t('Record your voice or write a few words.', 'কণ্ঠ রেকর্ড করুন অথবা কয়েকটি কথা লিখুন।'));
       if (!against || !category) return;
-      file({ fromWorkerId: workerId, againstId: against, category, message: message.trim(), audio: audio ?? undefined, anonymous });
+      const id = file({ fromWorkerId: workerId, againstId: against, category, message: message.trim(), audio: audio ?? undefined, anonymous });
+      if (anonymous) keepReceipt(workerId, id);
       setSent(true);
       return;
     }

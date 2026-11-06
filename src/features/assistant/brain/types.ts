@@ -32,6 +32,7 @@ export interface ApaContext {
   health: HealthReport[];
   raises: RaiseRequest[];
   complaints: Complaint[];
+  ownComplaintIds?: string[];
   now?: number;
 }
 

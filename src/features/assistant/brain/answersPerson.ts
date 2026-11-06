@@ -1,5 +1,6 @@
 import type { Worker } from '@/core/types';
 import { COMPLAINT_CATEGORIES } from '@/core/catalog';
+import { isOwnComplaint } from '@/core/complaints';
 import { PAYROLL_RULES } from '@/core/payroll';
 import { getBreakStatus } from '@/core/reminderPolicy';
 import type { Text } from '@/shared/i18n';
@@ -78,7 +79,7 @@ export function answerPerson(key: QuestionKey, ctx: ApaContext): Text | null {
           bn: `${h.bn.num(open + checking)}টি অভিযোগের সমাধান হয়নি। ${h.bn.num(open)}টি এখনো খোলা হয়নি, ${h.bn.num(checking)}টি দেখা হচ্ছে।`,
         };
       }
-      const mine = ctx.complaints.filter((c) => c.fromWorkerId === w.id).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+      const mine = ctx.complaints.filter((c) => isOwnComplaint(c, w.id, ctx.ownComplaintIds)).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
       const last = mine[mine.length - 1];
       if (!last) return { en: 'You have not made any complaint.', bn: 'আপনি কোনো অভিযোগ করেননি।' };
       const cat = COMPLAINT_CATEGORIES[last.category];
