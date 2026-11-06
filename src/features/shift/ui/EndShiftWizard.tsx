@@ -129,8 +129,14 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
                         <p className="truncate text-sm text-ink-soft">{tx(roleOf(w))}</p>
                       </div>
                     </div>
-                    <Segmented label={t('On site', 'সাইটে')} options={PRESENCE} value={r.presentAtEnd} onChange={(v) => updateRow(r.workerId, { presentAtEnd: v })} />
-                    <Segmented label={t('Health', 'শরীর')} options={HEALTH} value={r.health} onChange={(v) => updateRow(r.workerId, { health: v })} />
+                    <div className="rounded-2xl border-2 border-line p-2">
+                      <p className="mb-1.5 px-1 text-sm font-semibold text-ink-soft">{t('On site', 'সাইটে')}</p>
+                      <Segmented boxed label={t('On site', 'সাইটে')} options={PRESENCE} value={r.presentAtEnd} onChange={(v) => updateRow(r.workerId, { presentAtEnd: v })} />
+                    </div>
+                    <div className="rounded-2xl border-2 border-line p-2">
+                      <p className="mb-1.5 px-1 text-sm font-semibold text-ink-soft">{t('Health', 'স্বাস্থ্য')}</p>
+                      <Segmented boxed label={t('Health', 'স্বাস্থ্য')} options={HEALTH} value={r.health} onChange={(v) => updateRow(r.workerId, { health: v })} />
+                    </div>
                     <div className="flex items-center gap-2">
                       <span className="w-14 shrink-0 text-sm leading-tight text-ink-soft">{t('Work done', 'কাজ')}</span>
                       <div className="flex-1">
@@ -292,8 +298,8 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
             icon={Wallet}
             title={t('Check the pay list', 'মজুরির তালিকা দেখুন')}
             speak={{
-              en: `Check the pay list. Total ${i.numEn(payrollTotal(preview))} taka. You can change anyone's pay and add a comment.`,
-              bn: `মজুরির তালিকা দেখুন। মোট ${num(payrollTotal(preview))} টাকা। যে কারও মজুরি বদলাতে ও মন্তব্য দিতে পারেন।`,
+              en: `Check the pay list. Total ${i.numEn(payrollTotal(preview))} taka. The office approves it before anyone is paid.`,
+              bn: `মজুরির তালিকা দেখুন। মোট ${num(payrollTotal(preview))} টাকা। টাকা দেওয়ার আগে অফিস এটি অনুমোদন করবে।`,
             }}
           />
           <PayRules />
@@ -319,7 +325,7 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
         backLabel={step > 0 ? undefined : t('Keep working', 'কাজ চলুক')}
         onNext={next}
         nextIcon={step === 3 ? Send : ChevronRight}
-        nextLabel={step === 3 ? t('Send to office', 'অফিসে পাঠান') : t('Next', 'পরের ধাপ')}
+        nextLabel={step === 3 ? t('Send to office', 'অফিসে পাঠান') : t(`Next - ${STEPS[step + 1].label.en}`, `পরের ধাপ - ${STEPS[step + 1].label.bn}`)}
         error={error}
       />
     </div>
