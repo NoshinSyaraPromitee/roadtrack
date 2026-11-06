@@ -3,7 +3,7 @@ import type { Shift, Worker } from '@/core/types';
 import { Avatar, shortName } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import { SpeakButton } from '@/shared/voice';
-import { Badge, Card, CardHeader, EmptyState, Pictogram } from '@/shared/ui';
+import { Badge, Card, CardHeader, DateTile, EmptyState, Pictogram } from '@/shared/ui';
 import { cn, sum } from '@/shared/lib/utils';
 import { PayFlags } from './PayFlags';
 
@@ -73,11 +73,7 @@ export function WorkerEarnings({ shifts, worker }: { shifts: Shift[]; worker: Wo
               const isPaid = shift.payrollStatus === 'approved';
               return (
                 <li key={shift.id} className="flex items-center gap-3 py-3">
-                  <div className="grid w-14 shrink-0 place-items-center rounded-xl bg-paper py-1.5 text-center leading-none">
-                    <span className="text-xs text-ink-soft">{i.weekday(shift.startedAt)}</span>
-                    <span className="font-sign text-2xl">{i.day(shift.startedAt)}</span>
-                    <span className="text-xs text-ink-soft">{i.month(shift.startedAt)}</span>
-                  </div>
+                  <DateTile at={shift.startedAt} />
                   <div className="min-w-0 flex-1">
                     <PayFlags flags={line.flags} />
                     {line.note && (

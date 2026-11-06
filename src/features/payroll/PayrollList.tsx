@@ -9,7 +9,6 @@ import { Button, Stepper, Textarea } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { PayFlags } from './PayFlags';
 
-/** The supervisor changes one worker's pay up or down, and must say why. */
 function PayEditor({ line, edit, onSave, onCancel }: { line: PayrollLine; edit?: PayEdit; onSave: (edit: PayEdit | null) => void; onCancel: () => void }) {
   const i = useI18n();
   const worked = line.basePay - line.deduction + line.welfareBonus;
@@ -68,10 +67,6 @@ function PayEditor({ line, edit, onSave, onCancel }: { line: PayrollLine; edit?:
   );
 }
 
-/**
- * Every worker's pay for one shift. With `onEdit`, the supervisor can change a worker's pay and add a comment;
- * the office and the worker then see that change and the comment.
- */
 export function PayrollList({ lines, edits = {}, onEdit }: { lines: PayrollLine[]; edits?: Record<string, PayEdit>; onEdit?: (workerId: string, edit: PayEdit | null) => void }) {
   const i = useI18n();
   const workers = useWorkforce((s) => s.workers);
@@ -115,7 +110,7 @@ export function PayrollList({ lines, edits = {}, onEdit }: { lines: PayrollLine[
               )}
               {onEdit && editing !== l.workerId && (
                 <div className="mt-1 pl-[3.75rem]">
-                  <button type="button" onClick={() => setEditing(l.workerId)} className="flex h-9 items-center gap-1.5 font-semibold text-sign-600 hover:text-sign-800">
+                  <button type="button" onClick={() => setEditing(l.workerId)} className="flex h-9 items-center gap-1.5 rounded-lg px-1.5 font-semibold text-guide-700 hover:bg-guide-50">
                     <Pencil className="h-4 w-4" />
                     {edits[l.workerId] ? i.t('Change the edit or comment', 'বদল বা মন্তব্য ঠিক করুন') : i.t('Change pay or add a comment', 'মজুরি বদলান বা মন্তব্য দিন')}
                   </button>

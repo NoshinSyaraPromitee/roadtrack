@@ -41,7 +41,7 @@ export function PayrollApprovals({ shifts, onApprove }: { shifts: Shift[]; onApp
                   type="button"
                   aria-expanded={isOpen}
                   onClick={() => setOpen(isOpen ? null : s.id)}
-                  className="flex w-full items-center justify-between gap-3 p-4 text-left hover:bg-paper/60"
+                  className="flex w-full items-center justify-between gap-3 p-4 text-left hover:bg-guide-50"
                 >
                   <div className="min-w-0">
                     <p className="font-sign text-xl">{i.dateLong(s.startedAt)}</p>

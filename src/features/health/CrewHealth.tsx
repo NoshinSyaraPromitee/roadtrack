@@ -8,7 +8,6 @@ import { HEALTH_ICON } from './meta';
 import { HEALTH_LABEL, sickDays, todaysReports } from './model';
 import { useHealthReports } from './store';
 
-/** What the crew told the app about their health today. Sick and hurt first. */
 export function CrewHealth() {
   const i = useI18n();
   const reports = useHealthReports((s) => s.reports);

@@ -25,7 +25,6 @@ export function PayFlags({ flags, quiet = false }: { flags: PayFlag[]; quiet?: b
   );
 }
 
-/** The three pay rules, shown with the same chips used on every pay line. */
 export function PayRules() {
   const i = useI18n();
   return (

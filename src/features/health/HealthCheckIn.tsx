@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { CalendarDays, HeartPulse, Send } from 'lucide-react';
 import type { Health, Worker } from '@/core/types';
 import { useI18n } from '@/shared/i18n';
-import { SpeakButton, VoiceNote, VoiceRecorder } from '@/shared/voice';
-import { ActionBar, Button, Card, CardHeader, EmptyState, Field, Pictogram, Textarea, Tile } from '@/shared/ui';
+import { SpeakButton, VoiceNote } from '@/shared/voice';
+import { ActionBar, Button, Card, CardHeader, EmptyState, Pictogram, Tile, VoiceOrWrite } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { HEALTH_ICON } from './meta';
 import { HEALTH_LABEL, sickDays, todaysReport } from './model';
@@ -11,7 +11,6 @@ import { useHealthReports } from './store';
 
 const CHOICES: Health[] = ['fit', 'sick', 'injured'];
 
-/** A worker tells the supervisor how they feel today, by tapping a sign and, if they want, by voice. */
 export function HealthCheckIn({ worker }: { worker: Worker }) {
   const i = useI18n();
   const reports = useHealthReports((s) => s.reports);
@@ -86,12 +85,7 @@ export function HealthCheckIn({ worker }: { worker: Worker }) {
       {status && status !== 'fit' && (
         <Card>
           <CardHeader title={i.t('Tell us more (if you want)', 'আরও বলুন (চাইলে)')} speak={{ en: 'Tap the microphone and say what is wrong.', bn: 'মাইকে চাপ দিয়ে কী সমস্যা বলুন।' }} />
-          <VoiceRecorder value={audio} onChange={setAudio} />
-          <div className="mt-4">
-            <Field label={i.t('Or write it', 'অথবা লিখুন')}>
-              <Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder={i.t('For example: fever since last night', 'যেমন: গত রাত থেকে জ্বর')} />
-            </Field>
-          </div>
+          <VoiceOrWrite audio={audio} onAudio={setAudio} text={note} onText={setNote} rows={2} placeholder={{ en: 'For example: fever since last night', bn: 'যেমন: গত রাত থেকে জ্বর' }} />
         </Card>
       )}
       <ActionBar fixed={false} onNext={send} nextIcon={Send} nextLabel={i.t('Send to supervisor', 'সুপারভাইজারকে পাঠান')} error={error} />
@@ -99,7 +93,6 @@ export function HealthCheckIn({ worker }: { worker: Worker }) {
   );
 }
 
-/** The last few days a worker reported. */
 export function MyHealthHistory({ workerId }: { workerId: string }) {
   const i = useI18n();
   const reports = useHealthReports((s) => s.reports);

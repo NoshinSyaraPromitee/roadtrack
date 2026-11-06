@@ -6,13 +6,11 @@ export type { SickDays } from '@/core/health';
 
 const sameDay = (iso: string, now = new Date()) => new Date(iso).toDateString() === now.toDateString();
 
-/** The newest report a worker sent today, if any. */
 export function todaysReport(reports: HealthReport[], workerId: string): HealthReport | undefined {
   const mine = reports.filter((r) => r.workerId === workerId && sameDay(r.at));
   return mine.sort((a, b) => a.at.localeCompare(b.at))[mine.length - 1];
 }
 
-/** Every worker's newest report from today. */
 export function todaysReports(reports: HealthReport[]): HealthReport[] {
   const ids = Array.from(new Set(reports.filter((r) => sameDay(r.at)).map((r) => r.workerId)));
   return ids.map((id) => todaysReport(reports, id)).filter((r): r is HealthReport => !!r);
