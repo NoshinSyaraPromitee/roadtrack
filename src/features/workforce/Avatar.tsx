@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Check } from 'lucide-react';
 import type { Person } from '@/core/types';
 import type { IconType } from '@/shared/ui';
@@ -8,9 +9,20 @@ function Glyph({ icon: Icon, size }: { icon: IconType; size: number }) {
   return <Icon strokeWidth={2.2} style={{ width: size, height: size }} />;
 }
 
-/** A person shown as their work icon on their own colour, like a round sign. */
+/** Photos the browser could not load, so each missing photo is asked for only once. */
+const missing = new Set<string>();
+
+/** Where a person's photo lives: public/workers/<id>.jpg. */
+const photoOf = (person: Person) => `/workers/${person.id}.jpg`;
+
+/**
+ * A person shown by their real photo. Until the photo loads, or if there is no photo,
+ * their work icon on their own colour shows instead, like a round sign.
+ */
 export function Avatar({ person, size = 56, selected, dim, className }: { person: Person; size?: number; selected?: boolean; dim?: boolean; className?: string }) {
   const mark = Math.max(18, Math.round(size * 0.36));
+  const src = photoOf(person);
+  const [broken, setBroken] = useState(() => missing.has(src));
 
   return (
     <span
@@ -22,8 +34,20 @@ export function Avatar({ person, size = 56, selected, dim, className }: { person
       )}
       style={{ width: size, height: size, backgroundColor: person.color }}
     >
-      <span className="absolute inset-[8%] rounded-full border-2 border-white/40" aria-hidden="true" />
       <Glyph icon={roleIcon(person)} size={size * 0.46} />
+      {!broken && (
+        <img
+          src={src}
+          alt=""
+          loading="lazy"
+          draggable={false}
+          onError={() => {
+            missing.add(src);
+            setBroken(true);
+          }}
+          className="absolute inset-0 h-full w-full rounded-full object-cover"
+        />
+      )}
       {selected && (
         <span className="absolute -right-1 -top-1 grid place-items-center rounded-full bg-guide-600 text-white ring-2 ring-white" style={{ width: mark, height: mark }}>
           <Check strokeWidth={3.2} style={{ width: mark * 0.62, height: mark * 0.62 }} />
