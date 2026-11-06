@@ -20,7 +20,6 @@ const ROLES: Array<{ role: Role; path: string; title: Text; cta: Text; icon: Ico
 
 export type LoginStep = 'role' | 'name' | 'signin';
 
-/** Pick the road from the dropdown and who you are; workers then tap their name. */
 export function LoginFlow({ progress, onStepChange }: { progress: Record<string, number>; onStepChange?: (step: LoginStep) => void }) {
   const { t, tx } = useI18n();
   const { hint, say } = useSay();
@@ -106,13 +105,13 @@ export function LoginFlow({ progress, onStepChange }: { progress: Record<string,
         {ROLES.map((r) => (
           <div
             key={r.role}
-            className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 rounded-3xl border-2 border-line bg-white p-4 transition hover:border-guide-600 md:flex md:flex-col md:p-6 md:text-center"
+            className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 rounded-3xl border-2 border-line bg-white p-4 transition hover:border-guide-600 hover:bg-guide-50 md:flex md:flex-col md:p-6 md:text-center"
           >
             <span className="md:hidden">
-              <Pictogram icon={r.icon} tone={r.tone} shape={r.shape} size={64} />
+              <Pictogram icon={r.icon} tone={r.tone} shape={r.shape} size={64} keepTone />
             </span>
             <span className="hidden md:block">
-              <Pictogram icon={r.icon} tone={r.tone} shape={r.shape} size={88} />
+              <Pictogram icon={r.icon} tone={r.tone} shape={r.shape} size={88} keepTone />
             </span>
             <div className="min-w-0 md:mt-4 md:flex-1">
               <h2 className="font-sign text-3xl leading-tight">{tx(r.title)}</h2>
@@ -123,7 +122,6 @@ export function LoginFlow({ progress, onStepChange }: { progress: Record<string,
               onClick={() => {
                 hint(r.title);
                 if (r.role === 'worker') setStep('name');
-                // Already signed in as this role on this phone: go straight in.
                 else if (session.role === r.role && session.accountId) navigate(r.path);
                 else {
                   setSigninRole(r);

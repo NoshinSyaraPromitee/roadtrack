@@ -5,7 +5,6 @@ import type { Role } from '@/core/types';
 interface SessionState {
   role: Role | null;
   workerId: string | null;
-  /** Set only for the supervisor and the head office, after they sign in. */
   accountId: string | null;
   login: (role: Role, ids?: { workerId?: string | null; accountId?: string | null }) => void;
   logout: () => void;

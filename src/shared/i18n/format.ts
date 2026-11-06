@@ -13,7 +13,6 @@ export function makeI18n(lang: Lang) {
     t: (en: string, bn: string) => (lang === 'bn' ? bn : en),
     tx: (text: Text) => text[lang],
     num,
-    /** English digits, for text read aloud by an English voice. */
     numEn: (n: number, digits = 0) => n.toLocaleString('en-US', { maximumFractionDigits: digits }),
     timeEn: (iso: string) => new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
     fixed: (n: number, digits = 1) => n.toLocaleString(loc, { minimumFractionDigits: digits, maximumFractionDigits: digits }),
