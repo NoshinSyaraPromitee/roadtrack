@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Attendance, BreakType, IncidentKey, MaterialKey, MaterialLine, Shift, Text, Worker } from '@/core/types';
-import { calculatePayroll } from '@/core/payroll';
+import { applyPayEdits, calculatePayroll } from '@/core/payroll';
+import type { PayEdit } from '@/core/payroll';
 import { SEED_SHIFTS } from '@/core/seed';
 import { uid } from '@/shared/lib/utils';
 
@@ -19,6 +20,8 @@ export interface EndShiftInput {
   endProgress: number;
   incidentTags: IncidentKey[];
   incidents: string;
+  /** The supervisor's changes to the pay list, by worker. */
+  payEdits?: Record<string, PayEdit>;
 }
 
 interface ShiftState {
@@ -62,12 +65,13 @@ export const useShiftStore = create<ShiftState>()(
       endShift: (roadId, input, workers) => {
         const active = get().shifts.find((s) => s.status === 'active' && s.roadId === roadId);
         if (!active) return null;
+        const { payEdits = {}, ...rest } = input;
         const done: Shift = {
           ...active,
-          ...input,
+          ...rest,
           status: 'completed',
           endedAt: new Date().toISOString(),
-          payroll: calculatePayroll(workers, input.attendance),
+          payroll: applyPayEdits(calculatePayroll(workers, input.attendance), payEdits),
           payrollStatus: 'pending',
         };
         set((s) => ({ shifts: s.shifts.map((sh) => (sh.id === active.id ? done : sh)) }));

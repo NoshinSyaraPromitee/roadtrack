@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Bandage, ChevronRight, CircleCheck, Construction, LogOut, Package, Send, Thermometer, ThumbsUp, Trash2, TriangleAlert, Users, Wallet } from 'lucide-react';
+import { Bandage, ChevronRight, CircleCheck, Construction, LogOut, Package, Send, Thermometer, ThumbsUp, TriangleAlert, Users, Wallet } from 'lucide-react';
 import type { Attendance, Health, IncidentKey, MaterialLine, Shift } from '@/core/types';
 import { INCIDENTS, INCIDENT_KEYS, MATERIAL_BY_KEY } from '@/core/catalog';
-import { calculatePayroll, payrollTotal } from '@/core/payroll';
+import { applyPayEdits, calculatePayroll, payrollTotal } from '@/core/payroll';
+import type { PayEdit } from '@/core/payroll';
 import { kmToPct, pctToKm } from '@/core/roads';
 import { useRoad } from '@/features/road';
 import { useHealthReports, todaysReport } from '@/features/health';
@@ -57,9 +58,10 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
   const endProgress = Math.max(shift.startProgress, kmToPct(endKm, road));
   const [tags, setTags] = useState<IncidentKey[]>([]);
   const [notes, setNotes] = useState('');
+  const [payEdits, setPayEdits] = useState<Record<string, PayEdit>>({});
   const [error, setError] = useState('');
 
-  const preview = useMemo(() => calculatePayroll(workers, rows), [workers, rows]);
+  const preview = useMemo(() => applyPayEdits(calculatePayroll(workers, rows), payEdits), [workers, rows, payEdits]);
   const here = rows.filter((r) => r.presentAtEnd).length;
   const required: IncidentKey[] = [];
   if (mats.some((m) => pct(m.wasted, m.allocated) > WASTE_LIMIT)) required.push('waste');
@@ -77,7 +79,7 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
       return;
     }
     if (step === 3) {
-      const id = endShift(road.id, { attendance: rows, materials: mats, endProgress, incidentTags: tags, incidents: notes.trim() }, workers);
+      const id = endShift(road.id, { attendance: rows, materials: mats, endProgress, incidentTags: tags, incidents: notes.trim(), payEdits }, workers);
       if (id) onEnded(id);
       return;
     }
@@ -89,7 +91,6 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
     <div className="space-y-5 pb-36">
       <PageHeader
         title={t('Finish the shift', 'শিফট শেষ করুন')}
-        subtitle={t('Count, check materials, mark progress, then send the pay list.', 'গুনুন, মাল দেখুন, অগ্রগতি দিন, তারপর মজুরির তালিকা পাঠান।')}
         speak={{ en: 'Finish the shift in four steps.', bn: 'চারটি ধাপে শিফট শেষ করুন।' }}
       />
       <WizardSteps steps={STEPS} current={step} />
@@ -182,15 +183,13 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
                   />
                   <div className="mt-3 grid gap-3 sm:grid-cols-2">
                     <div>
-                      <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-guide-700">
-                        <CircleCheck className="h-4 w-4" />
+                      <p className="mb-1 text-sm font-semibold text-guide-700">
                         {t('Used', 'খরচ')}
                       </p>
                       <Stepper value={m.used} step={def.step} max={m.allocated - m.wasted} unit={tx(def.unit)} label={t('Used', 'খরচ')} onChange={(v) => updateMat(idx, { used: v })} />
                     </div>
                     <div>
-                      <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-stop-600">
-                        <Trash2 className="h-4 w-4" />
+                      <p className="mb-1 text-sm font-semibold text-stop-600">
                         {t('Wasted', 'নষ্ট')}
                       </p>
                       <Stepper
@@ -199,6 +198,7 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
                         max={m.allocated}
                         unit={tx(def.unit)}
                         label={t('Wasted', 'নষ্ট')}
+                        tone="stop"
                         onChange={(v) => updateMat(idx, { wasted: v, used: Math.min(m.used, m.allocated - v) })}
                       />
                     </div>
@@ -227,7 +227,6 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
               icon={Construction}
               tone="mark"
               title={t('How many km of road are done now?', 'এখন রাস্তার কত কিলোমিটার হয়েছে?')}
-              subtitle={t(`Today started at ${fixed(startKm, 2)} km of ${fixed(road.lengthKm)} km. Yellow is today's work.`, `আজ শুরু ${fixed(road.lengthKm)} কিমির মধ্যে ${fixed(startKm, 2)} কিমি থেকে। হলুদ অংশ আজকের কাজ।`)}
               speak={{ en: "How many kilometres of road are done now? The yellow part is today's work.", bn: 'এখন রাস্তার কত কিলোমিটার হয়েছে? হলুদ অংশ আজকের কাজ।' }}
             />
             <RoadStrip progress={endProgress} lengthKm={road.lengthKm} today={{ from: shift.startProgress, to: endProgress }} />
@@ -247,7 +246,6 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
               shape="warn"
               tone="stop"
               title={t('Any problems today?', 'আজ কোনো সমস্যা হয়েছে?')}
-              subtitle={t('Tap everything that happened. Leave empty if nothing went wrong.', 'যা যা হয়েছে সব চাপুন। কিছু না হলে খালি রাখুন।')}
               speak={{ en: 'Any problems today? Tap everything that happened.', bn: 'আজ কোনো সমস্যা হয়েছে? যা যা হয়েছে সব চাপুন।' }}
             />
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
@@ -283,15 +281,26 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
           <CardHeader
             icon={Wallet}
             title={t('Check the pay list', 'মজুরির তালিকা দেখুন')}
-            subtitle={t('The office approves it before anyone is paid.', 'টাকা দেওয়ার আগে অফিস এটি অনুমোদন করবে।')}
+            subtitle={t('You can change anyone’s pay and add a comment. The office approves it before anyone is paid.', 'যে কারও মজুরি বদলাতে ও মন্তব্য দিতে পারেন। টাকা দেওয়ার আগে অফিস এটি অনুমোদন করবে।')}
             speak={{
-              en: `Check the pay list. Total ${i.numEn(payrollTotal(preview))} taka.`,
-              bn: `মজুরির তালিকা দেখুন। মোট ${num(payrollTotal(preview))} টাকা।`,
+              en: `Check the pay list. Total ${i.numEn(payrollTotal(preview))} taka. You can change anyone's pay and add a comment.`,
+              bn: `মজুরির তালিকা দেখুন। মোট ${num(payrollTotal(preview))} টাকা। যে কারও মজুরি বদলাতে ও মন্তব্য দিতে পারেন।`,
             }}
           />
           <PayRules />
           <div className="mt-2">
-            <PayrollList lines={preview} />
+            <PayrollList
+              lines={preview}
+              edits={payEdits}
+              onEdit={(workerId, edit) =>
+                setPayEdits((all) => {
+                  const next = { ...all };
+                  if (edit) next[workerId] = edit;
+                  else delete next[workerId];
+                  return next;
+                })
+              }
+            />
           </div>
         </Card>
       )}

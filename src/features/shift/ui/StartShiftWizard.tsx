@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { ChevronRight, Construction, MapPin, Package, Play, Users } from 'lucide-react';
+import { ChevronRight, Construction, MapPin, Package, Users } from 'lucide-react';
 import type { MaterialKey, Text } from '@/core/types';
 import { MATERIALS, POSTS } from '@/core/catalog';
 import { kmToPct, pctToKm } from '@/core/roads';
 import { useRoad } from '@/features/road';
 import { PeoplePicker, POST_ICON, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
-import { ActionBar, Badge, Button, Card, CardHeader, Chip, Field, Input, PageHeader, RoadStrip, Stepper, WizardSteps } from '@/shared/ui';
-import { useShiftStore } from '../model/store';
+import { ActionBar, Badge, Button, Card, CardHeader, Chip, Field, Input, RoadStrip, Stepper, WizardSteps } from '@/shared/ui';
+import type { DayPlan } from '../model/daySetup';
 import { useProjectProgress } from '../model/selectors';
 import { MaterialPicto } from './icons';
 
@@ -17,19 +17,26 @@ const STEPS = [
   { icon: MapPin, label: { en: 'Place', bn: 'স্থান' } },
 ];
 
-export function StartShiftWizard() {
+/**
+ * Step 1 of the supervisor's day: who came, the materials, and where the crew works.
+ * It only saves the plan; work starts later, after the machines and the crew's health are checked.
+ */
+export function StartShiftWizard({ initial, onDone }: { initial?: DayPlan; onDone: (plan: DayPlan) => void }) {
   const { t, tx, num, fixed } = useI18n();
   const road = useRoad();
   const workers = useWorkforce((s) => s.workers);
-  const startShift = useShiftStore((s) => s.startShift);
   const lastProgress = useProjectProgress();
 
   const [step, setStep] = useState(0);
-  const [selected, setSelected] = useState<string[]>(() => workers.map((w) => w.id));
-  const [qty, setQty] = useState(() => Object.fromEntries(MATERIALS.map((m) => [m.key, m.defaultQty])) as Record<MaterialKey, number>);
-  const [site, setSite] = useState<Text>(road.places[0]);
-  const [other, setOther] = useState('');
-  const [km, setKm] = useState(() => pctToKm(lastProgress, road));
+  const [selected, setSelected] = useState<string[]>(() => initial?.workerIds ?? workers.map((w) => w.id));
+  const [qty, setQty] = useState(
+    () =>
+      Object.fromEntries(MATERIALS.map((m) => [m.key, initial?.materials.find((x) => x.key === m.key)?.allocated ?? m.defaultQty])) as Record<MaterialKey, number>,
+  );
+  const known = initial && road.places.some((p) => p.en === initial.site.en);
+  const [site, setSite] = useState<Text>(known && initial ? initial.site : road.places[0]);
+  const [other, setOther] = useState(initial && !known ? initial.site.en : '');
+  const [km, setKm] = useState(() => pctToKm(initial?.startProgress ?? lastProgress, road));
   const progress = kmToPct(km, road);
   const [error, setError] = useState('');
 
@@ -50,7 +57,7 @@ export function StartShiftWizard() {
         setError(t('Choose where the crew is working.', 'কোথায় কাজ হচ্ছে তা বাছাই করুন।'));
         return;
       }
-      startShift({ roadId: road.id, site: place, startProgress: progress, workerIds: selected, materials: MATERIALS.map((m) => ({ key: m.key, allocated: qty[m.key] })) });
+      onDone({ site: place, startProgress: progress, workerIds: selected, materials: MATERIALS.map((m) => ({ key: m.key, allocated: qty[m.key] })) });
       return;
     }
     setError('');
@@ -59,10 +66,6 @@ export function StartShiftWizard() {
 
   return (
     <div className="space-y-5 pb-36">
-      <PageHeader
-        title={t("Start today's work", 'আজকের কাজ শুরু করুন')}
-        speak={{ en: "Start today's work.", bn: 'আজকের কাজ শুরু করুন।' }}
-      />
       <WizardSteps steps={STEPS} current={step} />
 
       {step === 0 && (
@@ -99,7 +102,7 @@ export function StartShiftWizard() {
             subtitle={t('How much was given to the site?', 'সাইটে কতটা মাল দেওয়া হয়েছে?')}
             speak={{ en: 'Materials for today. Use plus and minus.', bn: 'আজকের মালামাল। যোগ আর বিয়োগ চিহ্ন ব্যবহার করুন।' }}
           />
-          <ul className="divide-y divide-line">
+          <ul className="space-y-1">
             {MATERIALS.map((m) => (
               <li key={m.key} className="flex flex-wrap items-center gap-3 py-3 sm:flex-nowrap">
                 <MaterialPicto k={m.key} />
@@ -169,8 +172,8 @@ export function StartShiftWizard() {
       <ActionBar
         onBack={step > 0 ? () => setStep(step - 1) : undefined}
         onNext={next}
-        nextIcon={step === 2 ? Play : ChevronRight}
-        nextLabel={step === 2 ? t('Start work', 'কাজ শুরু করুন') : t('Next', 'পরের ধাপ')}
+        nextIcon={ChevronRight}
+        nextLabel={step === 2 ? t('Next: machines', 'পরের ধাপ: মেশিন') : t('Next', 'পরের ধাপ')}
         error={error}
       />
     </div>

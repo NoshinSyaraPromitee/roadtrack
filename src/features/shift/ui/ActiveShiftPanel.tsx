@@ -1,4 +1,4 @@
-import { Clock, Flag, MapPin, Users } from 'lucide-react';
+import { Flag } from 'lucide-react';
 import type { Shift, Worker } from '@/core/types';
 import { MATERIAL_BY_KEY } from '@/core/catalog';
 import { AvatarStack, useWorkforce } from '@/features/workforce';
@@ -17,7 +17,6 @@ export function ActiveShiftPanel({ shift, onFinish }: { shift: Shift; onFinish: 
   return (
     <div className="space-y-4">
       <section className="relative overflow-hidden rounded-3xl bg-guide-600 p-5 text-white sm:p-7">
-        <div className="pointer-events-none absolute inset-2 rounded-[20px] border-2 border-white/80" />
         <div className="relative grid gap-6 md:grid-cols-[1.3fr_1fr] md:items-end">
           <div>
             <div className="flex items-center gap-3">
@@ -36,20 +35,17 @@ export function ActiveShiftPanel({ shift, onFinish }: { shift: Shift; onFinish: 
               />
             </div>
             <p className="mt-3 font-sign text-6xl leading-none tabular-nums sm:text-7xl">{i.dur(now - new Date(shift.startedAt).getTime())}</p>
-            <p className="mt-3 flex items-center gap-2 text-lg text-white/90">
-              <MapPin className="h-5 w-5" />
+            <p className="mt-3 text-lg text-white/90">
               {i.tx(shift.site)}
             </p>
           </div>
           <div className="space-y-3">
             <AvatarStack people={crew} size={44} />
             <div className="flex flex-wrap gap-x-5 gap-y-1 text-white/90">
-              <span className="inline-flex items-center gap-1.5">
-                <Users className="h-5 w-5" />
+              <span>
                 {i.t(`${i.num(crew.length)} on site`, `${i.num(crew.length)} জন সাইটে`)}
               </span>
-              <span className="inline-flex items-center gap-1.5">
-                <Clock className="h-5 w-5" />
+              <span>
                 {i.t(`Started ${i.time(shift.startedAt)}`, `শুরু ${i.time(shift.startedAt)}`)}
               </span>
             </div>
