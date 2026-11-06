@@ -24,8 +24,8 @@ export function SpeakButton({ text, size = 'md', tone = 'light', className }: { 
       className={cn(
         'grid shrink-0 place-items-center rounded-full transition',
         SIZES[size],
-        tone === 'dark' ? 'bg-white/15 text-white hover:bg-white/25' : 'bg-sign-50 text-sign-600 hover:bg-sign-100',
-        speaking && (tone === 'dark' ? 'ring-4 ring-white/30' : 'ring-4 ring-sign-100'),
+        tone === 'dark' ? 'bg-white/15 text-white hover:bg-white/25' : 'bg-guide-50 text-guide-700 hover:bg-guide-100',
+        speaking && (tone === 'dark' ? 'ring-4 ring-white/30' : 'ring-4 ring-guide-100'),
         className,
       )}
     >

@@ -6,7 +6,6 @@ interface VoiceGuideState {
   toggle: () => void;
 }
 
-/** When on, tapping a big choice tile also reads its label aloud. */
 export const useVoiceGuide = create<VoiceGuideState>()(
   persist(
     (set) => ({

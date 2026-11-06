@@ -4,7 +4,6 @@ export type RecorderState = 'idle' | 'recording' | 'denied' | 'unsupported';
 
 const isSupported = () => typeof window !== 'undefined' && 'MediaRecorder' in window && !!navigator.mediaDevices?.getUserMedia;
 
-/** Records a short voice clip and hands it back as a data URL that can be stored with a complaint. */
 export function useRecorder(onDone: (dataUrl: string) => void, maxSeconds = 30) {
   const [state, setState] = useState<RecorderState>(() => (isSupported() ? 'idle' : 'unsupported'));
   const [seconds, setSeconds] = useState(0);

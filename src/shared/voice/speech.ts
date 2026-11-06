@@ -1,18 +1,9 @@
 import type { Lang, Text } from '@/shared/i18n';
 
-/**
- * Why reading aloud did not go as planned, so the screen can say why and how to fix it.
- * - unsupported: this browser cannot read aloud at all.
- * - bn-offline: no Bangla voice on the device and no internet, so English was read instead.
- * - bn-online-failed: the online Bangla voice could not be reached, so English was read instead.
- * - blocked: the browser blocked sound until the person taps the page.
- * - failed: the device voice stopped with an error.
- */
 export type SpeakIssue = 'unsupported' | 'bn-offline' | 'bn-online-failed' | 'blocked' | 'failed';
 
 export const canSpeak = () => typeof window !== 'undefined' && ('speechSynthesis' in window || 'Audio' in window);
 
-/** Apa is a woman, so pick a female voice when the device names one. */
 const FEMALE = /female|woman|zira|aria|jenny|samantha|karen|moira|tessa|veena|heera|nabanita|tanishaa|google (us|uk english female)/i;
 
 const synth = () => (typeof window !== 'undefined' && 'speechSynthesis' in window ? window.speechSynthesis : null);
@@ -25,7 +16,6 @@ function findVoice(lang: Lang) {
   return voices.find((v) => FEMALE.test(v.name)) ?? voices[0] ?? null;
 }
 
-/** Every new speak() or stop() bumps this, so an older speech never keeps playing. */
 let token = 0;
 let audio: HTMLAudioElement | null = null;
 
@@ -43,7 +33,6 @@ function speakWithDevice(words: string, use: Lang, voice: SpeechSynthesisVoice |
   utterance.onstart = () => onStart?.();
   utterance.onend = () => onEnd?.();
   utterance.onerror = (e) => {
-    // "interrupted" and "canceled" only mean a newer speech took over.
     if (e.error === 'not-allowed') onIssue?.('blocked');
     else if (e.error !== 'interrupted' && e.error !== 'canceled') onIssue?.('failed');
     onEnd?.();
@@ -51,7 +40,6 @@ function speakWithDevice(words: string, use: Lang, voice: SpeechSynthesisVoice |
   s.speak(utterance);
 }
 
-/** Cuts Bangla text into short pieces at sentence and comma breaks; the online voice reads up to about 200 letters at a time. */
 function pieces(words: string, max = 180) {
   const parts = words.split(/(?<=[।!?,])\s+/);
   const out: string[] = [];
@@ -73,7 +61,6 @@ function pieces(words: string, max = 180) {
   return out.filter(Boolean);
 }
 
-/** Bangla speech from the internet, for phones and laptops that have no Bangla voice of their own. */
 function speakOnline(words: string, mine: number, onEnd: (() => void) | undefined, onStart: (() => void) | undefined, onFail: (why: 'blocked' | 'failed') => void) {
   const list = pieces(words);
   let k = 0;
@@ -104,10 +91,6 @@ function speakOnline(words: string, mine: number, onEnd: (() => void) | undefine
   next();
 }
 
-/**
- * Reads the text aloud. Bangla uses the device's Bangla voice if it has one, otherwise a Bangla voice from the internet.
- * Only when both are missing does it read the English text instead.
- */
 export function speak(text: Text, lang: Lang, onEnd?: () => void, onStart?: () => void, onIssue?: (issue: SpeakIssue) => void) {
   if (!canSpeak()) {
     onIssue?.('unsupported');
