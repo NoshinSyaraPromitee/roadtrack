@@ -1,4 +1,5 @@
 export { speak, stopSpeaking, canSpeak } from './speech';
+export type { SpeakIssue } from './speech';
 export { useVoiceGuide } from './store';
 export { useSay } from './useSay';
 export { SpeakButton } from './SpeakButton';
