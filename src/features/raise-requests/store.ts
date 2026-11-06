@@ -19,6 +19,6 @@ export const useRaiseRequests = create<RaiseState>()(
       request: (r) => set((s) => ({ requests: [...s.requests, { ...r, id: uid('r'), createdAt: new Date().toISOString(), status: 'pending' }] })),
       decide: (id, status) => set((s) => ({ requests: s.requests.map((r) => (r.id === id ? { ...r, status } : r)) })),
     }),
-    { name: 'roadtrack-v3-raises' },
+    { name: 'roadtrack-v4-raises' },
   ),
 );

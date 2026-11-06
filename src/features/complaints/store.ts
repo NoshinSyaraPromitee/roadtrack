@@ -19,6 +19,6 @@ export const useComplaints = create<ComplaintState>()(
       file: (c) => set((s) => ({ complaints: [...s.complaints, { ...c, id: uid('c'), createdAt: new Date().toISOString(), status: 'open' }] })),
       setStatus: (id, status) => set((s) => ({ complaints: s.complaints.map((c) => (c.id === id ? { ...c, status } : c)) })),
     }),
-    { name: 'roadtrack-v3-complaints' },
+    { name: 'roadtrack-v4-complaints' },
   ),
 );

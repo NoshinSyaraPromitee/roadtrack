@@ -104,7 +104,7 @@ function seedShift(plan: RoadPlan, i: number, startProgress: number): Shift {
     materials,
     breaks,
     incidentTags: spill ? ['waste'] : [],
-    incidents: spill ? 'Minor bitumen spill near Gazipura Bus Stand. Area cleaned, no injuries.' : '',
+    incidents: spill ? 'গাজীপুরা বাসস্ট্যান্ডের কাছে অল্প বিটুমিন পড়ে গিয়েছিল। জায়গা পরিষ্কার করা হয়েছে, কেউ আহত হয়নি।' : '',
     payroll: calculatePayroll(SEED_WORKERS, attendance),
     payrollStatus: i < gains.length - 1 ? 'approved' : 'pending',
   };
@@ -143,11 +143,11 @@ export const SEED_MACHINES: Machine[] = [
 ];
 
 export const SEED_HEALTH: HealthReport[] = [
-  { id: 'h0', workerId: 'w4', status: 'sick', note: 'Cough and fever.', at: at(12, 7, 5) },
+  { id: 'h0', workerId: 'w4', status: 'sick', note: 'কাশি আর জ্বর।', at: at(12, 7, 5) },
   { id: 'h0b', workerId: 'w4', status: 'fit', note: '', at: at(10, 7, 0) },
-  { id: 'h0c', workerId: 'w4', status: 'sick', note: 'Fever.', at: at(2, 7, 20) },
-  { id: 'h0d', workerId: 'w4', status: 'sick', note: 'Still have fever.', at: at(1, 7, 5) },
-  { id: 'h1', workerId: 'w4', status: 'sick', note: 'Fever since last night.', at: at(0, 7, 10) },
+  { id: 'h0c', workerId: 'w4', status: 'sick', note: 'জ্বর।', at: at(2, 7, 20) },
+  { id: 'h0d', workerId: 'w4', status: 'sick', note: 'এখনো জ্বর আছে।', at: at(1, 7, 5) },
+  { id: 'h1', workerId: 'w4', status: 'sick', note: 'গত রাত থেকে জ্বর।', at: at(0, 7, 10) },
   { id: 'h2', workerId: 'w2', status: 'fit', note: '', at: at(0, 7, 25) },
   { id: 'h3', workerId: 'w1', status: 'fit', note: '', at: at(1, 7, 15) },
 ];
@@ -159,7 +159,7 @@ export const SEED_COMPLAINTS: Complaint[] = [
     anonymous: false,
     againstId: SUPERVISOR.id,
     category: 'conditions',
-    message: 'Snacks were not given on Tuesday even though we worked past 6 PM.',
+    message: 'মঙ্গলবার সন্ধ্যা ৬টার পরেও কাজ করেছি, কিন্তু নাস্তা দেওয়া হয়নি।',
     createdAt: at(2, 18),
     status: 'reviewing',
   },
@@ -169,7 +169,7 @@ export const SEED_COMPLAINTS: Complaint[] = [
     anonymous: true,
     againstId: 'w5',
     category: 'safety',
-    message: 'Drives the roller without a helmet, very close to other workers.',
+    message: 'হেলমেট ছাড়া রোলার চালায়, অন্য শ্রমিকদের খুব কাছ দিয়ে।',
     createdAt: at(1, 17),
     status: 'open',
   },
@@ -182,7 +182,7 @@ export const SEED_RAISES: RaiseRequest[] = [
     currentRate: 950,
     requestedRate: 1050,
     reason: 'responsibility',
-    details: 'Training two new masons on curb work for the past month.',
+    details: 'গত এক মাস ধরে দুজন নতুন রাজমিস্ত্রিকে কার্ব বসানোর কাজ শেখাচ্ছি।',
     createdAt: at(3, 19),
     status: 'pending',
   },
