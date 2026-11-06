@@ -17,5 +17,4 @@ export const useRoadStore = create<RoadState>()(
   ),
 );
 
-/** The road everyone on this device is working on. */
 export const useRoad = () => roadById(useRoadStore((s) => s.roadId));
