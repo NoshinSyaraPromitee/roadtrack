@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { HeartPulse, Megaphone, TrendingUp, Wallet } from 'lucide-react';
 import { ComplaintWizard, MyComplaints } from '@/features/complaints';
@@ -10,8 +9,10 @@ import { useAllCompletedShifts } from '@/features/shift';
 import { useWorker } from '@/features/workforce';
 import { TabBar } from '@/shared/ui';
 import type { TabItem } from '@/shared/ui';
+import { useUrlState } from '@/shared/lib/useUrlState';
 
-type Tab = 'money' | 'health' | 'raise' | 'complain';
+const TAB_KEYS = ['money', 'health', 'raise', 'complain'] as const;
+type Tab = (typeof TAB_KEYS)[number];
 
 const TABS: TabItem<Tab>[] = [
   { key: 'money', icon: Wallet, label: { en: 'My money', bn: 'আমার টাকা' } },
@@ -25,7 +26,7 @@ export function WorkerPage() {
   const workerId = useSession((s) => s.workerId);
   const worker = useWorker(workerId);
   const shifts = useAllCompletedShifts();
-  const [tab, setTab] = useState<Tab>('money');
+  const [tab, setTab] = useUrlState<Tab>('tab', 'money', TAB_KEYS);
 
   if (!worker) return <Navigate to="/" replace />;
 

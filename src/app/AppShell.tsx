@@ -2,13 +2,14 @@ import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { Building2, LogOut, RotateCcw } from 'lucide-react';
 import { SUPERVISOR } from '@/core/seed';
 import { ApaAssistant } from '@/features/assistant';
-import { RoadSwitcher } from '@/features/road';
+import { RoadSelect } from '@/features/road';
 import { useSession } from '@/features/session';
 import { useRoadProgressMap } from '@/features/shift';
 import { Avatar, roleOf, shortName, useWorker } from '@/features/workforce';
 import { LangToggle, useI18n } from '@/shared/i18n';
 import { VoiceGuideToggle } from '@/shared/voice';
 import { Logo, Pictogram } from '@/shared/ui';
+import { BackButton } from './BackButton';
 
 export function AppShell() {
   const i = useI18n();
@@ -37,17 +38,15 @@ export function AppShell() {
             <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="RoadTrack">
               <Logo tone="light" className="[&>span:last-child]:hidden xl:[&>span:last-child]:inline" />
             </Link>
-            <span className="hidden min-w-0 md:flex">
-              <RoadSwitcher progress={progress} />
-            </span>
+            <RoadSelect progress={progress} variant="header" className="hidden md:block" />
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             {person ? (
               <span className="mr-1 hidden items-center gap-2 lg:flex">
                 <Avatar person={person} size={36} />
                 <span className="leading-tight">
-                  <span className="block font-semibold">{shortName(person, i.lang)}</span>
-                  <span className="block text-sm text-white/75">{i.tx(roleOf(person))}</span>
+                  <span className="block w-24 truncate font-semibold">{shortName(person, i.lang)}</span>
+                  <span className="block w-24 truncate text-sm text-white/75">{i.tx(roleOf(person))}</span>
                 </span>
               </span>
             ) : role === 'admin' ? (
@@ -74,7 +73,7 @@ export function AppShell() {
                 navigate('/');
               }}
               aria-label={i.t('Switch user', 'ব্যবহারকারী বদলান')}
-              className="flex h-10 items-center gap-2 rounded-full bg-white/10 px-3 font-semibold transition hover:bg-white/20"
+              className="flex h-10 items-center justify-center gap-2 rounded-full bg-white/10 px-3 font-semibold transition hover:bg-white/20 lg:w-44"
             >
               <LogOut className="h-5 w-5" />
               <span className="hidden lg:inline">{i.t('Switch user', 'ব্যবহারকারী বদলান')}</span>
@@ -83,8 +82,9 @@ export function AppShell() {
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-5 md:py-8">
-        <div className="-mt-1 mb-3 md:hidden">
-          <RoadSwitcher progress={progress} variant="page" />
+        <div className="-mt-1 mb-4 flex items-center justify-between gap-3 md:mt-0">
+          <BackButton />
+          <RoadSelect progress={progress} variant="inline" className="min-w-0 md:hidden" />
         </div>
         <ApaAssistant />
         <Outlet />

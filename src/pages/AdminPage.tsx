@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { FileText, Gauge, HandCoins, Megaphone, Tractor, Wallet } from 'lucide-react';
 import { ComplaintsInbox, useComplaints } from '@/features/complaints';
 import { ProgressChart, ProjectOverview, ShiftRecords, WastageChart } from '@/features/dashboard';
@@ -10,8 +9,10 @@ import { useCompletedShifts, useShiftStore } from '@/features/shift';
 import { useI18n } from '@/shared/i18n';
 import { PageHeader, TabBar } from '@/shared/ui';
 import type { TabItem } from '@/shared/ui';
+import { useUrlState } from '@/shared/lib/useUrlState';
 
-type Tab = 'overview' | 'pay' | 'machines' | 'complaints' | 'raises' | 'records';
+const TAB_KEYS = ['overview', 'pay', 'machines', 'complaints', 'raises', 'records'] as const;
+type Tab = (typeof TAB_KEYS)[number];
 
 export function AdminPage() {
   const i = useI18n();
@@ -22,7 +23,7 @@ export function AdminPage() {
   const pendingPay = shifts.filter((s) => s.payrollStatus === 'pending').length;
   const road = useRoad();
   const broken = useEquipment((s) => s.machines.filter((m) => m.roadId === road.id && m.status === 'repair').length);
-  const [tab, setTab] = useState<Tab>('overview');
+  const [tab, setTab] = useUrlState<Tab>('tab', 'overview', TAB_KEYS);
 
   const tabs: TabItem<Tab>[] = [
     { key: 'overview', icon: Gauge, label: { en: 'Overview', bn: 'সারসংক্ষেপ' } },
@@ -37,7 +38,7 @@ export function AdminPage() {
     <div className="space-y-5">
       <PageHeader
         title={i.t('Head office', 'প্রধান কার্যালয়')}
-        subtitle={i.t(`${road.name.en}: approve pay, answer workers and follow the road.`, `${road.name.bn}: মজুরি অনুমোদন, শ্রমিকদের জবাব আর রাস্তার অগ্রগতি।`)}
+        subtitle={i.t(`${road.name.en}, ${road.area.en}`, `${road.name.bn}, ${road.area.bn}`)}
       />
       <TabBar items={tabs} value={tab} onChange={setTab} />
       {tab === 'overview' && (
