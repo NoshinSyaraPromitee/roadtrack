@@ -18,12 +18,13 @@ Road construction crews in Bangladesh are tracked on paper. Headcounts drift, wa
 - **Rest and snack reminders** with spoken alerts, phone vibration and notifications. A fast demo timer is included.
 - **Head office dashboard.** Road progress drawn as a road, charts, pay approval, complaints with voice playback, raise approvals and full shift records with CSV export.
 - **Worker phone view.** My money, ask for a raise, make a complaint (by voice or text, optionally anonymous).
+- **Ask Apa.** A drawn Bangladeshi site helper on every screen. Tap a question, speak (Bangla or English) or type, and she answers out loud from the app's own data: pay, breaks, raises, complaints, road progress and waste. No internet or AI service needed.
 
 ## Architecture (feature-based "lego")
 ```
 src/app       routing, shell, role guard
 src/pages     thin pages that only compose features
-src/features  self-contained bricks: session, workforce, shift, reminders, payroll, complaints, raise-requests, dashboard
+src/features  self-contained bricks: session, workforce, shift, reminders, payroll, complaints, raise-requests, dashboard, assistant
 src/core      pure domain: types, catalog, pay rules, break policy, seed data
 src/shared    i18n, voice, UI kit (pictograms, steppers, wizard, road strip), utils
 ```
