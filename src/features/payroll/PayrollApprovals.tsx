@@ -49,7 +49,7 @@ export function PayrollApprovals({ shifts, onApprove }: { shifts: Shift[]; onApp
                     <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-sm text-ink-soft">
                       <span className="inline-flex items-center gap-1">
                         <MapPin className="h-4 w-4" />
-                        {s.site}
+                        {i.tx(s.site)}
                       </span>
                       <span>{i.t(`${i.num(paid)} workers to pay`, `${i.num(paid)} জনকে টাকা দিতে হবে`)}</span>
                     </p>

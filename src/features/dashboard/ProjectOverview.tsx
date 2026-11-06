@@ -1,6 +1,6 @@
 import { Activity, Trash2, Users, Wallet } from 'lucide-react';
 import { PAYROLL_RULES, payrollTotal } from '@/core/payroll';
-import { PROJECT } from '@/core/seed';
+import { useRoad } from '@/features/road';
 import { useActiveShift, useCompletedShifts, useProjectProgress } from '@/features/shift';
 import { useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
@@ -11,6 +11,7 @@ import { pct, sum } from '@/shared/lib/utils';
 export function ProjectOverview() {
   const i = useI18n();
   const { t, num, fixed } = i;
+  const road = useRoad();
   const progress = useProjectProgress();
   const active = useActiveShift();
   const completed = useCompletedShifts();
@@ -19,7 +20,7 @@ export function ProjectOverview() {
   const lines = completed.flatMap((s) => s.materials);
   const wastePct = lines.length ? sum(lines.map((m) => pct(m.wasted, m.used + m.wasted))) / lines.length : 0;
   const pendingPay = sum(completed.filter((s) => s.payrollStatus === 'pending').map((s) => payrollTotal(s.payroll)));
-  const doneKm = (PROJECT.lengthKm * progress) / 100;
+  const doneKm = (road.lengthKm * progress) / 100;
 
   return (
     <div className="space-y-4">
@@ -28,26 +29,26 @@ export function ProjectOverview() {
           <div className="pointer-events-none absolute inset-1.5 rounded-xl border-2 border-white/85" />
           <div className="relative flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="font-sign text-3xl leading-tight sm:text-4xl">{i.tx(PROJECT.name)}</p>
-              <p className="text-white/85">{i.tx(PROJECT.section)}</p>
+              <p className="font-sign text-3xl leading-tight sm:text-4xl">{i.tx(road.name)}</p>
+              <p className="text-white/85">{i.t(`${road.from.en} to ${road.to.en}, ${road.area.en}`, `${road.from.bn} থেকে ${road.to.bn}, ${road.area.bn}`)}</p>
             </div>
             <div className="flex items-center gap-3">
               <p className="font-sign text-5xl leading-none tabular-nums">{fixed(progress)}%</p>
               <SpeakButton
                 tone="dark"
                 text={{
-                  en: `${i.numEn(doneKm, 2)} of ${i.numEn(PROJECT.lengthKm, 1)} kilometres are done. That is ${i.numEn(progress, 1)} percent.`,
-                  bn: `${fixed(PROJECT.lengthKm)} কিলোমিটারের মধ্যে ${fixed(doneKm, 2)} কিলোমিটার শেষ। মানে ${fixed(progress)} শতাংশ।`,
+                  en: `${i.numEn(doneKm, 2)} of ${i.numEn(road.lengthKm, 1)} kilometres are done. That is ${i.numEn(progress, 1)} percent.`,
+                  bn: `${fixed(road.lengthKm)} কিলোমিটারের মধ্যে ${fixed(doneKm, 2)} কিলোমিটার শেষ। মানে ${fixed(progress)} শতাংশ।`,
                 }}
               />
             </div>
           </div>
         </div>
-        <RoadStrip progress={progress} lengthKm={PROJECT.lengthKm} size="lg" />
+        <RoadStrip progress={progress} lengthKm={road.lengthKm} size="lg" />
         <p className="mt-3 text-ink-soft">
           {t(
-            `${fixed(doneKm, 2)} km paved out of ${fixed(PROJECT.lengthKm)} km, over ${num(completed.length)} recorded shifts.`,
-            `${fixed(PROJECT.lengthKm)} কিমির মধ্যে ${fixed(doneKm, 2)} কিমি পাকা হয়েছে, ${num(completed.length)}টি শিফটে।`,
+            `${fixed(doneKm, 2)} km paved out of ${fixed(road.lengthKm)} km, over ${num(completed.length)} recorded shifts.`,
+            `${fixed(road.lengthKm)} কিমির মধ্যে ${fixed(doneKm, 2)} কিমি পাকা হয়েছে, ${num(completed.length)}টি শিফটে।`,
           )}
         </p>
       </section>

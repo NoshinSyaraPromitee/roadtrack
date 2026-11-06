@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { ChevronDown, CircleCheck, Coffee, Cookie, Download, FileText, Hourglass, MapPin, Users } from 'lucide-react';
 import { INCIDENTS, MATERIAL_BY_KEY } from '@/core/catalog';
 import { payrollTotal } from '@/core/payroll';
+import { pctToKm } from '@/core/roads';
+import { useRoad } from '@/features/road';
 import { INCIDENT_ICON, MaterialPicto, useCompletedShifts } from '@/features/shift';
 import { useI18n } from '@/shared/i18n';
 import { Badge, Button, Card, CardHeader, StackBar } from '@/shared/ui';
@@ -10,20 +12,23 @@ import { cn, pct, sum } from '@/shared/lib/utils';
 export function ShiftRecords() {
   const i = useI18n();
   const { t, tx, num, fixed } = i;
+  const road = useRoad();
   const rows = [...useCompletedShifts()].reverse();
   const [open, setOpen] = useState<string | null>(null);
 
   const exportCsv = () => {
-    const header = ['Date', 'Site', 'Clock in', 'Clock out', 'Clocked in', 'At recount', 'Start %', 'End %', 'Rest breaks', 'Snack breaks', 'Wastage %', 'Payroll BDT', 'Payroll status', 'Problems', 'Notes'];
+    const header = ['Date', 'Site', 'Clock in', 'Clock out', 'Clocked in', 'At recount', 'Start %', 'End %', 'Start km', 'End km', 'Rest breaks', 'Snack breaks', 'Wastage %', 'Payroll BDT', 'Payroll status', 'Problems', 'Notes'];
     const body = rows.map((s) => [
       new Date(s.startedAt).toLocaleDateString('en-GB'),
-      s.site,
+      s.site.en,
       new Date(s.startedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
       s.endedAt ? new Date(s.endedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '',
       s.attendance.filter((a) => a.presentAtStart).length,
       s.attendance.filter((a) => a.presentAtStart && a.presentAtEnd).length,
       s.startProgress,
       s.endProgress ?? '',
+      pctToKm(s.startProgress, road),
+      s.endProgress !== undefined ? pctToKm(s.endProgress, road) : '',
       s.breaks.filter((b) => b.type === 'rest').length,
       s.breaks.filter((b) => b.type === 'snack').length,
       (sum(s.materials.map((m) => pct(m.wasted, m.used + m.wasted))) / (s.materials.length || 1)).toFixed(1),
@@ -33,10 +38,10 @@ export function ShiftRecords() {
       s.incidents,
     ]);
     const csv = [header, ...body].map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
-    const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+    const url = URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'roadtrack-shift-records.csv';
+    a.download = `roadtrack-${road.name.en.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -79,7 +84,7 @@ export function ShiftRecords() {
                 <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
                   <span className="inline-flex items-center gap-1 text-ink-soft">
                     <MapPin className="h-4 w-4" />
-                    {s.site}
+                    {tx(s.site)}
                   </span>
                   <span className="inline-flex items-center gap-1">
                     <Users className="h-4 w-4 text-ink-soft" />
