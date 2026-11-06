@@ -1,6 +1,7 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { Building2, LogOut, RotateCcw } from 'lucide-react';
 import { SUPERVISOR } from '@/core/seed';
+import { ApaAssistant } from '@/features/assistant';
 import { useSession } from '@/features/session';
 import { Avatar, roleOf, shortName, useWorker } from '@/features/workforce';
 import { LangToggle, useI18n } from '@/shared/i18n';
@@ -76,6 +77,7 @@ export function AppShell() {
       <main className="mx-auto max-w-6xl px-4 py-5 md:py-8">
         <Outlet />
       </main>
+      <ApaAssistant />
     </div>
   );
 }

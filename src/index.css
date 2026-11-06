@@ -68,6 +68,38 @@ html:lang(bn) body {
   outline-offset: 2px;
 }
 
+.apa-blink {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: apa-blink 4.2s infinite;
+}
+
+.apa-talk {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: apa-talk 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes apa-blink {
+  0%,
+  93%,
+  100% {
+    transform: scaleY(1);
+  }
+  96% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes apa-talk {
+  from {
+    transform: scaleY(0.3);
+  }
+  to {
+    transform: scaleY(1.05);
+  }
+}
+
 .road-dash {
   background-image: repeating-linear-gradient(90deg, #ffffff 0 16px, transparent 16px 30px);
 }
