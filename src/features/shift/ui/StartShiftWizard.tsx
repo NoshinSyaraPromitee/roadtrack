@@ -171,7 +171,7 @@ export function StartShiftWizard({ initial, onDone }: { initial?: DayPlan; onDon
         onBack={step > 0 ? () => setStep(step - 1) : undefined}
         onNext={next}
         nextIcon={ChevronRight}
-        nextLabel={step === 2 ? t('Next: machines', 'পরের ধাপ: মেশিন') : t('Next', 'পরের ধাপ')}
+        nextLabel={step === 2 ? t('Next - Machines', 'পরের ধাপ - মেশিন') : t(`Next - ${STEPS[step + 1].label.en}`, `পরের ধাপ - ${STEPS[step + 1].label.bn}`)}
         error={error}
       />
     </div>

@@ -57,15 +57,15 @@ export function ActionBar({ onBack, backLabel, onNext, nextLabel, nextIcon: Next
       )}
       <div className="flex items-center gap-3">
         {onBack && (
-          <Button variant="secondary" size="lg" onClick={onBack}>
+          <Button variant="secondary" size="lg" onClick={onBack} className="px-3 sm:px-5">
             <ChevronLeft />
             {backLabel ?? t('Back', 'পেছনে')}
           </Button>
         )}
         {aside}
-        <Button variant={nextVariant} size="xl" onClick={onNext} className="ml-auto min-w-0 flex-1 sm:flex-none">
-          {NextIcon && <NextIcon />}
-          <span className="truncate">{nextLabel}</span>
+        <Button variant={nextVariant} size="xl" onClick={onNext} className="ml-auto min-w-0 flex-1 px-3 text-lg sm:flex-none sm:px-7 sm:text-xl">
+          {NextIcon && <NextIcon className="hidden sm:block" />}
+          <span className="line-clamp-2 leading-tight sm:truncate">{nextLabel}</span>
         </Button>
       </div>
     </>
