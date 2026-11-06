@@ -1,7 +1,19 @@
 @import "tailwindcss";
 
+/* Kalpurush draws Bangla smaller than the Latin font. Scaling only the Bangla glyphs keeps every box the same size in both languages. */
+@font-face {
+  font-family: 'Kalpurush RT';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  size-adjust: 112%;
+  src: url('../node_modules/@hixbe/kalpurush/files/kalpurush.woff2') format('woff2'), url('../node_modules/@hixbe/kalpurush/files/kalpurush.woff') format('woff');
+  unicode-range: U+0951-0952, U+0964-0965, U+0980-09FE, U+1CD0, U+1CD2, U+1CD5-1CD6, U+1CD8, U+1CE1, U+1CEA, U+1CED, U+1CF2, U+1CF5-1CF7, U+200C-200D, U+20B9, U+25CC, U+A8F1;
+}
+
 @theme {
-  --font-sans: "Anek Latin Variable", "Kalpurush", ui-sans-serif, system-ui, sans-serif;
+  /* English in Times New Roman; Bangla letters fall through to Kalpurush, which only covers Bangla. */
+  --font-sans: "Kalpurush RT", "Times New Roman", Times, serif;
 
   --color-paper: #eceeea;
   --color-ink: #1f2623;
@@ -9,13 +21,14 @@
   --color-line: #d5dad4;
   --color-asphalt: #2c3330;
 
-  --color-guide-50: #e6f3ec;
-  --color-guide-100: #c8e6d6;
-  --color-guide-200: #93ccae;
-  --color-guide-500: #0e8459;
-  --color-guide-600: #0a6b4a;
-  --color-guide-700: #08573c;
-  --color-guide-800: #06422e;
+  /* The brand green is #09400E (guide-600). The others are lighter and darker steps of it. */
+  --color-guide-50: #e9f2ea;
+  --color-guide-100: #cfe3d1;
+  --color-guide-200: #a3c8a7;
+  --color-guide-500: #1f6b26;
+  --color-guide-600: #09400e;
+  --color-guide-700: #07340b;
+  --color-guide-800: #042406;
 
   --color-mark-100: #fff4cc;
   --color-mark-300: #ffdc66;
@@ -52,15 +65,6 @@ body {
   font-weight: 430;
   -webkit-font-smoothing: antialiased;
   text-size-adjust: 100%;
-}
-
-/* Kalpurush draws Bangla a little smaller than the Latin font and has one weight, so Bangla gets more size and room. */
-html:lang(bn) {
-  font-size: 106.25%;
-}
-
-html:lang(bn) body {
-  line-height: 1.6;
 }
 
 :focus-visible {

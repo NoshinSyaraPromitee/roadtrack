@@ -5,7 +5,7 @@ export type PictoTone = 'guide' | 'sign' | 'stop' | 'mark' | 'plain' | 'muted';
 export type PictoShape = 'plate' | 'disc' | 'warn';
 
 const PALETTE: Record<PictoTone, { fill: string; edge: string; icon: string }> = {
-  guide: { fill: '#0a6b4a', edge: '#ffffff', icon: '#ffffff' },
+  guide: { fill: '#09400e', edge: '#ffffff', icon: '#ffffff' },
   sign: { fill: '#1c5fb0', edge: '#ffffff', icon: '#ffffff' },
   stop: { fill: '#ffffff', edge: '#d3263a', icon: '#1f2623' },
   mark: { fill: '#ffc930', edge: '#1f2623', icon: '#1f2623' },

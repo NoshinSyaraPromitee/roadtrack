@@ -32,7 +32,7 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 bg-guide-700 text-white">
+      <header className="sticky top-0 z-30 bg-guide-600 text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-2.5">
           <div className="flex min-w-0 items-center gap-2 sm:gap-4">
             <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="RoadTrack">

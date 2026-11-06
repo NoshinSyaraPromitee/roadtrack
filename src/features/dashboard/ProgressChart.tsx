@@ -11,14 +11,14 @@ export function ProgressChart() {
 
   return (
     <Card>
-      <CardHeader icon={Construction} tone="mark" title={i.t('Road done after each shift', 'প্রতি শিফটের পর অগ্রগতি')} subtitle={i.t('Percent of the whole road', 'পুরো রাস্তার শতাংশ')} />
+      <CardHeader icon={Construction} tone="mark" title={i.t('Road done after each shift', 'প্রতি শিফটের পর অগ্রগতি')} />
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
             <defs>
               <linearGradient id="progressFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#0e8459" stopOpacity={0.35} />
-                <stop offset="100%" stopColor="#0e8459" stopOpacity={0} />
+                <stop offset="0%" stopColor="#1f6b26" stopOpacity={0.35} />
+                <stop offset="100%" stopColor="#1f6b26" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#d5dad4" vertical={false} />
@@ -31,7 +31,7 @@ export function ProgressChart() {
               tickLine={false}
             />
             <Tooltip formatter={(v) => [`${i.fixed(Number(v))}%`, i.t('Road done', 'রাস্তার কাজ')]} />
-            <Area type="monotone" dataKey="progress" stroke="#0a6b4a" strokeWidth={3} fill="url(#progressFill)" />
+            <Area type="monotone" dataKey="progress" stroke="#09400e" strokeWidth={3} fill="url(#progressFill)" />
           </AreaChart>
         </ResponsiveContainer>
       </div>

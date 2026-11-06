@@ -1,7 +1,5 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@fontsource-variable/anek-latin/wdth.css';
-import '@hixbe/kalpurush/bengali.css';
 import App from '@/app/App';
 import './index.css';
 
