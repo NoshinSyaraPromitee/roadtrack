@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { EyeOff, Inbox, Megaphone, UserRound } from 'lucide-react';
 import type { Complaint, ComplaintStatus, Person } from '@/core/types';
@@ -28,6 +29,20 @@ function Against({ id, size = 36 }: { id: string; size?: number }) {
   );
 }
 
+function CategoryRow({ c, date, children }: { c: Complaint; date: string; children?: ReactNode }) {
+  const i = useI18n();
+  return (
+    <div className="flex items-center gap-3">
+      <Pictogram icon={CATEGORY_ICON[c.category]} shape="warn" tone="stop" size={44} />
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold leading-tight">{i.tx(COMPLAINT_CATEGORIES[c.category])}</p>
+        <p className="text-sm text-ink-soft">{date}</p>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 function Body({ c }: { c: Complaint }) {
   return (
     <div className="mt-3 space-y-2">
@@ -53,16 +68,11 @@ export function MyComplaints({ workerId }: { workerId: string }) {
             const st = STATUS_META[c.status];
             return (
               <li key={c.id} className="rounded-2xl border border-line p-3">
-                <div className="flex items-center gap-3">
-                  <Pictogram icon={CATEGORY_ICON[c.category]} shape="warn" tone="stop" size={44} />
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold leading-tight">{i.tx(COMPLAINT_CATEGORIES[c.category])}</p>
-                    <p className="text-sm text-ink-soft">{i.date(c.createdAt)}</p>
-                  </div>
+                <CategoryRow c={c} date={i.date(c.createdAt)}>
                   <Badge tone={st.tone} icon={st.icon}>
                     {i.tx(st.label)}
                   </Badge>
-                </div>
+                </CategoryRow>
                 <div className="mt-3">
                   <Against id={c.againstId} size={32} />
                 </div>
@@ -112,13 +122,7 @@ export function ComplaintsInbox() {
             const from = find(c.fromWorkerId);
             return (
               <li key={c.id} className="rounded-2xl border border-line p-4">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Pictogram icon={CATEGORY_ICON[c.category]} shape="warn" tone="stop" size={44} />
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold leading-tight">{i.tx(COMPLAINT_CATEGORIES[c.category])}</p>
-                    <p className="text-sm text-ink-soft">{i.dateLong(c.createdAt)}</p>
-                  </div>
-                </div>
+                <CategoryRow c={c} date={i.dateLong(c.createdAt)} />
                 <div className="mt-3 grid gap-2 sm:grid-cols-2">
                   <div className="rounded-xl bg-stop-50 p-2.5">
                     <p className="mb-1 text-sm text-stop-700">{i.t('About', 'যার বিষয়ে')}</p>

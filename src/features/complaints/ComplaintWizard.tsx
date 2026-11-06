@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { ChevronRight, CircleCheck, EyeOff, Megaphone, MessageCircleWarning, UserRound } from 'lucide-react';
+import { ChevronRight, EyeOff, Megaphone, MessageCircleWarning, UserRound } from 'lucide-react';
 import type { ComplaintCategory } from '@/core/types';
 import { COMPLAINT_CATEGORIES, COMPLAINT_KEYS } from '@/core/catalog';
 import { SUPERVISOR } from '@/core/seed';
 import { PeoplePicker, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
-import { SpeakButton, VoiceRecorder, useSay } from '@/shared/voice';
-import { ActionBar, Button, Card, CardHeader, Field, Pictogram, Textarea, Tile, WizardSteps } from '@/shared/ui';
+import { useSay } from '@/shared/voice';
+import { ActionBar, Card, CardHeader, Pictogram, Tile, VoiceOrWrite, WizardSteps } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { CATEGORY_ICON } from './meta';
 import { useComplaints } from './store';
+import { ComplaintSent } from './ComplaintSent';
 
 const STEPS = [
   { icon: UserRound, label: { en: 'Who', bn: 'কে' } },
@@ -33,7 +34,7 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
 
-  const people = [SUPERVISOR, ...workers.filter((w) => w.id !== workerId)];
+  const people = [SUPERVISOR, ...workers].filter((p) => p.id !== workerId);
 
   const reset = () => {
     setStep(0);
@@ -60,19 +61,7 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
   };
 
   if (sent) {
-    return (
-      <Card className="flex flex-col items-center py-8 text-center">
-        <Pictogram icon={CircleCheck} size={88} />
-        <h2 className="mt-4 font-sign text-3xl">{t('Complaint sent', 'অভিযোগ পাঠানো হয়েছে')}</h2>
-        <p className="mt-1 text-lg text-ink-soft">{t('The head office will look into it.', 'প্রধান কার্যালয় বিষয়টি দেখবে।')}</p>
-        <div className="mt-3">
-          <SpeakButton text={{ en: 'Complaint sent. The head office will look into it.', bn: 'অভিযোগ পাঠানো হয়েছে। প্রধান কার্যালয় বিষয়টি দেখবে।' }} />
-        </div>
-        <Button size="lg" variant="secondary" className="mt-6" onClick={reset}>
-          {t('Make another complaint', 'আরেকটি অভিযোগ করুন')}
-        </Button>
-      </Card>
-    );
+    return <ComplaintSent onAgain={reset} />;
   }
 
   return (
@@ -98,7 +87,7 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
               }}
               className={cn(
                 'flex flex-col items-center justify-center gap-2 rounded-2xl border-2 px-1 pb-3 pt-4 text-center',
-                against === 'other' ? 'border-guide-600 bg-white' : 'border-transparent bg-white hover:border-line',
+                against === 'other' ? 'border-guide-600 bg-white hover:bg-guide-50' : 'border-transparent bg-white hover:border-guide-600 hover:bg-guide-50',
               )}
             >
               <Pictogram icon={UserRound} tone="muted" shape="disc" size={64} />
@@ -134,12 +123,7 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
             title={t('Tell us what happened', 'কী হয়েছে বলুন')}
             speak={{ en: 'Tap the microphone and tell us what happened.', bn: 'মাইকে চাপ দিয়ে কী হয়েছে বলুন।' }}
           />
-          <VoiceRecorder value={audio} onChange={setAudio} />
-          <div className="mt-4">
-            <Field label={t('Or write it', 'অথবা লিখুন')}>
-              <Textarea rows={3} value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('When and where did it happen?', 'কখন, কোথায় হয়েছে?')} />
-            </Field>
-          </div>
+          <VoiceOrWrite audio={audio} onAudio={setAudio} text={message} onText={setMessage} rows={3} placeholder={{ en: 'When and where did it happen?', bn: 'কখন, কোথায় হয়েছে?' }} />
           <div className="mt-4">
             <Tile
               layout="row"
