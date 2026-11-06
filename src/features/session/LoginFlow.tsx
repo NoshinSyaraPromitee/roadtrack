@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Check, ClipboardCheck, HardHat } from 'lucide-react';
+import { ArrowRight, Building2, Check, ClipboardCheck, HardHat, MapPin, Repeat } from 'lucide-react';
 import type { Role } from '@/core/types';
+import { RoadPicker, useRoad, useRoadStore } from '@/features/road';
 import { PeoplePicker, shortName, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { SpeakButton, useSay } from '@/shared/voice';
-import { ActionBar, Pictogram } from '@/shared/ui';
+import { ActionBar, Pictogram, RoadStrip } from '@/shared/ui';
 import type { IconType, PictoShape, PictoTone } from '@/shared/ui';
 import { useSession } from './store';
 
@@ -43,15 +44,18 @@ const ROLES: Array<{ role: Role; path: string; title: Text; desc: Text; cta: Tex
   },
 ];
 
-export type LoginStep = 'role' | 'name';
+export type LoginStep = 'road' | 'role' | 'name';
 
-export function LoginFlow({ onStepChange }: { onStepChange?: (step: LoginStep) => void }) {
+/** First the road, then who you are, then (for workers) your name. */
+export function LoginFlow({ progress, onStepChange }: { progress: Record<string, number>; onStepChange?: (step: LoginStep) => void }) {
   const { t, tx } = useI18n();
   const { hint, say } = useSay();
   const login = useSession((s) => s.login);
   const workers = useWorkforce((s) => s.workers);
   const navigate = useNavigate();
-  const [step, setStepState] = useState<LoginStep>('role');
+  const road = useRoad();
+  const setRoad = useRoadStore((s) => s.setRoad);
+  const [step, setStepState] = useState<LoginStep>('road');
   const [picked, setPicked] = useState<string | null>(null);
   const me = workers.find((w) => w.id === picked);
 
@@ -65,6 +69,26 @@ export function LoginFlow({ onStepChange }: { onStepChange?: (step: LoginStep) =
     login(role, workerId);
     navigate(path);
   };
+
+  if (step === 'road') {
+    return (
+      <div>
+        <div className="mb-2 flex items-center gap-3">
+          <h1 className="font-sign text-3xl sm:text-5xl">{t('Which road?', 'কোন রাস্তা?')}</h1>
+          <SpeakButton text={{ en: 'Which road are you working on? Tap one.', bn: 'আপনি কোন রাস্তায় কাজ করছেন? একটিতে চাপ দিন।' }} size="lg" />
+        </div>
+        <p className="mb-5 text-ink-soft sm:text-lg">{t('Choose the road you are working on today.', 'আজ যে রাস্তায় কাজ করছেন সেটি বেছে নিন।')}</p>
+        <RoadPicker
+          value={road.id}
+          progress={progress}
+          onPick={(r) => {
+            setRoad(r.id);
+            setStep('role');
+          }}
+        />
+      </div>
+    );
+  }
 
   if (step === 'name') {
     return (
@@ -96,6 +120,29 @@ export function LoginFlow({ onStepChange }: { onStepChange?: (step: LoginStep) =
 
   return (
     <div>
+      <section className="relative mb-8 overflow-hidden rounded-3xl bg-guide-600 p-5 text-white sm:p-7">
+        <div className="pointer-events-none absolute inset-2 rounded-[20px] border-2 border-white/85" />
+        <div className="relative">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="font-sign text-3xl leading-[1.05] sm:text-5xl">{tx(road.name)}</p>
+              <p className="mt-2 flex flex-wrap items-center gap-1.5 text-lg text-white/90">
+                <MapPin className="h-5 w-5 text-mark-400" />
+                {tx(road.from)}
+                <ArrowRight className="h-4 w-4" />
+                {tx(road.to)}, {tx(road.area)}
+              </p>
+            </div>
+            <button type="button" onClick={() => setStep('road')} className="inline-flex items-center gap-1.5 py-2 font-semibold text-mark-300 hover:text-white">
+              <Repeat className="h-5 w-5" />
+              {t('Change road', 'রাস্তা বদলান')}
+            </button>
+          </div>
+          <div className="mt-5 rounded-2xl bg-white p-3 text-ink sm:p-4">
+            <RoadStrip progress={progress[road.id] ?? 0} lengthKm={road.lengthKm} size="lg" />
+          </div>
+        </div>
+      </section>
       <div className="mb-5 flex items-center gap-3">
         <h1 className="font-sign text-3xl sm:text-5xl">{t('Who are you?', 'আপনি কে?')}</h1>
         <SpeakButton text={{ en: 'Who are you? Choose one.', bn: 'আপনি কে? একটি বেছে নিন।' }} size="lg" />

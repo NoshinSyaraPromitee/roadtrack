@@ -35,12 +35,12 @@ export function PeoplePicker({ people, selected, onPick, size = 76, className, c
             }}
             className={cn(
               'flex flex-col items-center gap-2 rounded-2xl border-2 px-1 pb-3 pt-4 text-center transition active:scale-[0.97]',
-              on ? 'border-guide-600 bg-guide-50' : 'border-transparent bg-white hover:border-line',
+              on ? 'border-guide-600 bg-white' : 'border-transparent bg-white hover:border-line',
             )}
           >
             <Avatar person={p} size={size} selected={on} />
             <span className="w-full px-1">
-              <span className="line-clamp-2 font-semibold leading-tight">{personName(p, lang)}</span>
+              <span className={cn('line-clamp-2 leading-tight', on ? 'font-bold text-guide-700' : 'font-semibold')}>{personName(p, lang)}</span>
               <span className="block truncate text-sm text-ink-soft">{tx(roleOf(p))}</span>
             </span>
           </button>

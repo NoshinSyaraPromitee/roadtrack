@@ -98,7 +98,7 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
               }}
               className={cn(
                 'flex flex-col items-center justify-center gap-2 rounded-2xl border-2 px-1 pb-3 pt-4 text-center',
-                against === 'other' ? 'border-guide-600 bg-guide-50' : 'border-transparent bg-white hover:border-line',
+                against === 'other' ? 'border-guide-600 bg-white' : 'border-transparent bg-white hover:border-line',
               )}
             >
               <Pictogram icon={UserRound} tone="muted" shape="disc" size={64} />
