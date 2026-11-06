@@ -16,22 +16,17 @@ export function WizardSteps({ steps, current }: { steps: Array<{ icon: IconType;
         const Icon = s.icon;
         return (
           <li key={i} className={cn('flex items-center gap-2', i < steps.length - 1 && 'flex-1')} aria-current={active ? 'step' : undefined}>
-            <span
-              className={cn(
-                'flex shrink-0 items-center gap-2 rounded-full p-1',
-                active ? 'bg-guide-600 pr-4 text-white' : done ? 'bg-guide-50 text-guide-700' : 'bg-white text-ink-soft ring-1 ring-inset ring-line',
-              )}
-            >
+            <span className={cn('flex shrink-0 items-center gap-1.5', active ? 'text-guide-700' : done ? 'text-guide-700' : 'text-ink-soft/70')}>
               <span
                 className={cn(
-                  'grid h-9 w-9 place-items-center rounded-full font-sign text-lg',
-                  active ? 'bg-white text-guide-700' : done ? 'bg-guide-600 text-white' : 'bg-paper',
+                  'grid h-9 w-9 place-items-center rounded-full border-2 font-sign text-lg',
+                  active ? 'border-guide-600' : done ? 'border-guide-600' : 'border-line',
                 )}
               >
                 {done ? <Check className="h-5 w-5" strokeWidth={3} /> : num(i + 1)}
               </span>
               {active && (
-                <span className="flex items-center gap-1.5 font-semibold">
+                <span className="flex items-center gap-1.5 font-bold">
                   <Icon className="h-5 w-5" />
                   {tx(s.label)}
                 </span>

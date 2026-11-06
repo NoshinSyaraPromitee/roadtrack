@@ -13,6 +13,6 @@ export const useVoiceGuide = create<VoiceGuideState>()(
       on: true,
       toggle: () => set((s) => ({ on: !s.on })),
     }),
-    { name: 'roadtrack-v2-voice' },
+    { name: 'roadtrack-v3-voice' },
   ),
 );

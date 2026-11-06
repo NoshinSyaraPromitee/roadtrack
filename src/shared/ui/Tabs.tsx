@@ -40,16 +40,15 @@ export function TabBar<K extends string>({
                   hint(label);
                   onChange(key);
                 }}
-                className={cn('relative flex flex-col items-center gap-1 pb-2.5 pt-3 transition', on ? 'text-guide-700' : 'text-ink-soft')}
+                className={cn('relative flex flex-col items-center gap-1 pb-2.5 pt-3 transition', on ? 'text-guide-700' : 'text-ink-soft/75')}
               >
-                <span className={cn('absolute inset-x-6 top-0 h-1 rounded-b-full', on ? 'bg-guide-600' : 'bg-transparent')} />
-                <span className={cn('relative grid h-11 w-14 place-items-center rounded-2xl', on && 'bg-guide-50')}>
+                <span className="relative grid h-11 w-14 place-items-center">
                   <Icon className="h-7 w-7" strokeWidth={on ? 2.4 : 2} />
                   {!!count && (
                     <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-stop-500 px-1 text-xs font-bold text-white">{num(count)}</span>
                   )}
                 </span>
-                <span className="text-sm font-semibold">{tx(label)}</span>
+                <span className={cn('text-sm', on ? 'font-bold' : 'font-semibold')}>{tx(label)}</span>
               </button>
             );
           })}
@@ -59,8 +58,8 @@ export function TabBar<K extends string>({
   }
 
   return (
-    <nav>
-      <div className="flex flex-wrap gap-1.5 rounded-2xl bg-black/[0.04] p-1.5 sm:inline-flex">
+    <nav className="border-b border-line">
+      <div className="flex flex-wrap gap-x-4 gap-y-1 sm:gap-x-6">
         {items.map(({ key, icon: Icon, label, count }) => {
           const on = key === value;
           return (
@@ -73,11 +72,11 @@ export function TabBar<K extends string>({
                 onChange(key);
               }}
               className={cn(
-                'flex h-11 grow items-center justify-center gap-2 rounded-xl px-3 font-semibold transition sm:grow-0 sm:px-4',
-                on ? 'bg-white text-ink shadow-[0_1px_0_0_var(--color-line)] ring-1 ring-line' : 'text-ink-soft hover:text-ink',
+                '-mb-px flex h-12 items-center justify-center gap-2 border-b-[3px] px-1 transition',
+                on ? 'border-guide-600 font-bold text-guide-700' : 'border-transparent font-semibold text-ink-soft hover:text-ink',
               )}
             >
-              <Icon className={cn('h-5 w-5', on && 'text-guide-600')} />
+              <Icon className="h-5 w-5" />
               {tx(label)}
               {!!count && <span className="grid h-6 min-w-6 place-items-center rounded-full bg-stop-500 px-1.5 text-xs font-bold text-white">{num(count)}</span>}
             </button>

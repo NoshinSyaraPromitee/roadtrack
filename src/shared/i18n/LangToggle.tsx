@@ -8,36 +8,34 @@ const OPTIONS: Array<{ value: Lang; label: string; short: string }> = [
   { value: 'en', label: 'English', short: 'EN' },
 ];
 
+/** Two words, the chosen one in colour. No pill, no background. */
 export function LangToggle({ tone = 'light' }: { tone?: 'light' | 'dark' }) {
   const lang = useLang((s) => s.lang);
   const setLang = useLang((s) => s.setLang);
   const dark = tone === 'dark';
 
   return (
-    <div
-      role="radiogroup"
-      aria-label="Language / ভাষা"
-      className={cn('inline-flex items-center gap-0.5 rounded-full p-1', dark ? 'bg-white/10' : 'bg-white ring-1 ring-line')}
-    >
-      <Languages className={cn('mx-1.5 hidden h-4 w-4 sm:block', dark ? 'text-white/70' : 'text-ink-soft')} aria-hidden="true" />
-      {OPTIONS.map((o) => {
+    <div role="radiogroup" aria-label="Language / ভাষা" className="inline-flex items-center gap-1">
+      <Languages className={cn('hidden h-4 w-4 sm:block', dark ? 'text-white/60' : 'text-ink-soft')} aria-hidden="true" />
+      {OPTIONS.map((o, idx) => {
         const on = lang === o.value;
         return (
-          <button
-            key={o.value}
-            type="button"
-            role="radio"
-            aria-checked={on}
-            onClick={() => setLang(o.value)}
-            className={cn(
-              'rounded-full px-3 py-1.5 text-sm font-semibold transition',
-              on && (dark ? 'bg-white text-guide-700' : 'bg-guide-600 text-white'),
-              !on && (dark ? 'text-white/80 hover:text-white' : 'text-ink-soft hover:text-ink'),
-            )}
-          >
-            <span className="sm:hidden">{o.short}</span>
-            <span className="hidden sm:inline">{o.label}</span>
-          </button>
+          <span key={o.value} className="inline-flex items-center gap-1">
+            {idx > 0 && <span className={dark ? 'text-white/35' : 'text-line'}>|</span>}
+            <button
+              type="button"
+              role="radio"
+              aria-checked={on}
+              onClick={() => setLang(o.value)}
+              className={cn(
+                'px-1.5 py-1.5 transition',
+                on ? cn('font-bold', dark ? 'text-mark-400' : 'text-guide-700') : cn('font-semibold', dark ? 'text-white/60 hover:text-white' : 'text-ink-soft hover:text-ink'),
+              )}
+            >
+              <span className="sm:hidden">{o.short}</span>
+              <span className="hidden sm:inline">{o.label}</span>
+            </button>
+          </span>
         );
       })}
     </div>

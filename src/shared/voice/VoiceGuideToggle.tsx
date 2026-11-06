@@ -20,7 +20,7 @@ export function VoiceGuideToggle() {
         if (on) stopSpeaking();
         toggle();
       }}
-      className={cn('grid h-10 w-10 place-items-center rounded-full transition', on ? 'bg-white text-guide-700' : 'bg-white/10 text-white/70 hover:bg-white/20')}
+      className={cn('grid h-10 w-10 place-items-center transition', on ? 'text-mark-400' : 'text-white/60 hover:text-white')}
     >
       {on ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
     </button>

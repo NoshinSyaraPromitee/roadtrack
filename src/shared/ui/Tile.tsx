@@ -37,13 +37,13 @@ export function Tile({ icon, label, sub, tone, shape, selected, onPress, layout 
       className={cn(
         'relative flex rounded-2xl border-2 bg-white transition active:scale-[0.98]',
         stack ? 'flex-col items-center justify-center gap-2.5 px-3 py-4 text-center' : 'items-center gap-3 p-3 pr-10 text-left',
-        selected ? 'border-guide-600 bg-guide-50' : 'border-line hover:border-ink-soft/40',
+        selected ? 'border-guide-600' : 'border-line hover:border-ink-soft/40',
         className,
       )}
     >
       <Pictogram icon={icon} tone={tone} shape={shape} size={size === 'lg' ? 64 : 52} />
       <span className="min-w-0">
-        <span className={cn('block font-semibold leading-snug', size === 'lg' ? 'text-lg' : 'text-base')}>{tx(label)}</span>
+        <span className={cn('block leading-snug', selected ? 'font-bold text-guide-700' : 'font-semibold', size === 'lg' ? 'text-lg' : 'text-base')}>{tx(label)}</span>
         {sub && <span className="mt-0.5 block text-sm text-ink-soft">{tx(sub)}</span>}
       </span>
       {selected && (

@@ -14,7 +14,7 @@ export const useWorkforce = create<WorkforceState>()(
       workers: SEED_WORKERS,
       updateRate: (id, rate) => set((s) => ({ workers: s.workers.map((w) => (w.id === id ? { ...w, dailyRate: rate } : w)) })),
     }),
-    { name: 'roadtrack-v2-workforce' },
+    { name: 'roadtrack-v3-workforce' },
   ),
 );
 

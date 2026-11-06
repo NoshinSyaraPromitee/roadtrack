@@ -13,6 +13,6 @@ export const useLang = create<LangState>()(
       lang: 'en',
       setLang: (lang) => set({ lang }),
     }),
-    { name: 'roadtrack-v2-lang' },
+    { name: 'roadtrack-v3-lang' },
   ),
 );
