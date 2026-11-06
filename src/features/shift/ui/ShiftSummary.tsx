@@ -8,6 +8,7 @@ import { useI18n } from '@/shared/i18n';
 import { Badge, Button, Card, CardHeader, PageHeader, PhotoStrip, RoadStrip, StackBar, StatCard } from '@/shared/ui';
 import { useShiftById } from '../model/selectors';
 import { INCIDENT_ICON, MaterialPicto } from './icons';
+import { MaterialTotals } from './MaterialTotals';
 
 export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: () => void }) {
   const i = useI18n();
@@ -52,6 +53,8 @@ export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: (
       <Card>
         <RoadStrip progress={end} lengthKm={road.lengthKm} today={{ from: shift.startProgress, to: end }} />
       </Card>
+
+      <MaterialTotals lines={shift.materials} />
 
       <div className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
         <Card>
