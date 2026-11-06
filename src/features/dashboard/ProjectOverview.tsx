@@ -26,7 +26,6 @@ export function ProjectOverview() {
     <div className="space-y-4">
       <section className="rounded-3xl border border-line bg-white p-4 sm:p-6">
         <div className="relative mb-5 overflow-hidden rounded-2xl bg-guide-600 px-5 py-4 text-white">
-          <div className="pointer-events-none absolute inset-1.5 rounded-xl border-2 border-white/85" />
           <div className="relative flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="font-sign text-3xl leading-tight sm:text-4xl">{i.tx(road.name)}</p>

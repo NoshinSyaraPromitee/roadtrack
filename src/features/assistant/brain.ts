@@ -2,7 +2,7 @@ import { Coffee, Construction, Flag, HandCoins, HeartHandshake, HeartPulse, Info
 import type { Complaint, HealthReport, Machine, RaiseRequest, Road, Role, Shift, Worker } from '@/core/types';
 import { COMPLAINT_CATEGORIES, MATERIAL_BY_KEY, MATERIALS } from '@/core/catalog';
 import { PAYROLL_RULES } from '@/core/payroll';
-import { DEMO_POLICY, REAL_POLICY, getBreakStatus } from '@/core/reminderPolicy';
+import { getBreakStatus } from '@/core/reminderPolicy';
 import { sickDays } from '@/core/health';
 import { pctToKm } from '@/core/roads';
 import { makeI18n } from '@/shared/i18n';
@@ -11,7 +11,7 @@ import type { IconType } from '@/shared/ui';
 
 /**
  * Apa's built-in brain. No internet and no AI service: every answer is read from the app's own data,
- * so it always works offline and in a demo. Swap `answer` for an AI call later without touching the UI.
+ * so it always works offline. Swap `answer` for an AI call later without touching the UI.
  */
 
 export type QuestionKey =
@@ -45,7 +45,6 @@ export interface ApaContext {
   health: HealthReport[];
   raises: RaiseRequest[];
   complaints: Complaint[];
-  demoMode: boolean;
   /** Defaults to the current time. */
   now?: number;
 }
@@ -323,7 +322,7 @@ export function answer(key: QuestionKey, ctx: ApaContext): Text {
     case 'next_break': {
       const shift = activeShift(ctx);
       if (!shift) return { en: 'No shift is running now, so there is no break timer.', bn: 'এখন কোনো শিফট চলছে না, তাই বিরতির সময় নেই।' };
-      const st = getBreakStatus(shift.startedAt, shift.breaks, ctx.demoMode ? DEMO_POLICY : REAL_POLICY, now);
+      const st = getBreakStatus(shift.startedAt, shift.breaks, now);
       const name = { rest: { en: 'rest', bn: 'বিশ্রাম', of: 'বিশ্রামের' }, snack: { en: 'snack', bn: 'নাস্তা', of: 'নাস্তার' } };
       if (st.due) {
         return ctx.role === 'worker'
@@ -359,8 +358,8 @@ export function answer(key: QuestionKey, ctx: ApaContext): Text {
 
     case 'how_start':
       return {
-        en: 'Three steps. Tap the workers who came. Set the materials with plus and minus. Choose the place and how much road is done. Then tap Start work.',
-        bn: 'তিনটি ধাপ। যারা এসেছেন তাদের উপর চাপ দিন। যোগ-বিয়োগ দিয়ে মাল ঠিক করুন। জায়গা আর রাস্তার কতটা হয়েছে বাছাই করুন। তারপর "কাজ শুরু করুন" চাপুন।',
+        en: 'Four steps, in order. First, today\'s work: tap the workers who came, set the materials and choose the place. Second, check the machines. Third, check the crew\'s health. Last, tap Start work.',
+        bn: 'চারটি ধাপ, পরপর। প্রথমে আজকের কাজ: যারা এসেছেন তাদের চাপুন, মাল ঠিক করুন, জায়গা বাছাই করুন। তারপর মেশিন দেখুন। তারপর শ্রমিকদের শরীর দেখুন। শেষে "কাজ শুরু করুন" চাপুন।',
       };
 
     case 'how_finish':
@@ -492,7 +491,7 @@ export interface Tip {
 export function nextStep(ctx: ApaContext): Tip {
   const now = ctx.now ?? Date.now();
   const shift = activeShift(ctx);
-  const st = shift ? getBreakStatus(shift.startedAt, shift.breaks, ctx.demoMode ? DEMO_POLICY : REAL_POLICY, now) : null;
+  const st = shift ? getBreakStatus(shift.startedAt, shift.breaks, now) : null;
   const min = st ? Math.max(1, Math.ceil(st.msUntilNext / 60_000)) : 0;
   const breakName = (t: 'rest' | 'snack') => (t === 'rest' ? { en: 'rest', bn: 'বিশ্রাম' } : { en: 'snack', bn: 'নাস্তা' });
   const unwell = healthToday(ctx, now).filter((r) => r.status !== 'fit');

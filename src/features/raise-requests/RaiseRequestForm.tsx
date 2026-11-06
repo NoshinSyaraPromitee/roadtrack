@@ -10,7 +10,7 @@ import { useRaiseRequests } from './store';
 
 export function RaiseRequestForm({ worker }: { worker: Worker }) {
   const i = useI18n();
-  const { t, taka, num, fixed } = i;
+  const { t, taka, num } = i;
   const request = useRaiseRequests((s) => s.request);
   const pending = useRaiseRequests((s) => s.requests.find((r) => r.workerId === worker.id && r.status === 'pending'));
 
@@ -38,7 +38,6 @@ export function RaiseRequestForm({ worker }: { worker: Worker }) {
   }
 
   const max = Math.round((worker.dailyRate * 1.5) / 50) * 50;
-  const increase = ((rate - worker.dailyRate) / worker.dailyRate) * 100;
 
   const send = () => {
     setError('');
@@ -68,9 +67,6 @@ export function RaiseRequestForm({ worker }: { worker: Worker }) {
           <div>
             <p className="mb-1 text-ink-soft">{t('Daily pay you want', 'যত মজুরি চান')}</p>
             <Stepper value={rate} step={50} min={worker.dailyRate + 50} max={max} size="lg" prefix="৳" label={t('New daily pay', 'নতুন দৈনিক মজুরি')} onChange={setRate} />
-            <p className="mt-1 font-semibold text-guide-700">
-              +{taka(rate - worker.dailyRate)} {t('a day', 'প্রতিদিন')} (+{fixed(increase)}%)
-            </p>
           </div>
         </div>
       </Card>

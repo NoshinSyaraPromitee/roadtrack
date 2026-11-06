@@ -18,7 +18,7 @@ export function MyRaiseRequests({ workerId }: { workerId: string }) {
   return (
     <Card>
       <CardHeader icon={HandCoins} title={i.t('My requests', 'আমার আবেদন')} />
-      <ul className="divide-y divide-line">
+      <ul className="space-y-1">
         {mine.map((r) => {
           const st = RAISE_STATUS[r.status];
           return (

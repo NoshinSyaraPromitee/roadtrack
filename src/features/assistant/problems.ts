@@ -142,6 +142,6 @@ export const PROBLEMS: Record<ProblemKey, Problem> = {
     tone: 'error',
     title: { en: 'Apa could not read the app’s data', bn: 'আপা অ্যাপের তথ্য পড়তে পারেনি' },
     why: { en: 'The data saved in this browser is from an older version of the app or is damaged.', bn: 'এই ব্রাউজারে রাখা তথ্য অ্যাপের পুরনো সংস্করণের, অথবা নষ্ট হয়ে গেছে।' },
-    fix: { en: 'Tap the reset button (the round arrow) at the top of the page. It brings back the sample data.', bn: 'পাতার উপরের রিসেট বোতামে (গোল তীর) চাপ দিন। নমুনা তথ্য আবার ফিরে আসবে।' },
+    fix: { en: 'Tap the round arrow at the top of the page to clear the saved data and start again.', bn: 'সংরক্ষিত তথ্য মুছে আবার শুরু করতে পাতার উপরের গোল তীরে চাপ দিন।' },
   },
 };

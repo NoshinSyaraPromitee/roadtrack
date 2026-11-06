@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, CircleCheck, Coffee, Cookie, Download, FileText, Hourglass, MapPin, Users } from 'lucide-react';
+import { ChevronDown, CircleCheck, Coffee, Cookie, Download, FileText, Hourglass } from 'lucide-react';
 import { INCIDENTS, MATERIAL_BY_KEY } from '@/core/catalog';
 import { payrollTotal } from '@/core/payroll';
 import { pctToKm } from '@/core/roads';
@@ -82,13 +82,9 @@ export function ShiftRecords() {
                   <span className="text-xs text-ink-soft">{i.month(s.startedAt)}</span>
                 </div>
                 <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
-                  <span className="inline-flex items-center gap-1 text-ink-soft">
-                    <MapPin className="h-4 w-4" />
-                    {tx(s.site)}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Users className="h-4 w-4 text-ink-soft" />
-                    {num(stayed)}/{num(present)}
+                  <span className="text-ink-soft">{tx(s.site)}</span>
+                  <span>
+                    {t('Workers', 'শ্রমিক')} {num(stayed)}/{num(present)}
                   </span>
                   <span className="font-semibold text-guide-700">+{fixed(gained)}%</span>
                   <span className={cn(waste > 5 ? 'font-semibold text-stop-600' : 'text-ink-soft')}>
@@ -106,7 +102,7 @@ export function ShiftRecords() {
                 </div>
               </button>
               {isOpen && (
-                <div className="grid gap-5 border-t border-line bg-paper/50 p-4 md:grid-cols-3">
+                <div className="grid gap-5 bg-paper/50 p-4 md:grid-cols-3">
                   <div>
                     <p className="mb-2 font-semibold">{t('Materials', 'মালামাল')}</p>
                     <ul className="space-y-2.5">

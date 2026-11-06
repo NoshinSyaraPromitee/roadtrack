@@ -1,4 +1,4 @@
-import { CircleCheck, Fuel, Gauge, Tractor, TriangleAlert, Wrench } from 'lucide-react';
+import { CircleCheck, Tractor } from 'lucide-react';
 import type { Machine, MachineStatus } from '@/core/types';
 import { Avatar, personName, useWorkforce } from '@/features/workforce';
 import { useRoad } from '@/features/road';
@@ -35,8 +35,7 @@ function MachineCard({ m }: { m: Machine }) {
         <div className="min-w-0 flex-1">
           <p className="text-lg font-semibold leading-tight">{i.tx(kind.name)}</p>
           <p className="font-sign text-lg leading-tight text-ink-soft">{m.code}</p>
-          <p className={cn('mt-0.5 inline-flex items-center gap-1.5 font-semibold', st.text)}>
-            <st.icon className="h-4 w-4" />
+          <p className={cn('mt-0.5 font-semibold', st.text)}>
             {i.tx(st.label)}
           </p>
         </div>
@@ -62,8 +61,7 @@ function MachineCard({ m }: { m: Machine }) {
 
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
         <div>
-          <p className={cn('mb-1 flex items-center gap-1.5 text-sm font-semibold', low ? 'text-stop-600' : 'text-ink-soft')}>
-            <Fuel className="h-4 w-4" />
+          <p className={cn('mb-1 text-sm font-semibold', low ? 'text-stop-600' : 'text-ink-soft')}>
             {i.t('Fuel', 'জ্বালানি')}
             {low && ` · ${i.t('low', 'কম')}`}
           </p>
@@ -71,8 +69,7 @@ function MachineCard({ m }: { m: Machine }) {
           <Stepper value={m.fuelPct} step={10} min={0} max={100} unit="%" label={i.t('Fuel', 'জ্বালানি')} onChange={(v) => update(m.id, { fuelPct: v })} />
         </div>
         <div>
-          <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-ink-soft">
-            <Gauge className="h-4 w-4" />
+          <p className="mb-1 text-sm font-semibold text-ink-soft">
             {i.t('Hours run today', 'আজ কত ঘণ্টা চলেছে')}
           </p>
           <div className="mb-2 h-3" />
@@ -80,9 +77,8 @@ function MachineCard({ m }: { m: Machine }) {
         </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-3">
-        <span className={cn('inline-flex items-center gap-1.5 text-sm', due ? 'font-semibold text-stop-600' : 'text-ink-soft')}>
-          {due ? <TriangleAlert className="h-4 w-4" /> : <Wrench className="h-4 w-4" />}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+        <span className={cn('text-sm', due ? 'font-semibold text-stop-600' : 'text-ink-soft')}>
           {due
             ? i.t(`Service due: ${i.num(m.hoursSinceService)} hours since last service`, `সার্ভিসিং দরকার: শেষ সার্ভিসের পর ${i.num(m.hoursSinceService)} ঘণ্টা`)
             : i.t(`Next service in ${i.num(SERVICE_EVERY_HOURS - m.hoursSinceService)} hours`, `${i.num(SERVICE_EVERY_HOURS - m.hoursSinceService)} ঘণ্টা পর সার্ভিসিং`)}

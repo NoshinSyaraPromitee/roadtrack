@@ -4,7 +4,6 @@ import { useComplaints } from '@/features/complaints';
 import { useEquipment } from '@/features/equipment';
 import { useHealthReports } from '@/features/health';
 import { useRaiseRequests } from '@/features/raise-requests';
-import { useReminderSettings } from '@/features/reminders';
 import { useRoad } from '@/features/road';
 import { useSession } from '@/features/session';
 import { useShiftStore } from '@/features/shift';
@@ -26,10 +25,10 @@ import type { ProblemKey } from './problems';
 import { useApaSettings } from './settings';
 import { canListen, useListen, useWakeWord } from './useListen';
 
-const TIP_STYLE = {
-  info: { border: 'border-guide-600', text: 'text-ink' },
-  warn: { border: 'border-mark-400', text: 'text-ink' },
-  alert: { border: 'border-stop-500', text: 'text-stop-700' },
+const TIP_TEXT = {
+  info: 'text-ink',
+  warn: 'text-ink',
+  alert: 'text-stop-700',
 };
 
 /** How long Apa "thinks" before answering, so a new answer is easy to notice. */
@@ -47,7 +46,7 @@ function ProblemCard({ k, onRetry, onClose }: { k: ProblemKey; onRetry?: () => v
   const error = p.tone === 'error';
   const Icon = error ? CircleAlert : TriangleAlert;
   return (
-    <div role="alert" className={cn('rounded-2xl border-l-4 bg-white p-3.5 ring-1 ring-line', error ? 'border-stop-500' : 'border-mark-400')}>
+    <div role="alert" className="rounded-2xl bg-white p-3.5 ring-1 ring-line">
       <div className="flex items-start gap-2">
         <Icon className={cn('mt-0.5 h-5 w-5 shrink-0', error ? 'text-stop-600' : 'text-[#9a5b00]')} />
         <p className={cn('min-w-0 flex-1 font-semibold leading-snug', error ? 'text-stop-700' : 'text-ink')}>{i.tx(p.title)}</p>
@@ -90,7 +89,6 @@ export function ApaAssistant() {
   const shifts = useShiftStore((s) => s.shifts);
   const raises = useRaiseRequests((s) => s.requests);
   const complaints = useComplaints((s) => s.complaints);
-  const demoMode = useReminderSettings((s) => s.demoMode);
   const road = useRoad();
   const machines = useEquipment((s) => s.machines);
   const health = useHealthReports((s) => s.reports);
@@ -118,7 +116,7 @@ export function ApaAssistant() {
   const nextId = useRef(1);
   const end = useRef<HTMLDivElement>(null);
 
-  const context = (): ApaContext => ({ role: role ?? 'worker', road, worker: role === 'worker' ? worker : undefined, workers, shifts, machines, health, raises, complaints, demoMode });
+  const context = (): ApaContext => ({ role: role ?? 'worker', road, worker: role === 'worker' ? worker : undefined, workers, shifts, machines, health, raises, complaints });
 
   const push = (m: Omit<Message, 'id'>) => {
     const id = nextId.current++;
@@ -303,14 +301,14 @@ export function ApaAssistant() {
         ? i.t('Getting the voice ready…', 'আওয়াজ আসছে…')
         : voice === 'playing'
           ? i.t('Speaking…', 'বলছে…')
-          : i.t('Your helper on site', 'সাইটে আপনার সহকারী');
+          : i.t('Talk to me', 'কথা বলুন');
   const micProblem: ProblemKey | null = listen.error && !listen.listening ? `mic-${listen.error}` : null;
   const shownProblem = micProblem ?? problem;
   const photoProblem: ProblemKey | null = photo.status === 'error' && photo.problem ? `photo-${photo.problem}` : null;
 
   const tipBody = tip && (
     <>
-      <p className={cn('font-semibold leading-snug', TIP_STYLE[tip.tone].text)}>{i.tx(tip.text)}</p>
+      <p className={cn('font-semibold leading-snug', TIP_TEXT[tip.tone])}>{i.tx(tip.text)}</p>
       <div className="mt-1.5 flex flex-wrap items-center gap-x-1">
         <button type="button" onClick={() => speak(tip.text, i.lang)} className="flex h-10 items-center gap-1.5 px-1.5 font-semibold text-sign-600 hover:text-sign-800">
           <Volume2 className="h-5 w-5" />
@@ -340,7 +338,7 @@ export function ApaAssistant() {
             <ApaAvatar size={52} />
           </button>
           {/* A speech bubble from Apa. It sits at the top of the page so it never covers a button. */}
-          <div className={cn('relative min-w-0 flex-1 rounded-2xl border-l-4 bg-white p-3 ring-1 ring-line sm:max-w-2xl', TIP_STYLE[tip.tone].border)}>
+          <div className="relative min-w-0 flex-1 rounded-2xl bg-white p-3 ring-1 ring-line sm:max-w-2xl">
             <span className="absolute -left-[7px] top-5 h-3.5 w-3.5 rotate-45 bg-white ring-1 ring-line [clip-path:polygon(0_0,0_100%,100%_100%)]" aria-hidden="true" />
             {tipBody}
           </div>
@@ -378,7 +376,6 @@ export function ApaAssistant() {
                 <p aria-live="polite" className="mt-1 text-white/85">
                   {status}
                 </p>
-                <p className="mt-1 truncate text-sm text-white/75">{i.tx(road.name)}</p>
               </div>
               <div className="flex shrink-0 flex-col items-center gap-2 self-start">
                 <button type="button" onClick={close} aria-label={i.t('Close', 'বন্ধ করুন')} className="grid h-11 w-11 place-items-center rounded-full bg-white/12 transition hover:bg-white/25">
@@ -399,7 +396,7 @@ export function ApaAssistant() {
             </header>
 
             {confirmClear && (
-              <div role="alertdialog" aria-label={i.t('Delete the chat?', 'কথা মুছবেন?')} className="flex flex-wrap items-center gap-2 border-b border-line bg-stop-50 px-4 py-3">
+              <div role="alertdialog" aria-label={i.t('Delete the chat?', 'কথা মুছবেন?')} className="flex flex-wrap items-center gap-2 bg-stop-50 px-4 py-3">
                 <p className="min-w-0 flex-1 font-semibold text-stop-700">{i.t('Delete everything you and Apa said?', 'আপনার আর আপার সব কথা মুছে ফেলবেন?')}</p>
                 <button type="button" onClick={clearChat} className="flex h-10 items-center gap-1.5 rounded-full bg-stop-500 px-4 font-semibold text-white transition hover:bg-stop-600">
                   <Trash2 className="h-4 w-4" />
@@ -415,7 +412,7 @@ export function ApaAssistant() {
               {photoProblem && <ProblemCard k={photoProblem} onRetry={photo.load} />}
 
               {canListen() && (
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line pb-3">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pb-1">
                   <span className="min-w-0 flex-1 font-semibold">{i.t('Call me by saying "Apa"', '"আপা" বলে ডাকুন')}</span>
                   <span role="radiogroup" aria-label={i.t('Call by voice', 'কণ্ঠে ডাকা')} className="inline-flex items-center gap-1">
                     {[
@@ -465,7 +462,7 @@ export function ApaAssistant() {
                     </li>
                   ) : (
                     <li key={m.id} className="flex items-start gap-2">
-                      <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md border-l-4 border-guide-600 bg-white p-3.5 shadow-[0_1px_0_0_var(--color-line)]">
+                      <div className="min-w-0 flex-1 rounded-2xl rounded-tl-md bg-white p-3.5 ring-1 ring-line">
                         <p className="text-lg leading-relaxed">{i.tx(m.text)}</p>
                       </div>
                       <button
@@ -529,7 +526,7 @@ export function ApaAssistant() {
             </div>
 
             <form
-              className="flex items-center gap-2 border-t border-line bg-white p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
+              className="flex items-center gap-2 bg-white p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-4px_16px_-8px_rgba(0,0,0,0.18)]"
               onSubmit={(e) => {
                 e.preventDefault();
                 askText(typed);

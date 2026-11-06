@@ -24,7 +24,6 @@ export function CrewHealth() {
         tone="stop"
         shape="disc"
         title={i.t('Crew health today', 'আজ শ্রমিকদের শরীর')}
-        subtitle={i.t('Sent by the workers from their phones.', 'শ্রমিকরা নিজের ফোন থেকে পাঠিয়েছেন।')}
         speak={{
           en: `${notWell} workers are not well today. ${silent.length} have not told yet.`,
           bn: `আজ ${i.num(notWell)} জন শ্রমিক ভালো নেই। ${i.num(silent.length)} জন এখনো জানাননি।`,

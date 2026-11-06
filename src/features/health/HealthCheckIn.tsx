@@ -131,7 +131,7 @@ export function MyHealthHistory({ workerId }: { workerId: string }) {
       {mine.length === 0 ? (
         <EmptyState icon={HeartPulse} title={i.t('Nothing sent yet', 'এখনো কিছু পাঠানো হয়নি')} />
       ) : (
-        <ul className="divide-y divide-line">
+        <ul className="space-y-1">
           {mine.map((r) => {
             const m = HEALTH_ICON[r.status];
             return (
