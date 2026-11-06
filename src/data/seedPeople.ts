@@ -1,4 +1,4 @@
-import type { Person, Worker } from './types';
+import type { Person, Worker } from '@/core/types';
 
 export const SUPERVISOR: Person = {
   id: 'supervisor',

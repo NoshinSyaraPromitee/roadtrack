@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
 import { HardHat, HeartPulse, Tractor } from 'lucide-react';
-import { SUPERVISOR } from '@/core/seed';
+import { SUPERVISOR } from '@/data/seed';
 import { ComplaintWizard, MyComplaints } from '@/features/complaints';
 import { EquipmentBoard } from '@/features/equipment';
 import { CrewHealth } from '@/features/health';

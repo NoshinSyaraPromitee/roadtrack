@@ -10,5 +10,4 @@ export { ActiveShiftPanel } from './ui/ActiveShiftPanel';
 export { EndShiftWizard } from './ui/EndShiftWizard';
 export { ShiftSummary } from './ui/ShiftSummary';
 export { MaterialTotals } from './ui/MaterialTotals';
-export { sumMaterials } from './model/materials';
 export { IncidentBadges, MaterialUseList } from './ui/ShiftParts';

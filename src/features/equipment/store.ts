@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Machine, MachineStatus } from '@/core/types';
-import { SEED_MACHINES } from '@/core/seed';
+import { SEED_MACHINES } from '@/data/seed';
 
 interface EquipmentState {
   machines: Machine[];

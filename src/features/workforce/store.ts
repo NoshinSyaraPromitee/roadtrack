@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Person, Worker } from '@/core/types';
-import { SEED_WORKERS, SUPERVISOR } from '@/core/seed';
+import { SEED_WORKERS, SUPERVISOR } from '@/data/seed';
 
 interface WorkforceState {
   workers: Worker[];

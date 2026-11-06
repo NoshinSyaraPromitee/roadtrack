@@ -1,7 +1,7 @@
-import type { Attendance, BreakLog, Health, MaterialLine, Road, Shift } from './types';
-import { MATERIALS } from './catalog';
-import { calculatePayroll } from './payroll';
-import { ROADS } from './roads';
+import type { Attendance, BreakLog, Health, MaterialLine, Road, Shift } from '@/core/types';
+import { MATERIALS } from '@/core/catalog';
+import { calculatePayroll } from '@/core/payroll';
+import { ROADS } from '@/core/roads';
 import { SEED_WORKERS } from './seedPeople';
 
 export const at = (daysBack: number, hour: number, minute = 0) => {

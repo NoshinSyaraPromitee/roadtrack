@@ -1,4 +1,4 @@
-import type { Complaint, HealthReport, Machine, RaiseRequest } from './types';
+import type { Complaint, HealthReport, Machine, RaiseRequest } from '@/core/types';
 import { at } from './seedShifts';
 import { SUPERVISOR } from './seedPeople';
 
@@ -44,7 +44,6 @@ export const SEED_COMPLAINTS: Complaint[] = [
   },
   {
     id: 'c2',
-    fromWorkerId: 'w7',
     anonymous: true,
     againstId: 'w5',
     category: 'safety',
@@ -53,6 +52,8 @@ export const SEED_COMPLAINTS: Complaint[] = [
     status: 'open',
   },
 ];
+
+export const SEED_RECEIPTS: Record<string, string[]> = { w7: ['c2'] };
 
 export const SEED_RAISES: RaiseRequest[] = [
   {

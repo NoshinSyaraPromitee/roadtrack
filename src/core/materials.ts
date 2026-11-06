@@ -1,4 +1,4 @@
-import type { MaterialKey, MaterialLine } from '@/core/types';
+import type { MaterialKey, MaterialLine } from './types';
 
 export function sumMaterials(lists: MaterialLine[][]): MaterialLine[] {
   const by = new Map<MaterialKey, MaterialLine>();

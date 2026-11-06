@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { Building2, LogOut, Megaphone, RotateCcw } from 'lucide-react';
-import { SUPERVISOR } from '@/core/seed';
+import { SUPERVISOR } from '@/data/seed';
 import { ApaAssistant } from '@/features/assistant';
 import { RoadSelect } from '@/features/road';
 import { useSession } from '@/features/session';

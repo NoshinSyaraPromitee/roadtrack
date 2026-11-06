@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { HealthReport } from '@/core/types';
-import { SEED_HEALTH } from '@/core/seed';
+import { SEED_HEALTH } from '@/data/seed';
 import { uid } from '@/shared/lib/utils';
 
 export type NewHealthReport = Omit<HealthReport, 'id' | 'at'>;

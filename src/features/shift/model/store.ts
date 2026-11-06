@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import type { Attendance, BreakType, IncidentKey, MaterialKey, MaterialLine, Shift, Text, Worker } from '@/core/types';
 import { applyPayEdits, calculatePayroll } from '@/core/payroll';
 import type { PayEdit } from '@/core/payroll';
-import { SEED_SHIFTS } from '@/core/seed';
+import { SEED_SHIFTS } from '@/data/seed';
 import { uid } from '@/shared/lib/utils';
 
 export interface StartShiftInput {

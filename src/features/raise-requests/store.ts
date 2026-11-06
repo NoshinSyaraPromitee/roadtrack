@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { RaiseRequest, RaiseStatus } from '@/core/types';
-import { SEED_RAISES } from '@/core/seed';
+import { SEED_RAISES } from '@/data/seed';
 import { uid } from '@/shared/lib/utils';
 
 export type NewRaise = Omit<RaiseRequest, 'id' | 'createdAt' | 'status'>;

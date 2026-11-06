@@ -1,6 +1,7 @@
-import type { Text } from '@/shared/i18n/types';
-
-export type { Text };
+export interface Text {
+  en: string;
+  bn: string;
+}
 
 export type Role = 'admin' | 'supervisor' | 'worker';
 export type Health = 'fit' | 'sick' | 'injured';
@@ -82,7 +83,7 @@ export interface Shift {
 
 export interface Complaint {
   id: string;
-  fromWorkerId: string;
+  fromWorkerId?: string;
   anonymous: boolean;
   againstId: string;
   category: ComplaintCategory;
