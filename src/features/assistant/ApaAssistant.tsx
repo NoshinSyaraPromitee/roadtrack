@@ -350,7 +350,7 @@ export function ApaAssistant() {
           type="button"
           onClick={openPanel}
           aria-label={i.t('Ask Apa, your helper', 'আপাকে জিজ্ঞেস করুন, আপনার সহকারী')}
-          className="fixed bottom-[calc(6.75rem+env(safe-area-inset-bottom))] right-3 z-40 flex items-center gap-2 rounded-full bg-white p-1 shadow-[0_6px_24px_-6px_rgba(0,0,0,0.35)] ring-1 ring-line transition hover:-translate-y-0.5 sm:right-5 sm:p-1.5 sm:pr-4"
+          className="fixed bottom-[calc(6.75rem+env(safe-area-inset-bottom))] right-3 z-40 flex items-center gap-2 rounded-full bg-white p-1 ring-2 ring-line transition hover:-translate-y-0.5 sm:right-5 sm:p-1.5 sm:pr-4"
         >
           <ApaAvatar size={52} />
           <span className="hidden text-left leading-tight sm:block">
@@ -533,8 +533,8 @@ export function ApaAssistant() {
                 onClick={() => (listen.listening ? listen.stop() : startListening())}
                 aria-label={listen.listening ? i.t('Stop listening', 'শোনা বন্ধ করুন') : i.t('Speak to Apa', 'আপাকে বলুন')}
                 className={cn(
-                  'grid h-14 w-14 shrink-0 place-items-center rounded-full text-white shadow-[0_3px_0_0_var(--color-sign-800)] transition active:translate-y-[2px] active:shadow-none',
-                  listen.listening ? 'bg-stop-500 shadow-[0_3px_0_0_var(--color-stop-700)]' : 'bg-sign-500',
+                  'grid h-14 w-14 shrink-0 place-items-center rounded-full text-white transition',
+                  listen.listening ? 'bg-stop-500' : 'bg-sign-500',
                   !listen.supported && 'opacity-50',
                 )}
               >

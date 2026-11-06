@@ -47,7 +47,7 @@ export function VoiceRecorder({ value, onChange }: { value: string | null; onCha
         onClick={recording ? rec.stop : rec.start}
         aria-label={recording ? t('Stop recording', 'রেকর্ড থামান') : t('Start recording', 'রেকর্ড শুরু করুন')}
         className={cn(
-          'relative grid h-24 w-24 place-items-center rounded-full text-white shadow-[0_4px_0_0_rgba(0,0,0,0.18)] transition active:translate-y-0.5',
+          'relative grid h-24 w-24 place-items-center rounded-full text-white transition',
           recording ? 'bg-stop-500' : 'bg-sign-500 hover:bg-sign-600',
         )}
       >

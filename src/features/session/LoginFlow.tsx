@@ -130,7 +130,7 @@ export function LoginFlow({ progress, onStepChange }: { progress: Record<string,
                   setStep('signin');
                 }
               }}
-              className="col-span-3 mt-4 h-14 w-full rounded-2xl bg-guide-600 text-lg font-semibold text-white shadow-[0_3px_0_0_var(--color-guide-800)] transition after:absolute after:inset-0 after:rounded-3xl hover:bg-guide-700 active:translate-y-[2px] active:shadow-none md:mt-5"
+              className="col-span-3 mt-4 h-14 w-full rounded-2xl bg-guide-600 text-lg font-semibold text-white transition after:absolute after:inset-0 after:rounded-3xl hover:bg-guide-700 md:mt-5"
             >
               {tx(r.cta)}
             </button>

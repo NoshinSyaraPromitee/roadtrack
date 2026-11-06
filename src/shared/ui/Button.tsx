@@ -5,17 +5,17 @@ type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'mark' | 'sign' | 
 type Size = 'sm' | 'md' | 'lg' | 'xl';
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-guide-600 text-white shadow-[0_3px_0_0_var(--color-guide-800)] hover:bg-guide-700',
-  secondary: 'bg-white text-ink ring-1 ring-inset ring-line shadow-[0_2px_0_0_var(--color-line)] hover:bg-paper',
+  primary: 'bg-guide-600 text-white hover:bg-guide-700',
+  secondary: 'bg-white text-ink ring-1 ring-inset ring-line hover:bg-paper',
   ghost: 'text-ink-soft hover:bg-black/5 hover:text-ink',
-  danger: 'bg-stop-500 text-white shadow-[0_3px_0_0_var(--color-stop-700)] hover:bg-stop-600',
-  mark: 'bg-mark-400 text-ink shadow-[0_3px_0_0_var(--color-mark-600)] hover:bg-mark-300',
-  sign: 'bg-sign-500 text-white shadow-[0_3px_0_0_var(--color-sign-800)] hover:bg-sign-600',
+  danger: 'bg-stop-500 text-white hover:bg-stop-600',
+  mark: 'bg-mark-400 text-ink hover:bg-mark-300',
+  sign: 'bg-sign-500 text-white hover:bg-sign-600',
   onDark: 'bg-white/12 text-white hover:bg-white/20',
   /** One of a pair of choices, not picked yet: plain, with no hover colour. */
-  choice: 'bg-white text-ink ring-1 ring-inset ring-line shadow-[0_2px_0_0_var(--color-line)]',
+  choice: 'bg-white text-ink ring-1 ring-inset ring-line',
   /** The picked choice: coloured, and only this one reacts to hover. */
-  chosen: 'bg-guide-600 text-white shadow-[0_3px_0_0_var(--color-guide-800)] hover:bg-guide-700',
+  chosen: 'bg-guide-600 text-white hover:bg-guide-700',
 };
 
 const sizes: Record<Size, string> = {
@@ -35,7 +35,7 @@ export function Button({ variant = 'primary', size = 'md', className, type = 'bu
     <button
       type={type}
       className={cn(
-        'inline-flex shrink-0 items-center justify-center font-semibold transition active:translate-y-[2px] active:shadow-none disabled:pointer-events-none disabled:opacity-45',
+        'inline-flex shrink-0 items-center justify-center font-semibold transition disabled:pointer-events-none disabled:opacity-45',
         variants[variant],
         sizes[size],
         className,

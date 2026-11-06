@@ -36,8 +36,8 @@ export function Stepper({ value, onChange, step = 1, min = 0, max = Number.POSIT
 
   const red = tone === 'stop';
   const btn = cn(
-    'grid shrink-0 place-items-center rounded-xl bg-white ring-1 ring-inset transition active:translate-y-[2px] active:shadow-none disabled:opacity-35',
-    red ? 'text-stop-600 ring-stop-500/40 shadow-[0_2px_0_0_var(--color-stop-100)]' : 'text-ink ring-line shadow-[0_2px_0_0_var(--color-line)]',
+    'grid shrink-0 place-items-center rounded-xl bg-white ring-1 ring-inset transition disabled:opacity-35',
+    red ? 'text-stop-600 ring-stop-500/40' : 'text-ink ring-line',
     big ? 'h-14 w-14 [&_svg]:size-7' : 'h-12 w-12 [&_svg]:size-6',
   );
 
