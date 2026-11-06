@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react';
 import { cn } from '@/shared/lib/utils';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'mark' | 'sign' | 'onDark';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'mark' | 'sign' | 'onDark' | 'choice' | 'chosen';
 type Size = 'sm' | 'md' | 'lg' | 'xl';
 
 const variants: Record<Variant, string> = {
@@ -12,6 +12,10 @@ const variants: Record<Variant, string> = {
   mark: 'bg-mark-400 text-ink shadow-[0_3px_0_0_var(--color-mark-600)] hover:bg-mark-300',
   sign: 'bg-sign-500 text-white shadow-[0_3px_0_0_var(--color-sign-800)] hover:bg-sign-600',
   onDark: 'bg-white/12 text-white hover:bg-white/20',
+  /** One of a pair of choices, not picked yet: plain, with no hover colour. */
+  choice: 'bg-white text-ink ring-1 ring-inset ring-line shadow-[0_2px_0_0_var(--color-line)]',
+  /** The picked choice: coloured, and only this one reacts to hover. */
+  chosen: 'bg-guide-600 text-white shadow-[0_3px_0_0_var(--color-guide-800)] hover:bg-guide-700',
 };
 
 const sizes: Record<Size, string> = {

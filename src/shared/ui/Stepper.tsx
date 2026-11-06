@@ -14,10 +14,12 @@ interface StepperProps {
   label?: string;
   decimals?: number;
   size?: 'md' | 'lg';
+  /** 'stop' turns the buttons and the number red, for things that are lost or wasted. */
+  tone?: 'plain' | 'stop';
 }
 
 /** Big minus and plus buttons so nobody has to type a number. Tap the number to type it instead. */
-export function Stepper({ value, onChange, step = 1, min = 0, max = Number.POSITIVE_INFINITY, unit, prefix, label, decimals = 0, size = 'md' }: StepperProps) {
+export function Stepper({ value, onChange, step = 1, min = 0, max = Number.POSITIVE_INFINITY, unit, prefix, label, decimals = 0, size = 'md', tone = 'plain' }: StepperProps) {
   const { t, num, fixed } = useI18n();
   const [draft, setDraft] = useState<string | null>(null);
   const round = (v: number) => Math.round(v * 10 ** decimals) / 10 ** decimals;
@@ -32,8 +34,10 @@ export function Stepper({ value, onChange, step = 1, min = 0, max = Number.POSIT
     setDraft(null);
   };
 
+  const red = tone === 'stop';
   const btn = cn(
-    'grid shrink-0 place-items-center rounded-xl bg-white text-ink ring-1 ring-inset ring-line shadow-[0_2px_0_0_var(--color-line)] transition active:translate-y-[2px] active:shadow-none disabled:opacity-35',
+    'grid shrink-0 place-items-center rounded-xl bg-white ring-1 ring-inset transition active:translate-y-[2px] active:shadow-none disabled:opacity-35',
+    red ? 'text-stop-600 ring-stop-500/40 shadow-[0_2px_0_0_var(--color-stop-100)]' : 'text-ink ring-line shadow-[0_2px_0_0_var(--color-line)]',
     big ? 'h-14 w-14 [&_svg]:size-7' : 'h-12 w-12 [&_svg]:size-6',
   );
 
@@ -61,11 +65,11 @@ export function Stepper({ value, onChange, step = 1, min = 0, max = Number.POSIT
             className="w-full rounded-lg px-1 py-1 leading-none hover:bg-black/5"
             title={t('Tap to type a number', 'সংখ্যা লিখতে চাপ দিন')}
           >
-            <span className={cn('font-sign tabular-nums', big ? 'text-4xl' : 'text-[1.7rem]')}>
+            <span className={cn('font-sign tabular-nums', red && 'text-stop-600', big ? 'text-4xl' : 'text-[1.7rem]')}>
               {prefix}
               {decimals ? fixed(value, decimals) : num(value)}
             </span>
-            {unit && <span className="ml-1 text-sm text-ink-soft">{unit}</span>}
+            {unit && <span className={cn('ml-1 text-sm', red ? 'text-stop-600' : 'text-ink-soft')}>{unit}</span>}
           </button>
         )}
       </div>

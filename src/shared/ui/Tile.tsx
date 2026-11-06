@@ -43,7 +43,7 @@ export function Tile({ icon, label, sub, tone, shape, selected, onPress, layout 
     >
       <Pictogram icon={icon} tone={tone} shape={shape} size={size === 'lg' ? 64 : 52} />
       <span className="min-w-0">
-        <span className={cn('block leading-snug', selected ? 'font-bold text-guide-700' : 'font-semibold', size === 'lg' ? 'text-lg' : 'text-base')}>{tx(label)}</span>
+        <span className={cn('block leading-snug', 'font-semibold', selected && 'text-guide-700', size === 'lg' ? 'text-lg' : 'text-base')}>{tx(label)}</span>
         {sub && <span className="mt-0.5 block text-sm text-ink-soft">{tx(sub)}</span>}
       </span>
       {selected && (

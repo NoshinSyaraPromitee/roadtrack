@@ -40,7 +40,6 @@ export function Segmented<V extends string | boolean>({
     <div role="radiogroup" aria-label={label} className="flex gap-1">
       {options.map((o) => {
         const on = o.value === value;
-        const Icon = o.icon;
         return (
           <button
             key={String(o.value)}
@@ -54,10 +53,10 @@ export function Segmented<V extends string | boolean>({
             className={cn(
               'flex min-w-0 flex-1 items-center justify-center gap-1.5 px-1 transition',
               size === 'sm' ? 'h-9 text-sm' : 'h-12 text-base',
-              on ? cn('font-bold underline decoration-[3px] underline-offset-[7px]', ON[o.tone ?? 'neutral']) : 'font-semibold text-ink-soft/75 hover:text-ink',
+              'font-semibold',
+              on ? cn('underline decoration-[3px] underline-offset-[7px]', ON[o.tone ?? 'neutral']) : 'text-ink-soft/75 hover:text-ink',
             )}
           >
-            {Icon && <Icon className={cn('shrink-0', size === 'sm' ? 'h-4 w-4' : 'h-5 w-5')} strokeWidth={2.4} />}
             <span className="truncate">{tx(o.label)}</span>
           </button>
         );

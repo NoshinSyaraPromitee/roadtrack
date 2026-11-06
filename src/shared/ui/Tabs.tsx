@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { useSay } from '@/shared/voice';
@@ -27,7 +28,7 @@ export function TabBar<K extends string>({
 
   if (variant === 'bottom') {
     return (
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
+      <nav className="fixed inset-x-0 bottom-0 z-30 bg-white/95 shadow-[0_-4px_16px_-8px_rgba(0,0,0,0.18)] pb-[env(safe-area-inset-bottom)] backdrop-blur">
         <div className="mx-auto grid max-w-md" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
           {items.map(({ key, icon: Icon, label, count }) => {
             const on = key === value;
@@ -48,7 +49,7 @@ export function TabBar<K extends string>({
                     <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-stop-500 px-1 text-xs font-bold text-white">{num(count)}</span>
                   )}
                 </span>
-                <span className={cn('text-sm', on ? 'font-bold' : 'font-semibold')}>{tx(label)}</span>
+                <span className="text-sm font-semibold">{tx(label)}</span>
               </button>
             );
           })}
@@ -58,8 +59,12 @@ export function TabBar<K extends string>({
   }
 
   return (
-    <nav className="border-b border-line">
-      <div className="flex flex-wrap gap-x-4 gap-y-1 sm:gap-x-6">
+    <nav>
+      {/* Equal columns, so tabs keep their place when the language changes. */}
+      <div
+        className="grid grid-cols-[repeat(var(--cols-sm),minmax(0,1fr))] gap-x-2 lg:max-w-[calc(var(--cols)*12rem)] lg:grid-cols-[repeat(var(--cols),minmax(0,1fr))]"
+        style={{ '--cols': items.length, '--cols-sm': Math.min(items.length, 3) } as CSSProperties}
+      >
         {items.map(({ key, icon: Icon, label, count }) => {
           const on = key === value;
           return (
@@ -72,11 +77,11 @@ export function TabBar<K extends string>({
                 onChange(key);
               }}
               className={cn(
-                '-mb-px flex h-12 items-center justify-center gap-2 border-b-[3px] px-1 transition',
-                on ? 'border-guide-600 font-bold text-guide-700' : 'border-transparent font-semibold text-ink-soft hover:text-ink',
+                'flex min-h-14 items-center justify-center gap-2 px-1 py-1.5 text-center font-semibold leading-tight transition',
+                on ? 'text-guide-700' : 'text-ink-soft hover:text-ink',
               )}
             >
-              <Icon className="h-5 w-5" />
+              <Icon className="h-5 w-5 shrink-0" />
               {tx(label)}
               {!!count && <span className="grid h-6 min-w-6 place-items-center rounded-full bg-stop-500 px-1.5 text-xs font-bold text-white">{num(count)}</span>}
             </button>

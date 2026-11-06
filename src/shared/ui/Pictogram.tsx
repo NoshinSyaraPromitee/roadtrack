@@ -46,18 +46,8 @@ export function Pictogram({
       style={{ width: size, height: size }}
     >
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden="true">
-        {shape === 'plate' && (
-          <>
-            <rect x="2" y="2" width="96" height="96" rx="22" fill={ringed ? p.edge : p.fill} />
-            <rect x="9" y="9" width="82" height="82" rx="15" fill={ringed ? p.fill : 'none'} stroke={ringed ? 'none' : p.edge} strokeWidth="4" />
-          </>
-        )}
-        {shape === 'disc' && (
-          <>
-            <circle cx="50" cy="50" r="48" fill={ringed ? p.edge : p.fill} />
-            <circle cx="50" cy="50" r={ringed ? 38 : 40} fill={ringed ? p.fill : 'none'} stroke={ringed ? 'none' : p.edge} strokeWidth="4" />
-          </>
-        )}
+        {shape === 'plate' && <rect x="4" y="4" width="92" height="92" rx="22" fill={p.fill} stroke={ringed ? p.edge : 'none'} strokeWidth={ringed ? 7 : 0} />}
+        {shape === 'disc' && <circle cx="50" cy="50" r={ringed ? 45 : 48} fill={p.fill} stroke={ringed ? p.edge : 'none'} strokeWidth={ringed ? 7 : 0} />}
         {warn && (
           <path
             d="M50 9 L93 85 H7 Z"

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Check, ChevronLeft, TriangleAlert } from 'lucide-react';
+import { Check, ChevronLeft } from 'lucide-react';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { cn } from '@/shared/lib/utils';
@@ -13,7 +13,6 @@ export function WizardSteps({ steps, current }: { steps: Array<{ icon: IconType;
       {steps.map((s, i) => {
         const done = i < current;
         const active = i === current;
-        const Icon = s.icon;
         return (
           <li key={i} className={cn('flex items-center gap-2', i < steps.length - 1 && 'flex-1')} aria-current={active ? 'step' : undefined}>
             <span className={cn('flex shrink-0 items-center gap-1.5', active ? 'text-guide-700' : done ? 'text-guide-700' : 'text-ink-soft/70')}>
@@ -25,12 +24,7 @@ export function WizardSteps({ steps, current }: { steps: Array<{ icon: IconType;
               >
                 {done ? <Check className="h-5 w-5" strokeWidth={3} /> : num(i + 1)}
               </span>
-              {active && (
-                <span className="flex items-center gap-1.5 font-bold">
-                  <Icon className="h-5 w-5" />
-                  {tx(s.label)}
-                </span>
-              )}
+              {active && <span className="font-semibold">{tx(s.label)}</span>}
             </span>
             {i < steps.length - 1 && <span className={cn('h-1 flex-1 rounded-full', done ? 'bg-guide-600' : 'bg-line')} />}
           </li>
@@ -57,8 +51,7 @@ export function ActionBar({ onBack, backLabel, onNext, nextLabel, nextIcon: Next
   const body = (
     <>
       {error && (
-        <p role="alert" className="mb-3 flex items-start gap-2 rounded-xl bg-stop-50 px-3 py-2.5 font-semibold text-stop-700">
-          <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0" />
+        <p role="alert" className="mb-3 rounded-xl bg-stop-50 px-3 py-2.5 font-semibold text-stop-700">
           {error}
         </p>
       )}
@@ -80,7 +73,7 @@ export function ActionBar({ onBack, backLabel, onNext, nextLabel, nextIcon: Next
 
   if (!fixed) return <div className="pt-2">{body}</div>;
   return (
-    <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur">
+    <div className="fixed inset-x-0 bottom-0 z-20 bg-white/95 shadow-[0_-4px_16px_-8px_rgba(0,0,0,0.18)] pb-[env(safe-area-inset-bottom)] backdrop-blur">
       <div className="mx-auto max-w-6xl px-4 py-3">{body}</div>
     </div>
   );
