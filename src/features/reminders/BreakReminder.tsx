@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { Bell, Coffee, Cookie, Gauge, Timer } from 'lucide-react';
+import { Bell, Coffee, Cookie, Timer } from 'lucide-react';
 import type { BreakLog, BreakType } from '@/core/types';
-import { DEMO_POLICY, REAL_POLICY, getBreakStatus } from '@/core/reminderPolicy';
+import { getBreakStatus } from '@/core/reminderPolicy';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { SpeakButton, speak } from '@/shared/voice';
-import { Badge, Button, Card, Pictogram, Segmented } from '@/shared/ui';
+import { Badge, Button, Card, Pictogram } from '@/shared/ui';
 import { useNow } from '@/shared/lib/useNow';
-import { useReminderSettings } from './store';
 
 const COPY: Record<BreakType, { title: Text; text: Text }> = {
   rest: {
@@ -35,11 +34,10 @@ const canNotify = () => typeof window !== 'undefined' && 'Notification' in windo
 
 export function BreakReminder({ startedAt, breaks, onLog }: { startedAt: string; breaks: BreakLog[]; onLog: (type: BreakType) => void }) {
   const i = useI18n();
-  const demoMode = useReminderSettings((s) => s.demoMode);
-  const setDemoMode = useReminderSettings((s) => s.setDemoMode);
   const now = useNow();
-  const policy = demoMode ? DEMO_POLICY : REAL_POLICY;
-  const status = getBreakStatus(startedAt, breaks, policy, now);
+  const status = getBreakStatus(startedAt, breaks, now);
+  // The last break given is the selected one; only it is coloured and reacts to hover.
+  const last = breaks[breaks.length - 1]?.type;
   const due = status.due;
   const [permission, setPermission] = useState<NotificationPermission>(() => (canNotify() ? Notification.permission : 'denied'));
   const announced = useRef('');
@@ -57,14 +55,22 @@ export function BreakReminder({ startedAt, breaks, onLog }: { startedAt: string;
 
   const logButtons = (size: 'lg' | 'xl') => (
     <div className="grid gap-3 sm:grid-cols-2">
-      <Button variant="sign" size={size} onClick={() => onLog('rest')}>
-        <Coffee />
-        {i.tx(LOGGED.rest)}
-      </Button>
-      <Button variant={due === 'snack' ? 'mark' : 'secondary'} size={size} onClick={() => onLog('snack')}>
-        <Cookie />
-        {i.tx(LOGGED.snack)}
-      </Button>
+      {(['rest', 'snack'] as const).map((type) => {
+        const Icon = type === 'rest' ? Coffee : Cookie;
+        const selected = last === type;
+        return (
+          <Button
+            key={type}
+            variant={selected ? 'chosen' : 'choice'}
+            size={size}
+            aria-pressed={selected}
+            onClick={() => onLog(type)}
+          >
+            <Icon />
+            {i.tx(LOGGED[type])}
+          </Button>
+        );
+      })}
     </div>
   );
 
@@ -103,7 +109,7 @@ export function BreakReminder({ startedAt, breaks, onLog }: { startedAt: string;
         </div>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-black/10 pt-4">
+      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
         <Timer className="h-5 w-5 text-ink-soft" aria-hidden="true" />
         {breaks.length === 0 ? (
           <span className="text-ink-soft">{i.t('No breaks given yet', 'এখনো কোনো বিরতি দেওয়া হয়নি')}</span>
@@ -121,18 +127,6 @@ export function BreakReminder({ startedAt, breaks, onLog }: { startedAt: string;
               {i.t('Phone alerts', 'ফোনে সতর্কবার্তা')}
             </Button>
           )}
-          <div className="w-56">
-            <Segmented
-              size="sm"
-              label={i.t('Timer speed', 'টাইমারের গতি')}
-              value={demoMode ? 'demo' : 'real'}
-              onChange={(v) => setDemoMode(v === 'demo')}
-              options={[
-                { value: 'real', icon: Timer, label: { en: 'Real time', bn: 'আসল সময়' }, tone: 'neutral' },
-                { value: 'demo', icon: Gauge, label: { en: 'Fast demo', bn: 'দ্রুত ডেমো' }, tone: 'blue' },
-              ]}
-            />
-          </div>
         </div>
       </div>
     </Card>

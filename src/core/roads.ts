@@ -1,6 +1,6 @@
 import type { Road } from './types';
 
-/** Demo roads. Places are names a crew would say out loud, not chainage or coordinates. */
+/** The project's roads. Places are names a crew would say out loud, not chainage or coordinates. */
 export const ROADS: Road[] = [
   {
     id: 'r1',

@@ -22,8 +22,8 @@ export function AppShell() {
 
   const person = role === 'worker' ? worker : role === 'supervisor' ? SUPERVISOR : undefined;
 
-  const resetDemo = () => {
-    if (!window.confirm(i.t('Reset all demo data to the sample project?', 'সব ডেমো তথ্য মুছে নমুনা প্রকল্পে ফিরে যাবেন?'))) return;
+  const resetData = () => {
+    if (!window.confirm(i.t('Delete everything saved on this device and start again?', 'এই ডিভাইসে রাখা সব তথ্য মুছে আবার শুরু করবেন?'))) return;
     Object.keys(localStorage)
       .filter((k) => k.startsWith('roadtrack-') && k !== 'roadtrack-v3-lang')
       .forEach((k) => localStorage.removeItem(k));
@@ -59,9 +59,9 @@ export function AppShell() {
             <VoiceGuideToggle />
             <button
               type="button"
-              onClick={resetDemo}
-              title={i.t('Reset demo data', 'ডেমো তথ্য রিসেট')}
-              aria-label={i.t('Reset demo data', 'ডেমো তথ্য রিসেট')}
+              onClick={resetData}
+              title={i.t('Start again', 'আবার শুরু করুন')}
+              aria-label={i.t('Start again', 'আবার শুরু করুন')}
               className="grid h-10 w-10 place-items-center rounded-full text-white/80 transition hover:bg-white/10 hover:text-white"
             >
               <RotateCcw className="h-5 w-5" />

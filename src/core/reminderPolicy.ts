@@ -5,8 +5,8 @@ export interface BreakPolicy {
   snackEveryMin: number;
 }
 
-export const REAL_POLICY: BreakPolicy = { restEveryMin: 120, snackEveryMin: 240 };
-export const DEMO_POLICY: BreakPolicy = { restEveryMin: 1, snackEveryMin: 3 };
+/** Rest every 2 hours, snacks every 4 hours. */
+export const BREAK_POLICY: BreakPolicy = { restEveryMin: 120, snackEveryMin: 240 };
 
 export interface BreakStatus {
   due: BreakType | null;
@@ -14,7 +14,7 @@ export interface BreakStatus {
   msUntilNext: number;
 }
 
-export function getBreakStatus(startedAt: string, breaks: BreakLog[], policy: BreakPolicy, now: number): BreakStatus {
+export function getBreakStatus(startedAt: string, breaks: BreakLog[], now: number, policy: BreakPolicy = BREAK_POLICY): BreakStatus {
   const start = new Date(startedAt).getTime();
   const lastOf = (types: BreakType[]) => {
     const b = [...breaks].reverse().find((x) => types.includes(x.type));
