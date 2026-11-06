@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { ChevronRight, Construction, MapPin, Package, Play, Users } from 'lucide-react';
-import type { MaterialKey } from '@/core/types';
-import { MATERIALS, POSTS, SITE_SEGMENTS } from '@/core/catalog';
-import { PROJECT } from '@/core/seed';
+import type { MaterialKey, Text } from '@/core/types';
+import { MATERIALS, POSTS } from '@/core/catalog';
+import { kmToPct, pctToKm } from '@/core/roads';
+import { useRoad } from '@/features/road';
 import { PeoplePicker, POST_ICON, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import { ActionBar, Badge, Button, Card, CardHeader, Chip, Field, Input, PageHeader, RoadStrip, Stepper, WizardSteps } from '@/shared/ui';
@@ -18,6 +19,7 @@ const STEPS = [
 
 export function StartShiftWizard() {
   const { t, tx, num, fixed } = useI18n();
+  const road = useRoad();
   const workers = useWorkforce((s) => s.workers);
   const startShift = useShiftStore((s) => s.startShift);
   const lastProgress = useProjectProgress();
@@ -25,8 +27,10 @@ export function StartShiftWizard() {
   const [step, setStep] = useState(0);
   const [selected, setSelected] = useState<string[]>(() => workers.map((w) => w.id));
   const [qty, setQty] = useState(() => Object.fromEntries(MATERIALS.map((m) => [m.key, m.defaultQty])) as Record<MaterialKey, number>);
-  const [site, setSite] = useState(SITE_SEGMENTS[1]);
-  const [progress, setProgress] = useState(lastProgress);
+  const [site, setSite] = useState<Text>(road.places[0]);
+  const [other, setOther] = useState('');
+  const [km, setKm] = useState(() => pctToKm(lastProgress, road));
+  const progress = kmToPct(km, road);
   const [error, setError] = useState('');
 
   const everyone = selected.length === workers.length;
@@ -41,11 +45,12 @@ export function StartShiftWizard() {
       return;
     }
     if (step === 2) {
-      if (!site.trim()) {
+      const place = other.trim() ? { en: other.trim(), bn: other.trim() } : site;
+      if (!place.en) {
         setError(t('Choose where the crew is working.', 'কোথায় কাজ হচ্ছে তা বাছাই করুন।'));
         return;
       }
-      startShift({ site: site.trim(), startProgress: progress, workerIds: selected, materials: MATERIALS.map((m) => ({ key: m.key, allocated: qty[m.key] })) });
+      startShift({ roadId: road.id, site: place, startProgress: progress, workerIds: selected, materials: MATERIALS.map((m) => ({ key: m.key, allocated: qty[m.key] })) });
       return;
     }
     setError('');
@@ -119,20 +124,28 @@ export function StartShiftWizard() {
             <CardHeader
               icon={MapPin}
               title={t('Where is the crew working?', 'কোথায় কাজ হচ্ছে?')}
-              subtitle={t('Chainage on the road', 'রাস্তার চেইনেজ')}
-              speak={{ en: 'Where is the crew working?', bn: 'কোথায় কাজ হচ্ছে?' }}
+              subtitle={t(`On ${road.name.en}`, `${road.name.bn}-এ`)}
+              speak={{ en: 'Where is the crew working? Tap a place.', bn: 'কোথায় কাজ হচ্ছে? একটি জায়গায় চাপ দিন।' }}
             />
-            <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-              {SITE_SEGMENTS.map((s) => (
-                <Chip key={s} selected={site === s} onClick={() => setSite(s)} className="font-sign text-lg">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {road.places.map((p) => (
+                <Chip
+                  key={p.en}
+                  selected={!other.trim() && site.en === p.en}
+                  onClick={() => {
+                    setOther('');
+                    setSite(p);
+                  }}
+                  className="justify-start text-left text-lg"
+                >
                   <MapPin />
-                  {s}
+                  {tx(p)}
                 </Chip>
               ))}
             </div>
-            <div className="mt-4 max-w-sm">
-              <Field label={t('Somewhere else', 'অন্য কোথাও')}>
-                <Input value={SITE_SEGMENTS.includes(site) ? '' : site} onChange={(e) => setSite(e.target.value)} placeholder={t('Type the chainage', 'চেইনেজ লিখুন')} />
+            <div className="mt-4 max-w-md">
+              <Field label={t('Somewhere else? Write the place or address', 'অন্য কোথাও? জায়গা বা ঠিকানা লিখুন')}>
+                <Input value={other} onChange={(e) => setOther(e.target.value)} placeholder={t('For example: in front of Ali Hardware, Station Road', 'যেমন: আলী হার্ডওয়্যারের সামনে, স্টেশন রোড')} />
               </Field>
             </div>
           </Card>
@@ -140,13 +153,16 @@ export function StartShiftWizard() {
             <CardHeader
               icon={Construction}
               tone="mark"
-              title={t('How much road is done?', 'রাস্তার কতটা কাজ হয়েছে?')}
-              subtitle={t(`Last record: ${fixed(lastProgress)}%`, `শেষ হিসাব: ${fixed(lastProgress)}%`)}
-              speak={{ en: 'How much of the road is done?', bn: 'রাস্তার কতটা কাজ হয়েছে?' }}
+              title={t('How many km of road are done?', 'রাস্তার কত কিলোমিটার হয়েছে?')}
+              subtitle={t(`The whole road is ${fixed(road.lengthKm)} km. Last record: ${fixed(pctToKm(lastProgress, road), 2)} km`, `পুরো রাস্তা ${fixed(road.lengthKm)} কিমি। শেষ হিসাব: ${fixed(pctToKm(lastProgress, road), 2)} কিমি`)}
+              speak={{ en: 'How many kilometres of the road are done? Use plus and minus.', bn: 'রাস্তার কত কিলোমিটার হয়েছে? যোগ আর বিয়োগ চিহ্ন ব্যবহার করুন।' }}
             />
-            <RoadStrip progress={progress} lengthKm={PROJECT.lengthKm} />
-            <div className="mt-5 max-w-xs">
-              <Stepper value={progress} step={0.5} decimals={1} min={0} max={100} unit="%" size="lg" label={t('Road done', 'রাস্তার কাজ')} onChange={setProgress} />
+            <RoadStrip progress={progress} lengthKm={road.lengthKm} />
+            <div className="mt-5 flex flex-wrap items-center gap-4">
+              <div className="w-full max-w-xs">
+                <Stepper value={km} step={0.05} decimals={2} min={0} max={road.lengthKm} unit={t('km', 'কিমি')} size="lg" label={t('Road done in km', 'কত কিমি হয়েছে')} onChange={setKm} />
+              </div>
+              <p className="font-sign text-3xl text-guide-700">= {fixed(progress)}%</p>
             </div>
           </Card>
         </>

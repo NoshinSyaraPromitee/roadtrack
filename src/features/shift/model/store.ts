@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Attendance, BreakType, IncidentKey, MaterialKey, MaterialLine, Shift, Worker } from '@/core/types';
+import type { Attendance, BreakType, IncidentKey, MaterialKey, MaterialLine, Shift, Text, Worker } from '@/core/types';
 import { calculatePayroll } from '@/core/payroll';
 import { SEED_SHIFTS } from '@/core/seed';
 import { uid } from '@/shared/lib/utils';
 
 export interface StartShiftInput {
-  site: string;
+  roadId: string;
+  site: Text;
   startProgress: number;
   workerIds: string[];
   materials: Array<{ key: MaterialKey; allocated: number }>;
@@ -23,8 +24,8 @@ export interface EndShiftInput {
 interface ShiftState {
   shifts: Shift[];
   startShift: (input: StartShiftInput) => void;
-  logBreak: (type: BreakType) => void;
-  endShift: (input: EndShiftInput, workers: Worker[]) => string | null;
+  logBreak: (roadId: string, type: BreakType) => void;
+  endShift: (roadId: string, input: EndShiftInput, workers: Worker[]) => string | null;
   approvePayroll: (id: string) => void;
 }
 
@@ -36,6 +37,7 @@ export const useShiftStore = create<ShiftState>()(
       startShift: (input) => {
         const shift: Shift = {
           id: uid('s'),
+          roadId: input.roadId,
           site: input.site,
           startedAt: new Date().toISOString(),
           status: 'active',
@@ -50,15 +52,15 @@ export const useShiftStore = create<ShiftState>()(
         set((s) => ({ shifts: [...s.shifts, shift] }));
       },
 
-      logBreak: (type) =>
+      logBreak: (roadId, type) =>
         set((s) => ({
           shifts: s.shifts.map((sh): Shift =>
-            sh.status === 'active' ? { ...sh, breaks: [...sh.breaks, { id: uid('b'), type, at: new Date().toISOString() }] } : sh,
+            sh.status === 'active' && sh.roadId === roadId ? { ...sh, breaks: [...sh.breaks, { id: uid('b'), type, at: new Date().toISOString() }] } : sh,
           ),
         })),
 
-      endShift: (input, workers) => {
-        const active = get().shifts.find((s) => s.status === 'active');
+      endShift: (roadId, input, workers) => {
+        const active = get().shifts.find((s) => s.status === 'active' && s.roadId === roadId);
         if (!active) return null;
         const done: Shift = {
           ...active,
@@ -74,6 +76,6 @@ export const useShiftStore = create<ShiftState>()(
 
       approvePayroll: (id) => set((s) => ({ shifts: s.shifts.map((sh): Shift => (sh.id === id ? { ...sh, payrollStatus: 'approved' } : sh)) })),
     }),
-    { name: 'roadtrack-v2-shifts' },
+    { name: 'roadtrack-v3-shifts' },
   ),
 );

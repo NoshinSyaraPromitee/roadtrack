@@ -3,7 +3,9 @@ import { Bandage, ChevronRight, CircleCheck, Construction, LogOut, Package, Send
 import type { Attendance, Health, IncidentKey, MaterialLine, Shift } from '@/core/types';
 import { INCIDENTS, INCIDENT_KEYS, MATERIAL_BY_KEY } from '@/core/catalog';
 import { calculatePayroll, payrollTotal } from '@/core/payroll';
-import { PROJECT } from '@/core/seed';
+import { kmToPct, pctToKm } from '@/core/roads';
+import { useRoad } from '@/features/road';
+import { useHealthReports, todaysReport } from '@/features/health';
 import { PayRules, PayrollList } from '@/features/payroll';
 import { Avatar, personName, roleOf, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
@@ -38,11 +40,21 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
   const { t, tx, num, fixed } = i;
   const workers = useWorkforce((s) => s.workers);
   const endShift = useShiftStore((s) => s.endShift);
+  const road = useRoad();
+  const reports = useHealthReports((s) => s.reports);
 
   const [step, setStep] = useState(0);
-  const [rows, setRows] = useState<Attendance[]>(() => shift.attendance.map((a) => ({ ...a })));
+  // A worker who told the app they are sick or hurt today starts marked that way.
+  const [rows, setRows] = useState<Attendance[]>(() =>
+    shift.attendance.map((a) => {
+      const own = todaysReport(reports, a.workerId);
+      return own && own.status !== 'fit' && a.health === 'fit' ? { ...a, health: own.status } : { ...a };
+    }),
+  );
   const [mats, setMats] = useState<MaterialLine[]>(() => shift.materials.map((m) => ({ ...m })));
-  const [endProgress, setEndProgress] = useState(shift.startProgress);
+  const startKm = pctToKm(shift.startProgress, road);
+  const [endKm, setEndKm] = useState(startKm);
+  const endProgress = Math.max(shift.startProgress, kmToPct(endKm, road));
   const [tags, setTags] = useState<IncidentKey[]>([]);
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
@@ -65,7 +77,7 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
       return;
     }
     if (step === 3) {
-      const id = endShift({ attendance: rows, materials: mats, endProgress, incidentTags: tags, incidents: notes.trim() }, workers);
+      const id = endShift(road.id, { attendance: rows, materials: mats, endProgress, incidentTags: tags, incidents: notes.trim() }, workers);
       if (id) onEnded(id);
       return;
     }
@@ -214,17 +226,18 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
             <CardHeader
               icon={Construction}
               tone="mark"
-              title={t('How much road is done now?', 'এখন রাস্তার কতটা কাজ হয়েছে?')}
-              subtitle={t(`Today started at ${fixed(shift.startProgress)}%. Yellow is today's work.`, `আজ শুরু ${fixed(shift.startProgress)}% থেকে। হলুদ অংশ আজকের কাজ।`)}
-              speak={{ en: "How much road is done now? The yellow part is today's work.", bn: 'এখন রাস্তার কতটা কাজ হয়েছে? হলুদ অংশ আজকের কাজ।' }}
+              title={t('How many km of road are done now?', 'এখন রাস্তার কত কিলোমিটার হয়েছে?')}
+              subtitle={t(`Today started at ${fixed(startKm, 2)} km of ${fixed(road.lengthKm)} km. Yellow is today's work.`, `আজ শুরু ${fixed(road.lengthKm)} কিমির মধ্যে ${fixed(startKm, 2)} কিমি থেকে। হলুদ অংশ আজকের কাজ।`)}
+              speak={{ en: "How many kilometres of road are done now? The yellow part is today's work.", bn: 'এখন রাস্তার কত কিলোমিটার হয়েছে? হলুদ অংশ আজকের কাজ।' }}
             />
-            <RoadStrip progress={endProgress} lengthKm={PROJECT.lengthKm} today={{ from: shift.startProgress, to: endProgress }} />
+            <RoadStrip progress={endProgress} lengthKm={road.lengthKm} today={{ from: shift.startProgress, to: endProgress }} />
             <div className="mt-5 flex flex-wrap items-center gap-4">
               <div className="w-full max-w-xs">
-                <Stepper value={endProgress} step={0.1} decimals={1} min={shift.startProgress} max={100} unit="%" size="lg" label={t('Road done', 'রাস্তার কাজ')} onChange={setEndProgress} />
+                <Stepper value={endKm} step={0.05} decimals={2} min={startKm} max={road.lengthKm} unit={t('km', 'কিমি')} size="lg" label={t('Road done in km', 'কত কিমি হয়েছে')} onChange={setEndKm} />
               </div>
+              <p className="font-sign text-3xl text-guide-700">= {fixed(endProgress)}%</p>
               <Badge tone="green" icon={Construction}>
-                +{fixed(endProgress - shift.startProgress)}% {t('today', 'আজ')}
+                +{fixed(endKm - startKm, 2)} {t('km', 'কিমি')} {t('today', 'আজ')}
               </Badge>
             </div>
           </Card>

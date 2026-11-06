@@ -38,7 +38,7 @@ export function ActiveShiftPanel({ shift, onFinish }: { shift: Shift; onFinish: 
             <p className="mt-3 font-sign text-6xl leading-none tabular-nums sm:text-7xl">{i.dur(now - new Date(shift.startedAt).getTime())}</p>
             <p className="mt-3 flex items-center gap-2 text-lg text-white/90">
               <MapPin className="h-5 w-5" />
-              {shift.site}
+              {i.tx(shift.site)}
             </p>
           </div>
           <div className="space-y-3">

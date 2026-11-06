@@ -1,7 +1,8 @@
 import { CircleCheck, Clock, Construction, Send, TriangleAlert, Users, Wallet } from 'lucide-react';
 import { INCIDENTS, MATERIAL_BY_KEY } from '@/core/catalog';
 import { payrollTotal } from '@/core/payroll';
-import { PROJECT } from '@/core/seed';
+import { pctToKm } from '@/core/roads';
+import { useRoad } from '@/features/road';
 import { PayrollList } from '@/features/payroll';
 import { useI18n } from '@/shared/i18n';
 import { Badge, Button, Card, CardHeader, PageHeader, RoadStrip, StackBar, StatCard } from '@/shared/ui';
@@ -12,6 +13,7 @@ export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: (
   const i = useI18n();
   const { t, tx, num, fixed } = i;
   const shift = useShiftById(shiftId);
+  const road = useRoad();
   if (!shift || !shift.endedAt) return null;
 
   const started = shift.attendance.filter((a) => a.presentAtStart).length;
@@ -23,7 +25,7 @@ export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: (
     <div className="space-y-5">
       <PageHeader
         title={t('Shift finished', 'শিফট শেষ')}
-        subtitle={`${i.dateLong(shift.startedAt)}, ${shift.site}`}
+        subtitle={`${i.dateLong(shift.startedAt)}, ${tx(shift.site)}`}
         speak={{ en: `Shift finished. The pay list of ${i.numEn(total)} taka was sent to the office.`, bn: `শিফট শেষ। ${num(total)} টাকার মজুরির তালিকা অফিসে পাঠানো হয়েছে।` }}
         action={
           <Button size="lg" onClick={onClose}>
@@ -44,12 +46,12 @@ export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: (
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard icon={Clock} label={t('Shift time', 'শিফটের সময়')} value={i.dur(new Date(shift.endedAt).getTime() - new Date(shift.startedAt).getTime())} hint={`${i.time(shift.startedAt)} – ${i.time(shift.endedAt)}`} />
         <StatCard icon={Users} label={t('Stayed till the end', 'শেষ পর্যন্ত ছিলেন')} value={`${num(stayed)}/${num(started)}`} />
-        <StatCard icon={Construction} tone="mark" label={t('Road done today', 'আজকের কাজ')} value={`+${fixed(end - shift.startProgress)}%`} hint={t(`Now ${fixed(end)}%`, `এখন ${fixed(end)}%`)} />
+        <StatCard icon={Construction} tone="mark" label={t('Road done today', 'আজকের কাজ')} value={`+${fixed(pctToKm(end, road) - pctToKm(shift.startProgress, road), 2)} ${t('km', 'কিমি')}`} hint={t(`Now ${fixed(end)}% of the road`, `এখন রাস্তার ${fixed(end)}%`)} />
         <StatCard icon={Wallet} label={t('Pay list', 'মজুরি')} value={i.taka(total)} />
       </div>
 
       <Card>
-        <RoadStrip progress={end} lengthKm={PROJECT.lengthKm} today={{ from: shift.startProgress, to: end }} />
+        <RoadStrip progress={end} lengthKm={road.lengthKm} today={{ from: shift.startProgress, to: end }} />
       </Card>
 
       <div className="grid gap-5 lg:grid-cols-[1fr_1.4fr]">
