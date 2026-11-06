@@ -56,6 +56,10 @@ export interface PayrollLine {
   basePay: number;
   deduction: number;
   welfareBonus: number;
+  /** Money the supervisor added (or cut, when below zero) by hand. */
+  adjustment?: number;
+  /** The supervisor's comment on this worker's pay. */
+  note?: string;
   total: number;
   flags: PayFlag[];
 }

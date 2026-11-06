@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BadgeCheck, ChevronDown, MapPin, Wallet } from 'lucide-react';
+import { BadgeCheck, ChevronDown, Wallet } from 'lucide-react';
 import type { Shift } from '@/core/types';
 import { payrollTotal } from '@/core/payroll';
 import { useI18n } from '@/shared/i18n';
@@ -47,10 +47,7 @@ export function PayrollApprovals({ shifts, onApprove }: { shifts: Shift[]; onApp
                   <div className="min-w-0">
                     <p className="font-sign text-xl">{i.dateLong(s.startedAt)}</p>
                     <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-sm text-ink-soft">
-                      <span className="inline-flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {i.tx(s.site)}
-                      </span>
+                      <span>{i.tx(s.site)}</span>
                       <span>{i.t(`${i.num(paid)} workers to pay`, `${i.num(paid)} জনকে টাকা দিতে হবে`)}</span>
                     </p>
                   </div>
@@ -60,7 +57,7 @@ export function PayrollApprovals({ shifts, onApprove }: { shifts: Shift[]; onApp
                   </div>
                 </button>
                 {isOpen && (
-                  <div className="space-y-4 border-t border-line p-4">
+                  <div className="space-y-4 px-4 pb-4">
                     <PayRules />
                     <PayrollList lines={s.payroll} />
                     <div className="flex justify-end">

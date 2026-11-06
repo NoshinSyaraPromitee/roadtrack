@@ -68,7 +68,7 @@ export function WorkerEarnings({ shifts, worker }: { shifts: Shift[]; worker: Wo
         {entries.length === 0 ? (
           <EmptyState icon={CalendarCheck} title={i.t('No pay yet', 'এখনো কোনো মজুরি নেই')} text={i.t('Your pay shows here after the supervisor ends a shift.', 'সুপারভাইজার শিফট শেষ করলে মজুরি এখানে দেখাবে।')} />
         ) : (
-          <ul className="divide-y divide-line">
+          <ul className="space-y-1">
             {entries.map(({ shift, line }) => {
               const isPaid = shift.payrollStatus === 'approved';
               return (
@@ -80,6 +80,11 @@ export function WorkerEarnings({ shifts, worker }: { shifts: Shift[]; worker: Wo
                   </div>
                   <div className="min-w-0 flex-1">
                     <PayFlags flags={line.flags} />
+                    {line.note && (
+                      <p className="mt-1 text-sm text-ink-soft">
+                        <span className="font-semibold text-ink">{i.t('Supervisor', 'সুপারভাইজার')}:</span> {line.note}
+                      </p>
+                    )}
                   </div>
                   <div className="shrink-0 text-right">
                     <p className={cn('font-sign text-2xl tabular-nums', line.total === 0 && 'text-ink-soft')}>{i.taka(line.total)}</p>
