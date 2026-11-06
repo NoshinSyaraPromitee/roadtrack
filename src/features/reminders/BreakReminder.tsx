@@ -4,9 +4,10 @@ import type { BreakLog, BreakType } from '@/core/types';
 import { getBreakStatus } from '@/core/reminderPolicy';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
-import { SpeakButton, speak } from '@/shared/voice';
-import { Badge, Button, Card, Pictogram } from '@/shared/ui';
+import { SpeakButton, speakAuto } from '@/shared/voice';
+import { Button, Card, Pictogram } from '@/shared/ui';
 import { useNow } from '@/shared/lib/useNow';
+import { BreakBadges } from './BreakBadges';
 
 const COPY: Record<BreakType, { title: Text; text: Text }> = {
   rest: {
@@ -36,7 +37,6 @@ export function BreakReminder({ startedAt, breaks, onLog }: { startedAt: string;
   const i = useI18n();
   const now = useNow();
   const status = getBreakStatus(startedAt, breaks, now);
-  // The last break given is the selected one; only it is coloured and reacts to hover.
   const last = breaks[breaks.length - 1]?.type;
   const due = status.due;
   const [permission, setPermission] = useState<NotificationPermission>(() => (canNotify() ? Notification.permission : 'denied'));
@@ -48,7 +48,7 @@ export function BreakReminder({ startedAt, breaks, onLog }: { startedAt: string;
     if (announced.current === key) return;
     announced.current = key;
     const copy = COPY[due];
-    speak({ en: `${copy.title.en}. ${copy.text.en}`, bn: `${copy.title.bn}। ${copy.text.bn}` }, i.lang);
+    speakAuto({ en: `${copy.title.en}. ${copy.text.en}`, bn: `${copy.title.bn}। ${copy.text.bn}` }, i.lang);
     if (canNotify() && Notification.permission === 'granted') new Notification(`RoadTrack: ${i.tx(copy.title)}`, { body: i.tx(copy.text) });
     navigator.vibrate?.([300, 120, 300]);
   }, [due, breaks.length, i]);
@@ -114,11 +114,7 @@ export function BreakReminder({ startedAt, breaks, onLog }: { startedAt: string;
         {breaks.length === 0 ? (
           <span className="text-ink-soft">{i.t('No breaks given yet', 'এখনো কোনো বিরতি দেওয়া হয়নি')}</span>
         ) : (
-          breaks.map((b) => (
-            <Badge key={b.id} tone={b.type === 'snack' ? 'yellow' : 'blue'} icon={b.type === 'snack' ? Cookie : Coffee}>
-              {i.time(b.at)}
-            </Badge>
-          ))
+          <BreakBadges breaks={breaks} />
         )}
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {canNotify() && permission !== 'granted' && (
