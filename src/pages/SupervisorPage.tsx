@@ -26,7 +26,7 @@ type Tab = (typeof TAB_KEYS)[number];
 const TABS: TabItem<Tab>[] = [
   { key: 'work', icon: HardHat, label: { en: "Today's work", bn: 'আজকের কাজ' } },
   { key: 'machines', icon: Tractor, label: { en: 'Machines', bn: 'মেশিন' } },
-  { key: 'health', icon: HeartPulse, label: { en: 'Crew health', bn: 'শ্রমিকদের শরীর' } },
+  { key: 'health', icon: HeartPulse, label: { en: 'Crew health', bn: 'শ্রমিকদের স্বাস্থ্য' } },
 ];
 
 /** Before work starts the supervisor goes through these in order. A step opens only when the one before it is done. */
@@ -36,7 +36,7 @@ type SetupKey = (typeof SETUP_KEYS)[number];
 const SETUP_LABEL: Record<SetupKey, { en: string; bn: string }> = {
   plan: { en: "Today's work", bn: 'আজকের কাজ' },
   machines: { en: 'Machines', bn: 'মেশিন' },
-  health: { en: 'Crew health', bn: 'আজ শ্রমিকদের শরীর' },
+  health: { en: 'Crew health', bn: 'আজ শ্রমিকদের স্বাস্থ্য' },
   start: { en: 'Start work', bn: 'কাজ শুরু' },
 };
 
@@ -106,7 +106,7 @@ function DaySetupFlow() {
               go('start');
             }}
             nextIcon={ChevronRight}
-            nextLabel={i.t('Health checked', 'শরীর দেখা শেষ')}
+            nextLabel={i.t('Health checked', 'স্বাস্থ্য দেখা শেষ')}
           />
         </div>
       )}

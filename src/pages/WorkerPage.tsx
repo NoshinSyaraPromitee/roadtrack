@@ -16,7 +16,7 @@ type Tab = (typeof TAB_KEYS)[number];
 
 const TABS: TabItem<Tab>[] = [
   { key: 'money', icon: Wallet, label: { en: 'My money', bn: 'আমার টাকা' } },
-  { key: 'health', icon: HeartPulse, label: { en: 'My health', bn: 'আমার শরীর' } },
+  { key: 'health', icon: HeartPulse, label: { en: 'My health', bn: 'আমার স্বাস্থ্য' } },
   { key: 'raise', icon: TrendingUp, label: { en: 'More pay', bn: 'বেতন বাড়ান' } },
   { key: 'complain', icon: Megaphone, label: { en: 'Complain', bn: 'অভিযোগ' } },
 ];

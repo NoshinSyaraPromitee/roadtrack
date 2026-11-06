@@ -23,7 +23,7 @@ export function CrewHealth() {
         icon={HeartPulse}
         tone="stop"
         shape="disc"
-        title={i.t('Crew health today', 'আজ শ্রমিকদের শরীর')}
+        title={i.t('Crew health today', 'আজ শ্রমিকদের স্বাস্থ্য')}
         speak={{
           en: `${notWell} workers are not well today. ${silent.length} have not told yet.`,
           bn: `আজ ${i.num(notWell)} জন শ্রমিক ভালো নেই। ${i.num(silent.length)} জন এখনো জানাননি।`,

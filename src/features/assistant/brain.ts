@@ -147,7 +147,7 @@ export const QUESTIONS: Record<QuestionKey, QuestionDef> = {
       supervisor: { en: 'Is anyone sick today?', bn: 'আজ কেউ অসুস্থ?' },
       admin: { en: 'Is anyone sick today?', bn: 'আজ কেউ অসুস্থ?' },
     },
-    words: ['sick', 'ill', 'fever', 'health', 'hurt', 'unwell', 'অসুস্থ', 'জ্বর', 'শরীর', 'আহত', 'অসুখ', 'ব্যথা'],
+    words: ['sick', 'ill', 'fever', 'health', 'hurt', 'unwell', 'অসুস্থ', 'জ্বর', 'শরীর', 'স্বাস্থ্য', 'আহত', 'অসুখ', 'ব্যথা'],
   },
   intro: {
     icon: Info,
@@ -359,7 +359,7 @@ export function answer(key: QuestionKey, ctx: ApaContext): Text {
     case 'how_start':
       return {
         en: 'Four steps, in order. First, today\'s work: tap the workers who came, set the materials and choose the place. Second, check the machines. Third, check the crew\'s health. Last, tap Start work.',
-        bn: 'চারটি ধাপ, পরপর। প্রথমে আজকের কাজ: যারা এসেছেন তাদের চাপুন, মাল ঠিক করুন, জায়গা বাছাই করুন। তারপর মেশিন দেখুন। তারপর শ্রমিকদের শরীর দেখুন। শেষে "কাজ শুরু করুন" চাপুন।',
+        bn: 'চারটি ধাপ, পরপর। প্রথমে আজকের কাজ: যারা এসেছেন তাদের চাপুন, মাল ঠিক করুন, জায়গা বাছাই করুন। তারপর মেশিন দেখুন। তারপর শ্রমিকদের স্বাস্থ্য দেখুন। শেষে "কাজ শুরু করুন" চাপুন।',
       };
 
     case 'how_finish':
@@ -450,7 +450,7 @@ export function answer(key: QuestionKey, ctx: ApaContext): Text {
         const month = days.month > 0 ? { en: ` In the last 30 days you were unwell on ${en.num(days.month)} days.`, bn: ` গত ৩০ দিনে ${bn.num(days.month)} দিন ভালো ছিলেন না।` } : { en: '', bn: '' };
         return {
           en: `Tap My health, then tap how you feel: well, sick or hurt. You can also say it with your voice. The supervisor sees it.${told.en}${run.en}${month.en}`,
-          bn: `"আমার শরীর" চাপুন, তারপর কেমন আছেন চাপুন: ভালো, অসুস্থ বা আহত। চাইলে কণ্ঠেও বলতে পারেন। সুপারভাইজার দেখতে পাবেন।${told.bn}${run.bn}${month.bn}`,
+          bn: `"আমার স্বাস্থ্য" চাপুন, তারপর কেমন আছেন চাপুন: ভালো, অসুস্থ বা আহত। চাইলে কণ্ঠেও বলতে পারেন। সুপারভাইজার দেখতে পাবেন।${told.bn}${run.bn}${month.bn}`,
         };
       }
       const today = healthToday(ctx, now).filter((r) => r.status !== 'fit');
@@ -471,11 +471,11 @@ export function answer(key: QuestionKey, ctx: ApaContext): Text {
       if (ctx.role === 'supervisor')
         return {
           en: "Start the day by choosing the crew and materials. I remind you about rest and snacks. Machines shows fuel and repairs. Crew health shows who is sick. At the end, finish the shift and send the pay list.",
-          bn: 'দিনের শুরুতে শ্রমিক আর মাল বাছাই করুন। বিশ্রাম আর নাস্তার সময় আমি মনে করিয়ে দিই। "মেশিন"-এ জ্বালানি আর মেরামত। "শ্রমিকদের শরীর"-এ কে অসুস্থ। শেষে শিফট শেষ করে মজুরির তালিকা পাঠান।',
+          bn: 'দিনের শুরুতে শ্রমিক আর মাল বাছাই করুন। বিশ্রাম আর নাস্তার সময় আমি মনে করিয়ে দিই। "মেশিন"-এ জ্বালানি আর মেরামত। "শ্রমিকদের স্বাস্থ্য"-এ কে অসুস্থ। শেষে শিফট শেষ করে মজুরির তালিকা পাঠান।',
         };
       return {
         en: 'My money shows your pay. My health lets you tell the supervisor how you feel. More pay lets you ask for a raise. Complain lets you report a problem by voice.',
-        bn: '"আমার টাকা"-য় আপনার মজুরি। "আমার শরীর"-এ কেমন আছেন জানান। "বেতন বাড়ান"-এ বেতন বাড়ানোর আবেদন। "অভিযোগ"-এ কণ্ঠে সমস্যা জানান।',
+        bn: '"আমার টাকা"-য় আপনার মজুরি। "আমার স্বাস্থ্য"-এ কেমন আছেন জানান। "বেতন বাড়ান"-এ বেতন বাড়ানোর আবেদন। "অভিযোগ"-এ কণ্ঠে সমস্যা জানান।',
       };
   }
 }
@@ -501,7 +501,7 @@ export function nextStep(ctx: ApaContext): Tip {
     const w = ctx.worker;
     const mine = healthToday(ctx, now).find((r) => r.workerId === w.id);
     if (st?.due) return { key: `due-${st.due}-${shift!.breaks.length}`, tone: 'alert', text: { en: `It is ${breakName(st.due).en} time now. Drink water and sit in the shade.`, bn: `এখন ${st.due === 'rest' ? 'বিশ্রামের' : 'নাস্তার'} সময়। পানি খান, ছায়ায় বসুন।` } };
-    if (!mine) return { key: 'health-ask', tone: 'warn', text: { en: 'Good day! Tell your supervisor how you feel today. Tap My health.', bn: 'শুভ দিন! আজ কেমন আছেন সুপারভাইজারকে জানান। "আমার শরীর" চাপুন।' } };
+    if (!mine) return { key: 'health-ask', tone: 'warn', text: { en: 'Good day! Tell your supervisor how you feel today. Tap My health.', bn: 'শুভ দিন! আজ কেমন আছেন সুপারভাইজারকে জানান। "আমার স্বাস্থ্য" চাপুন।' } };
     if (st) return { key: 'next-break', tone: 'info', text: { en: `Next ${breakName(st.nextType).en} in ${en.num(min)} minutes. Keep drinking water.`, bn: `পরের ${breakName(st.nextType).bn} ${bn.num(min)} মিনিট পরে। পানি খেতে থাকুন।` } };
     const raise = ctx.raises.filter((r) => r.workerId === w.id).sort((a, b) => a.createdAt.localeCompare(b.createdAt)).pop();
     if (raise?.status === 'approved') return { key: `raise-${raise.id}`, tone: 'info', text: { en: `Good news! Your daily pay is now ${en.num(raise.requestedRate)} taka.`, bn: `সুখবর! আপনার দৈনিক মজুরি এখন ${bn.num(raise.requestedRate)} টাকা।` } };
