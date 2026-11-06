@@ -26,6 +26,8 @@ const getCtor = (): RecognitionCtor | undefined => {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition;
 };
 
+export const canListen = () => !!getCtor();
+
 export type ListenError = 'blocked' | 'silent' | 'failed';
 
 /** Speech to text with the browser's own recogniser. Chrome on Android understands Bangla (bn-BD). */
@@ -79,4 +81,69 @@ export function useListen(lang: Lang, onFinal: (text: string) => void) {
   }, [lang]);
 
   return { supported, listening, heard, error, start, stop };
+}
+
+const WAKE = /(hey\s+)?(apa|appa|aapa|apaa|upper|আপা|আপ্পা)/i;
+
+/**
+ * Hands-free: keeps listening quietly and calls `onWake` when someone says "Apa" (আপা).
+ * Whatever is said after the name is passed on as the question. Chrome needs the internet for this.
+ */
+export function useWakeWord(enabled: boolean, lang: Lang, onWake: (rest: string) => void) {
+  const [blocked, setBlocked] = useState(false);
+  const wakeRef = useRef(onWake);
+
+  useEffect(() => {
+    wakeRef.current = onWake;
+  }, [onWake]);
+
+  useEffect(() => {
+    const Ctor = getCtor();
+    if (!enabled || !Ctor) return;
+    let stopped = false;
+    let r: Recognition | null = null;
+    let retry = 0;
+
+    const begin = () => {
+      if (stopped) return;
+      r = new Ctor();
+      r.lang = lang === 'bn' ? 'bn-BD' : 'en-US';
+      r.continuous = true;
+      r.interimResults = false;
+      r.maxAlternatives = 1;
+      r.onresult = (e) => {
+        const text = Array.from(e.results)
+          .map((x) => x[0].transcript)
+          .join(' ');
+        const m = text.match(WAKE);
+        if (!m || m.index === undefined) return;
+        stopped = true;
+        r?.abort();
+        wakeRef.current(text.slice(m.index + m[0].length).replace(/^[\s,।.!?]+/, '').trim());
+      };
+      r.onerror = (e) => {
+        if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+          stopped = true;
+          setBlocked(true);
+        }
+      };
+      r.onend = () => {
+        if (!stopped) retry = window.setTimeout(begin, 500);
+      };
+      try {
+        r.start();
+      } catch {
+        retry = window.setTimeout(begin, 1000);
+      }
+    };
+
+    begin();
+    return () => {
+      stopped = true;
+      window.clearTimeout(retry);
+      r?.abort();
+    };
+  }, [enabled, lang]);
+
+  return { blocked };
 }

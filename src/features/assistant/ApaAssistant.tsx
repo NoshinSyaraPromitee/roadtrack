@@ -1,23 +1,37 @@
 import { useEffect, useRef, useState } from 'react';
-import { Mic, MicOff, Send, Volume2, WifiOff, X } from 'lucide-react';
+import { Ear, Lightbulb, Mic, MicOff, Send, TriangleAlert, Volume2, X } from 'lucide-react';
 import { useComplaints } from '@/features/complaints';
+import { useEquipment } from '@/features/equipment';
+import { useHealthReports } from '@/features/health';
 import { useRaiseRequests } from '@/features/raise-requests';
 import { useReminderSettings } from '@/features/reminders';
+import { useRoad } from '@/features/road';
 import { useSession } from '@/features/session';
 import { useShiftStore } from '@/features/shift';
 import { useWorker, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
-import { speak, stopSpeaking } from '@/shared/voice';
+import { speak, stopSpeaking, useVoiceGuide } from '@/shared/voice';
 import { Pictogram } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
+import { useNow } from '@/shared/lib/useNow';
 import { ApaFace } from './ApaFace';
 import type { ApaMood } from './ApaFace';
-import { FALLBACK, QUESTIONS, answer, greeting, matchQuestion, questionLabel, questionsFor } from './brain';
+import { FALLBACK, QUESTIONS, answer, greeting, matchQuestion, nextStep, questionLabel, questionsFor } from './brain';
 import type { ApaContext, QuestionKey } from './brain';
-import { useListen } from './useListen';
+import { useApaSettings } from './settings';
+import { canListen, useListen, useWakeWord } from './useListen';
 
-/** "Ask Apa": a floating helper on every screen. She answers from the app's own data and reads every answer aloud. */
+const TIP_STYLE = {
+  info: { border: 'border-guide-600', text: 'text-guide-700', icon: Lightbulb },
+  warn: { border: 'border-mark-400', text: 'text-[#9a5b00]', icon: Lightbulb },
+  alert: { border: 'border-stop-500', text: 'text-stop-600', icon: TriangleAlert },
+};
+
+/**
+ * "Ask Apa": a floating helper on every screen. A bubble beside her says what to do now and when.
+ * She answers from the app's own data, reads every answer aloud, and can be called hands-free by saying "Apa".
+ */
 export function ApaAssistant() {
   const i = useI18n();
   const role = useSession((s) => s.role);
@@ -28,17 +42,26 @@ export function ApaAssistant() {
   const raises = useRaiseRequests((s) => s.requests);
   const complaints = useComplaints((s) => s.complaints);
   const demoMode = useReminderSettings((s) => s.demoMode);
+  const road = useRoad();
+  const machines = useEquipment((s) => s.machines);
+  const health = useHealthReports((s) => s.reports);
+  const voiceGuide = useVoiceGuide((s) => s.on);
+  const wakeOn = useApaSettings((s) => s.wake);
+  const setWake = useApaSettings((s) => s.setWake);
+  const now = useNow(15_000);
 
   const [open, setOpen] = useState(false);
   const [mood, setMood] = useState<ApaMood>('idle');
   const [asked, setAsked] = useState<string | null>(null);
   const [reply, setReply] = useState<Text | null>(null);
   const [typed, setTyped] = useState('');
+  const [hiddenTip, setHiddenTip] = useState<string | null>(null);
+  const spokenTip = useRef<string | null>(null);
   const greeted = useRef(false);
   const timer = useRef(0);
   const body = useRef<HTMLDivElement>(null);
 
-  const context = (): ApaContext => ({ role: role ?? 'worker', worker: role === 'worker' ? worker : undefined, workers, shifts, raises, complaints, demoMode });
+  const context = (): ApaContext => ({ role: role ?? 'worker', road, worker: role === 'worker' ? worker : undefined, workers, shifts, machines, health, raises, complaints, demoMode });
 
   const talk = (text: Text) => {
     setReply(text);
@@ -79,6 +102,27 @@ export function ApaAssistant() {
 
   const listen = useListen(i.lang, askText);
 
+  const tip = role ? nextStep({ ...context(), now }) : null;
+  const showTip = !open && !!tip && hiddenTip !== tip.key;
+
+  // Read a new tip aloud once, when voice help is on.
+  useEffect(() => {
+    if (!showTip || !tip || !voiceGuide || spokenTip.current === tip.key) return;
+    spokenTip.current = tip.key;
+    speak(tip.text, i.lang);
+  }, [showTip, tip, voiceGuide, i.lang]);
+
+  // Hands-free: saying "Apa" opens the panel; anything said after her name is the question.
+  const wake = useWakeWord(wakeOn && !open && !!role, i.lang, (rest) => {
+    setOpen(true);
+    greeted.current = true;
+    if (rest) askText(rest);
+    else {
+      talk({ en: 'Yes? I am listening.', bn: 'জি, বলুন। আমি শুনছি।' });
+      window.setTimeout(() => listen.start(), 1600);
+    }
+  });
+
   const close = () => {
     stopSpeaking();
     listen.stop();
@@ -112,7 +156,15 @@ export function ApaAssistant() {
     }
   };
 
-  const keys = questionsFor({ role, shifts });
+  const askByVoice = () => {
+    setOpen(true);
+    greeted.current = true;
+    stopSpeaking();
+    setMood('idle');
+    listen.start();
+  };
+
+  const keys = questionsFor({ role, shifts: shifts.filter((x) => x.roadId === road.id) });
   const face: ApaMood = listen.listening ? 'listening' : mood;
   const listenNote: Record<string, Text> = {
     blocked: { en: 'The microphone is blocked. Allow it in the browser, or tap a question.', bn: 'মাইক বন্ধ আছে। ব্রাউজারে অনুমতি দিন, অথবা একটি প্রশ্নে চাপ দিন।' },
@@ -120,17 +172,61 @@ export function ApaAssistant() {
     failed: { en: 'Listening did not work here. Please tap a question.', bn: 'এখানে শোনা যাচ্ছে না। একটি প্রশ্নে চাপ দিন।' },
   };
 
+  const TipIcon = tip ? TIP_STYLE[tip.tone].icon : Lightbulb;
+  const tipBody = tip && (
+    <>
+      <p className={cn('mb-1 flex items-center gap-1.5 text-sm font-bold', TIP_STYLE[tip.tone].text)}>
+        <TipIcon className="h-4 w-4" />
+        {i.t('What to do now', 'এখন কী করবেন')}
+      </p>
+      <p className="font-semibold leading-snug">{i.tx(tip.text)}</p>
+      <div className="mt-1.5 flex flex-wrap items-center gap-x-1">
+        <button type="button" onClick={() => speak(tip.text, i.lang)} className="flex h-10 items-center gap-1.5 px-1.5 font-semibold text-sign-600 hover:text-sign-800">
+          <Volume2 className="h-5 w-5" />
+          {i.t('Listen', 'শুনুন')}
+        </button>
+        {listen.supported && (
+          <button type="button" onClick={askByVoice} className="flex h-10 items-center gap-1.5 px-1.5 font-semibold text-sign-600 hover:text-sign-800">
+            <Mic className="h-5 w-5" />
+            {i.t('Ask by voice', 'কণ্ঠে বলুন')}
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => setHiddenTip(tip.key)}
+          aria-label={i.t('Hide this tip', 'এই পরামর্শ লুকান')}
+          className="ml-auto grid h-10 w-10 place-items-center text-ink-soft hover:text-ink"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <>
+      {showTip && tip && (
+        <div role="status" className="mb-5 flex items-start gap-2 sm:gap-3">
+          <button type="button" onClick={openPanel} aria-label={i.t('Ask Apa', 'আপাকে বলুন')} className="shrink-0">
+            <ApaFace size={52} mood={mood === 'talking' ? 'talking' : 'idle'} />
+          </button>
+          {/* A speech bubble from Apa. It sits at the top of the page so it never covers a button. */}
+          <div className={cn('relative min-w-0 flex-1 rounded-2xl border-l-4 bg-white p-3 ring-1 ring-line sm:max-w-2xl', TIP_STYLE[tip.tone].border)}>
+            <span className="absolute -left-[7px] top-5 h-3.5 w-3.5 rotate-45 bg-white ring-1 ring-line [clip-path:polygon(0_0,0_100%,100%_100%)]" aria-hidden="true" />
+            {tipBody}
+          </div>
+        </div>
+      )}
+
       {!open && (
         <button
           type="button"
           onClick={openPanel}
           aria-label={i.t('Ask Apa, your helper', 'আপাকে জিজ্ঞেস করুন, আপনার সহকারী')}
-          className="fixed bottom-[calc(6.75rem+env(safe-area-inset-bottom))] right-3 z-40 flex items-center gap-2 rounded-full bg-white p-1.5 pr-4 shadow-[0_6px_24px_-6px_rgba(0,0,0,0.35)] ring-1 ring-line transition hover:-translate-y-0.5 sm:right-5"
+          className="fixed bottom-[calc(6.75rem+env(safe-area-inset-bottom))] right-3 z-40 flex items-center gap-2 rounded-full bg-white p-1 shadow-[0_6px_24px_-6px_rgba(0,0,0,0.35)] ring-1 ring-line transition hover:-translate-y-0.5 sm:right-5 sm:p-1.5 sm:pr-4"
         >
           <ApaFace size={52} />
-          <span className="text-left leading-tight">
+          <span className="hidden text-left leading-tight sm:block">
             <span className="block font-sign text-lg">{i.t('Ask Apa', 'আপাকে বলুন')}</span>
             <span className="block text-xs text-ink-soft">{i.t('Your helper', 'আপনার সহকারী')}</span>
           </span>
@@ -152,10 +248,7 @@ export function ApaAssistant() {
               <div className="relative min-w-0 flex-1">
                 <h2 className="font-sign text-3xl leading-none">{i.t('Apa', 'আপা')}</h2>
                 <p className="mt-1 text-white/85">{i.t('Your helper on site', 'সাইটে আপনার সহকারী')}</p>
-                <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-white/12 px-2.5 py-0.5 text-sm">
-                  <WifiOff className="h-3.5 w-3.5" />
-                  {i.t('Works without internet', 'ইন্টারনেট ছাড়াই চলে')}
-                </p>
+                <p className="mt-1 text-sm text-white/75">{i.tx(road.name)}</p>
               </div>
               <button
                 type="button"
@@ -168,6 +261,38 @@ export function ApaAssistant() {
             </header>
 
             <div ref={body} className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+              {canListen() && (
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line pb-3">
+                  <Ear className="h-5 w-5 text-sign-600" />
+                  <span className="min-w-0 flex-1 font-semibold">{i.t('Call me by saying "Apa"', '"আপা" বলে ডাকুন')}</span>
+                  <span role="radiogroup" aria-label={i.t('Call by voice', 'কণ্ঠে ডাকা')} className="inline-flex items-center gap-1">
+                    {[
+                      { on: true, label: i.t('On', 'চালু') },
+                      { on: false, label: i.t('Off', 'বন্ধ') },
+                    ].map((o, idx) => (
+                      <span key={o.label} className="inline-flex items-center gap-1">
+                        {idx > 0 && <span className="text-line">|</span>}
+                        <button
+                          type="button"
+                          role="radio"
+                          aria-checked={wakeOn === o.on}
+                          onClick={() => setWake(o.on)}
+                          className={cn('px-1.5 py-1', wakeOn === o.on ? cn('font-bold', o.on ? 'text-guide-700' : 'text-stop-600') : 'font-semibold text-ink-soft/70 hover:text-ink')}
+                        >
+                          {o.label}
+                        </button>
+                      </span>
+                    ))}
+                  </span>
+                  {wakeOn && (
+                    <p className="w-full text-sm text-ink-soft">
+                      {wake.blocked
+                        ? i.t('The microphone is blocked, so I cannot hear my name.', 'মাইক বন্ধ, তাই আমার নাম শুনতে পারছি না।')
+                        : i.t('Close this panel and say "Apa, when is the break?" I will open and answer. Needs internet.', 'এই প্যানেল বন্ধ করে বলুন "আপা, বিরতি কখন?" আমি খুলে উত্তর দেব। ইন্টারনেট লাগবে।')}
+                    </p>
+                  )}
+                </div>
+              )}
               {asked && (
                 <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-sign-500 px-3.5 py-2 text-white">{asked}</p>
               )}
