@@ -7,9 +7,13 @@ import type { IconType } from './icons';
 
 export interface TabItem<K extends string> {
   key: K;
-  icon: IconType;
+  icon?: IconType;
   label: Text;
   count?: number;
+}
+
+function Count({ n, className }: { n: string; className?: string }) {
+  return <span className={cn('grid h-5 min-w-5 place-items-center rounded-full bg-stop-500 px-1.5 text-xs font-bold text-white', className)}>{n}</span>;
 }
 
 export function TabBar<K extends string>({
@@ -43,13 +47,18 @@ export function TabBar<K extends string>({
                 }}
                 className={cn('relative flex flex-col items-center gap-1 pb-2.5 pt-3 transition', on ? 'text-guide-700' : 'text-ink-soft/75')}
               >
-                <span className="relative grid h-11 w-14 place-items-center">
-                  <Icon className="h-7 w-7" strokeWidth={on ? 2.4 : 2} />
-                  {!!count && (
-                    <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-stop-500 px-1 text-xs font-bold text-white">{num(count)}</span>
-                  )}
+                {Icon ? (
+                  <span className="relative grid h-11 w-14 place-items-center">
+                    <Icon className="h-7 w-7" strokeWidth={on ? 2.4 : 2} />
+                    {!!count && <Count n={num(count)} className="absolute -right-1 -top-1" />}
+                  </span>
+                ) : (
+                  <span className={cn('absolute inset-x-4 top-0 h-1 rounded-b-full transition', on ? 'bg-guide-600' : 'bg-transparent')} />
+                )}
+                <span className={cn('flex items-center gap-1.5 font-semibold', Icon ? 'text-sm' : 'py-2 text-base')}>
+                  {tx(label)}
+                  {!Icon && !!count && <Count n={num(count)} />}
                 </span>
-                <span className="text-sm font-semibold">{tx(label)}</span>
               </button>
             );
           })}
@@ -78,11 +87,12 @@ export function TabBar<K extends string>({
               className={cn(
                 'flex min-h-14 items-center justify-center gap-2 px-1 py-1.5 text-center font-semibold leading-tight transition',
                 on ? 'text-guide-700' : 'text-ink-soft hover:text-ink',
+                !Icon && (on ? 'border-b-2 border-guide-600' : 'border-b-2 border-transparent'),
               )}
             >
-              <Icon className="h-5 w-5 shrink-0" />
+              {Icon && <Icon className="h-5 w-5 shrink-0" />}
               {tx(label)}
-              {!!count && <span className="grid h-6 min-w-6 place-items-center rounded-full bg-stop-500 px-1.5 text-xs font-bold text-white">{num(count)}</span>}
+              {!!count && <Count n={num(count)} />}
             </button>
           );
         })}

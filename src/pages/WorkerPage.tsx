@@ -1,5 +1,4 @@
 import { Navigate } from 'react-router-dom';
-import { HeartPulse, Megaphone, TrendingUp, Wallet } from 'lucide-react';
 import { ComplaintWizard, MyComplaints } from '@/features/complaints';
 import { HealthCheckIn, MyHealthHistory } from '@/features/health';
 import { WorkerEarnings } from '@/features/payroll';
@@ -15,10 +14,10 @@ const TAB_KEYS = ['money', 'health', 'raise', 'complain'] as const;
 type Tab = (typeof TAB_KEYS)[number];
 
 const TABS: TabItem<Tab>[] = [
-  { key: 'money', icon: Wallet, label: { en: 'My money', bn: 'আমার টাকা' } },
-  { key: 'health', icon: HeartPulse, label: { en: 'My health', bn: 'আমার স্বাস্থ্য' } },
-  { key: 'raise', icon: TrendingUp, label: { en: 'More pay', bn: 'বেতন বাড়ান' } },
-  { key: 'complain', icon: Megaphone, label: { en: 'Complain', bn: 'অভিযোগ' } },
+  { key: 'money', label: { en: 'My money', bn: 'আমার টাকা' } },
+  { key: 'health', label: { en: 'My health', bn: 'আমার স্বাস্থ্য' } },
+  { key: 'raise', label: { en: 'More pay', bn: 'বেতন বাড়ান' } },
+  { key: 'complain', label: { en: 'Complain', bn: 'অভিযোগ' } },
 ];
 
 export function WorkerPage() {
