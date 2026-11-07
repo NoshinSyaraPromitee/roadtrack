@@ -35,7 +35,6 @@ export function WorkerEarnings({ shifts, worker }: { shifts: Shift[]; worker: Wo
             <div className="flex items-center gap-3">
               <Avatar person={worker} size={56} />
               <div className="min-w-0 flex-1">
-                <p className="text-white/80">{i.t('Your money', 'আপনার টাকা')}</p>
                 <p className="truncate font-sign text-2xl leading-tight">{shortName(worker, i.lang)}</p>
               </div>
               <SpeakButton text={summary} tone="dark" size="lg" />
