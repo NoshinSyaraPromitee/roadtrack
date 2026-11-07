@@ -26,3 +26,9 @@ export async function shrinkPhoto(file: File): Promise<string> {
     URL.revokeObjectURL(url);
   }
 }
+
+export function sizedImage(url: string, px: number) {
+  if (!url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url;
+  const side = Math.round(px);
+  return url.replace('/upload/', `/upload/c_fill,g_face,w_${side},h_${side},f_auto,q_auto/`);
+}

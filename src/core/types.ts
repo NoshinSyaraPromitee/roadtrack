@@ -21,6 +21,7 @@ export interface Person {
   name: string;
   nameBn: string;
   color: string;
+  photo?: string;
 }
 
 export interface Worker extends Person {
@@ -113,6 +114,9 @@ export interface Road {
   to: Text;
   lengthKm: number;
   places: Text[];
+  photo?: string;
+  credit?: string;
+  custom?: boolean;
 }
 
 export type MachineKind = 'roller' | 'excavator' | 'paver' | 'mixer' | 'truck' | 'generator';

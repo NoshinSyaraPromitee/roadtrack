@@ -4,6 +4,7 @@ import type { Person } from '@/core/types';
 import { ICON_COLOR } from '@/shared/ui';
 import type { IconType } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
+import { sizedImage } from '@/shared/lib/image';
 import { roleIcon } from './postIcons';
 
 function Glyph({ icon: Icon, size }: { icon: IconType; size: number }) {
@@ -12,11 +13,11 @@ function Glyph({ icon: Icon, size }: { icon: IconType; size: number }) {
 
 const missing = new Set<string>();
 
-const photoOf = (person: Person) => `/workers/${person.id}.jpg`;
+const photoOf = (person: Person, size: number) => (person.photo ? sizedImage(person.photo, size * 2) : `/workers/${person.id}.jpg`);
 
 export function Avatar({ person, size = 56, selected, dim, className }: { person: Person; size?: number; selected?: boolean; dim?: boolean; className?: string }) {
   const mark = Math.max(18, Math.round(size * 0.36));
-  const src = photoOf(person);
+  const src = photoOf(person, size);
   const [broken, setBroken] = useState(() => missing.has(src));
 
   return (

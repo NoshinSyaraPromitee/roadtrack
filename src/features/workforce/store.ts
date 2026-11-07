@@ -14,7 +14,16 @@ export const useWorkforce = create<WorkforceState>()(
       workers: SEED_WORKERS,
       updateRate: (id, rate) => set((s) => ({ workers: s.workers.map((w) => (w.id === id ? { ...w, dailyRate: rate } : w)) })),
     }),
-    { name: 'roadtrack-v3-workforce' },
+    {
+      name: 'roadtrack-v3-workforce',
+      version: 1,
+      migrate: (saved) => {
+        const state = saved as Partial<WorkforceState>;
+        const seedPhoto = (id: string) => SEED_WORKERS.find((s) => s.id === id)?.photo;
+        const workers = (state.workers ?? SEED_WORKERS).map((w) => ({ ...w, photo: w.photo ?? seedPhoto(w.id) }));
+        return { ...state, workers } as WorkforceState;
+      },
+    },
   ),
 );
 
