@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
+/* Kalpurush for every Bangla letter; English text falls through to the next font in each stack. */
+@font-face {
+  font-family: "Kalpurush RT";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  size-adjust: 112%;
+  src: url("@hixbe/kalpurush/files/kalpurush.woff2") format("woff2"), url("@hixbe/kalpurush/files/kalpurush.woff") format("woff");
+  unicode-range: U+0951-0952, U+0964-0965, U+0980-09FE, U+1CD0, U+1CD2, U+1CD5-1CD6, U+1CD8, U+1CE1, U+1CEA, U+1CED, U+1CF2, U+1CF5-1CF7, U+200C-200D, U+20B9, U+25CC, U+A8F1;
+}
+
 @theme {
-  --font-sans: "Anek Latin Variable", "Anek Bangla Variable", system-ui, sans-serif;
-  --font-display: "Tiro Bangla", Georgia, serif;
+  --font-sans: "Kalpurush RT", "Anek Latin Variable", system-ui, sans-serif;
+  --font-display: "Kalpurush RT", "Tiro Bangla", Georgia, serif;
 
   --color-paper: #f3f5f0;
   --color-ink: #17201b;

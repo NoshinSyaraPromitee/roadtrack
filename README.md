@@ -1,4 +1,4 @@
-# RoadTrack - Road Construction Tracker (Frontend Demo)
+﻿# RoadTrack - Road Construction Tracker (Frontend Demo)
 
 Credosis Internship Phase 02, Frontend track.
 
@@ -10,7 +10,7 @@ Road construction crews in Bangladesh are tracked on paper. Headcounts drift, wa
 - **People as signs.** Every worker is shown as their work icon (shovel, brick wall, roller) on their own colour. Tap a person and the phone says their name.
 - **Voice.** Every key card has a speaker button that reads it aloud in Bangla or English. Break reminders speak on their own. Workers can record a voice message instead of writing a complaint.
 - **No typing.** Numbers use big minus and plus buttons. Tap the number to type if you prefer.
-- **Bangla and English.** One tap switches the language, including Bangla digits. Headings use Tiro Bangla, a serif made for both Bangla and English; everything else uses Anek, with real weights instead of faux bold.
+- **Bangla and English.** One tap switches the language, including Bangla digits. Bangla text uses Kalpurush; English uses Tiro Bangla for headings and Anek for everything else.
 - **Plain switches.** Choices are shown by coloured text, not filled pill buttons.
 - **Phone and laptop.** Big bottom tabs and one column on phones; top tabs and two columns on laptops.
 
