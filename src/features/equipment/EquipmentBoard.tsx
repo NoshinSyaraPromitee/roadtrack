@@ -1,13 +1,15 @@
-import { CircleCheck, Tractor } from 'lucide-react';
+import { Tractor } from 'lucide-react';
 import type { Machine, MachineStatus } from '@/core/types';
+import { repairCostAll } from '@/core/repairs';
 import { Avatar, personName, useWorkforce } from '@/features/workforce';
 import { useRoad } from '@/features/road';
 import { useI18n } from '@/shared/i18n';
 import { SpeakButton } from '@/shared/voice';
-import { Button, Card, CardHeader, Pictogram, Segmented, StackBar, Stepper } from '@/shared/ui';
+import { Card, CardHeader, Pictogram, Segmented, StackBar, Stepper } from '@/shared/ui';
 import type { SegmentOption } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { LOW_FUEL_PCT, MACHINE_KIND, MACHINE_STATUS, SERVICE_EVERY_HOURS, fuelLow, machineName, serviceDue } from './meta';
+import { RepairControl } from './RepairControl';
 import { useEquipment } from './store';
 
 const STATUS_OPTIONS: SegmentOption<MachineStatus>[] = [
@@ -19,7 +21,6 @@ const STATUS_OPTIONS: SegmentOption<MachineStatus>[] = [
 function MachineCard({ m }: { m: Machine }) {
   const i = useI18n();
   const update = useEquipment((s) => s.update);
-  const serviced = useEquipment((s) => s.serviced);
   const workers = useWorkforce((s) => s.workers);
   const operator = workers.find((w) => w.id === m.operatorId);
   const kind = MACHINE_KIND[m.kind];
@@ -77,19 +78,12 @@ function MachineCard({ m }: { m: Machine }) {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-        <span className={cn('text-sm', due ? 'font-semibold text-stop-600' : 'text-ink-soft')}>
-          {due
-            ? i.t(`Service due: ${i.num(m.hoursSinceService)} hours since last service`, `সার্ভিসিং দরকার: শেষ সার্ভিসের পর ${i.num(m.hoursSinceService)} ঘণ্টা`)
-            : i.t(`Next service in ${i.num(SERVICE_EVERY_HOURS - m.hoursSinceService)} hours`, `${i.num(SERVICE_EVERY_HOURS - m.hoursSinceService)} ঘণ্টা পর সার্ভিসিং`)}
-        </span>
-        {(due || m.status === 'repair') && (
-          <Button variant="secondary" size="sm" onClick={() => serviced(m.id)}>
-            <CircleCheck />
-            {i.t('Fixed and serviced', 'ঠিক ও সার্ভিস করা হয়েছে')}
-          </Button>
-        )}
-      </div>
+      <p className={cn('mt-4 text-sm', due ? 'font-semibold text-stop-600' : 'text-ink-soft')}>
+        {due
+          ? i.t(`Service due: ${i.num(m.hoursSinceService)} hours since last service`, `সার্ভিসিং দরকার: শেষ সার্ভিসের পর ${i.num(m.hoursSinceService)} ঘণ্টা`)
+          : i.t(`Next service in ${i.num(SERVICE_EVERY_HOURS - m.hoursSinceService)} hours`, `${i.num(SERVICE_EVERY_HOURS - m.hoursSinceService)} ঘণ্টা পর সার্ভিসিং`)}
+      </p>
+      <RepairControl m={m} needed={due || m.status === 'repair'} />
     </li>
   );
 }
@@ -101,6 +95,7 @@ export function EquipmentBoard() {
   const machines = all.filter((m) => m.roadId === road.id);
   const count = (s: MachineStatus) => machines.filter((m) => m.status === s).length;
   const lowFuel = machines.filter(fuelLow);
+  const spent = repairCostAll(machines);
 
   return (
     <Card>
@@ -120,6 +115,7 @@ export function EquipmentBoard() {
         {lowFuel.length > 0 && (
           <span className="text-stop-600">{i.t(`${i.num(lowFuel.length)} below ${LOW_FUEL_PCT}% fuel`, `${i.num(lowFuel.length)}টির জ্বালানি ${i.num(LOW_FUEL_PCT)}%-এর কম`)}</span>
         )}
+        {spent > 0 && <span className="text-ink">{i.t(`${i.taka(spent)} spent on repairs`, `মেরামতে খরচ ${i.taka(spent)}`)}</span>}
       </div>
       <ul className="grid gap-3 lg:grid-cols-2">
         {machines.map((m) => (

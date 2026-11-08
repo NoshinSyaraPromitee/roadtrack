@@ -133,6 +133,12 @@ export interface Machine {
   hoursSinceService: number;
   operatorId?: string;
   updatedAt: string;
+  repairs?: Repair[];
+}
+
+export interface Repair {
+  at: string;
+  cost: number;
 }
 
 export interface HealthReport {

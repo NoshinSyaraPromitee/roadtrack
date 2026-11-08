@@ -6,12 +6,12 @@ const machine = (m: Omit<Machine, 'updatedAt' | 'hoursToday'> & { hoursToday?: n
 
 export const SEED_MACHINES: Machine[] = [
   machine({ id: 'm1', roadId: 'r1', kind: 'roller', code: 'RL-01', status: 'working', fuelPct: 70, hoursSinceService: 120, operatorId: 'w5' }),
-  machine({ id: 'm2', roadId: 'r1', kind: 'excavator', code: 'EX-02', status: 'working', fuelPct: 55, hoursSinceService: 236, operatorId: 'w3' }),
+  machine({ id: 'm2', roadId: 'r1', kind: 'excavator', code: 'EX-02', status: 'working', fuelPct: 55, hoursSinceService: 236, operatorId: 'w3', repairs: [{ at: at(9, 15, 0), cost: 4500 }] }),
   machine({ id: 'm3', roadId: 'r1', kind: 'paver', code: 'PV-01', status: 'idle', fuelPct: 80, hoursSinceService: 60 }),
-  machine({ id: 'm4', roadId: 'r1', kind: 'mixer', code: 'MX-03', status: 'repair', fuelPct: 40, hoursSinceService: 262 }),
+  machine({ id: 'm4', roadId: 'r1', kind: 'mixer', code: 'MX-03', status: 'repair', fuelPct: 40, hoursSinceService: 262, repairs: [{ at: at(20, 11, 0), cost: 12000 }] }),
   machine({ id: 'm5', roadId: 'r1', kind: 'truck', code: 'TR-07', status: 'working', fuelPct: 18, hoursSinceService: 90, operatorId: 'w1' }),
   machine({ id: 'm6', roadId: 'r1', kind: 'generator', code: 'GN-01', status: 'idle', fuelPct: 65, hoursSinceService: 30 }),
-  machine({ id: 'm7', roadId: 'r2', kind: 'roller', code: 'RL-04', status: 'working', fuelPct: 62, hoursSinceService: 150, operatorId: 'w5' }),
+  machine({ id: 'm7', roadId: 'r2', kind: 'roller', code: 'RL-04', status: 'working', fuelPct: 62, hoursSinceService: 150, operatorId: 'w5', repairs: [{ at: at(5, 10, 0), cost: 7800 }] }),
   machine({ id: 'm8', roadId: 'r2', kind: 'truck', code: 'TR-02', status: 'idle', fuelPct: 85, hoursSinceService: 40 }),
   machine({ id: 'm9', roadId: 'r2', kind: 'mixer', code: 'MX-01', status: 'working', fuelPct: 22, hoursSinceService: 180 }),
   machine({ id: 'm10', roadId: 'r3', kind: 'paver', code: 'PV-02', status: 'working', fuelPct: 58, hoursSinceService: 255, operatorId: 'w3' }),
