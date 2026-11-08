@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BriefcaseBusiness, Building2, Check, ClipboardCheck, HardHat } from 'lucide-react';
 import type { Role } from '@/core/types';
@@ -107,10 +107,10 @@ export function LoginFlow({ progress }: { progress: Record<string, number> }) {
             className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 rounded-[18px] border border-line bg-white p-4 transition hover:border-guide-600 hover:bg-guide-50 md:flex md:flex-col md:p-6 md:text-center"
           >
             <span className="md:hidden">
-              <Pictogram icon={r.icon} tone={r.tone} shape={r.shape} size={64} keepTone />
+              <Pictogram icon={r.icon} tone={r.tone} shape={r.shape} size={64} keepTone fullSize />
             </span>
             <span className="hidden md:block">
-              <Pictogram icon={r.icon} tone={r.tone} shape={r.shape} size={88} keepTone />
+              <Pictogram icon={r.icon} tone={r.tone} shape={r.shape} size={88} keepTone fullSize />
             </span>
             <div className="min-w-0 md:mt-4 md:flex-1">
               <h2 className="font-sign text-3xl leading-tight">{tx(r.title)}</h2>

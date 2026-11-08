@@ -15,6 +15,9 @@ const PALETTE: Record<PictoTone, { fill: string; edge: string; icon: string }> =
 
 export const ICON_COLOR = '#09400e';
 
+/** Signs are drawn a little smaller than the space they are given, so screens feel lighter. */
+const SCALE = 0.85;
+
 export function Pictogram({
   icon: Icon,
   tone = 'guide',
@@ -24,6 +27,7 @@ export function Pictogram({
   className,
   keepTone = false,
   onDark = false,
+  fullSize = false,
 }: {
   icon: IconType;
   tone?: PictoTone;
@@ -33,7 +37,10 @@ export function Pictogram({
   className?: string;
   keepTone?: boolean;
   onDark?: boolean;
+  /** Draw at the exact size given, for the big role signs on the home page. */
+  fullSize?: boolean;
 }) {
+  const px = fullSize ? size : Math.round(size * SCALE);
   const p = keepTone
     ? PALETTE[tone]
     : onDark
@@ -41,7 +48,7 @@ export function Pictogram({
       : { fill: ICON_COLOR, edge: ICON_COLOR, icon: '#ffffff' };
   const toneKey: PictoTone = keepTone ? tone : onDark ? 'plain' : 'guide';
   const warn = shape === 'warn';
-  const iconSize = Math.round(size * (warn ? 0.42 : 0.5));
+  const iconSize = Math.round(px * (warn ? 0.42 : 0.5));
   const ringed = onDark || toneKey === 'stop' || toneKey === 'plain' || toneKey === 'mark';
 
   return (
@@ -50,7 +57,7 @@ export function Pictogram({
       aria-label={label}
       aria-hidden={label ? undefined : true}
       className={cn('relative inline-grid shrink-0 place-items-center', className)}
-      style={{ width: size, height: size }}
+      style={{ width: px, height: px }}
     >
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden="true">
         {shape === 'plate' && <rect x="4" y="4" width="92" height="92" rx="22" fill={p.fill} stroke={ringed ? p.edge : 'none'} strokeWidth={ringed ? 7 : 0} />}
@@ -68,7 +75,7 @@ export function Pictogram({
       <Icon
         className="relative"
         strokeWidth={2.4}
-        style={{ width: iconSize, height: iconSize, color: warn ? (keepTone ? '#1f2623' : onDark ? '#ffffff' : ICON_COLOR) : p.icon, transform: warn ? `translateY(${size * 0.11}px)` : undefined }}
+        style={{ width: iconSize, height: iconSize, color: warn ? (keepTone ? '#1f2623' : onDark ? '#ffffff' : ICON_COLOR) : p.icon, transform: warn ? `translateY(${px * 0.11}px)` : undefined }}
       />
     </span>
   );
