@@ -1,25 +1,23 @@
-import { useState } from 'react';
 import type { Road } from '@/core/types';
 import { pctToKm } from '@/core/roads';
 import { useI18n } from '@/shared/i18n';
 import { SpeakButton } from '@/shared/voice';
 import { RoadStrip } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
-
-const FALLBACK = '/scenes/site-banner.svg';
+import { useRoadPhoto } from './useRoadPhoto';
 
 function RoadPhoto({ road }: { road: Road }) {
   const { t } = useI18n();
-  const [broken, setBroken] = useState(!road.photo);
+  const photo = useRoadPhoto(road.photo);
   return (
     <div className="relative aspect-[16/9] bg-asphalt md:aspect-auto md:min-h-[300px]">
       <img
-        src={broken ? FALLBACK : road.photo!}
+        src={photo.src}
         alt={t(`Photo of ${road.name.en}`, `${road.name.bn}-এর ছবি`)}
-        onError={() => setBroken(true)}
-        className={cn('absolute inset-0 h-full w-full object-cover', broken && 'object-bottom')}
+        onError={photo.onError}
+        className={cn('absolute inset-0 h-full w-full object-cover', photo.isFallback && 'object-bottom')}
       />
-      {!broken && road.credit && (
+      {!photo.isFallback && road.credit && (
         <span className="absolute bottom-2 left-2 rounded-md bg-black/55 px-2 py-0.5 text-xs text-white/90">{t(`Photo: ${road.credit}`, `ছবি: ${road.credit}`)}</span>
       )}
     </div>

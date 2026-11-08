@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MapPinned, Plus } from 'lucide-react';
-import { roadProblems, toRoad } from '@/core/newRoad';
+import { MAX_ROAD_KM, roadProblems, toRoad } from '@/core/newRoad';
 import type { RoadDraft, RoadProblem } from '@/core/newRoad';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
@@ -79,7 +79,7 @@ export function AddRoadForm({ onAdded }: { onAdded: () => void }) {
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <p className="mb-1.5 text-sm font-semibold">{t('Length of the road', 'রাস্তার দৈর্ঘ্য')}</p>
-              <Stepper value={draft.lengthKm} step={0.1} decimals={1} min={0.1} max={200} unit={t('km', 'কিমি')} label={t('Length in km', 'দৈর্ঘ্য কিমি')} onChange={(v) => set({ lengthKm: v })} />
+              <Stepper value={draft.lengthKm} step={0.1} decimals={1} min={0.1} max={MAX_ROAD_KM} unit={t('km', 'কিমি')} label={t('Length in km', 'দৈর্ঘ্য কিমি')} onChange={(v) => set({ lengthKm: v })} />
               {errorFor('length') && <p className="mt-1.5 text-sm font-semibold text-stop-600">{errorFor('length')}</p>}
             </div>
             <Field label={t('Work places on the way (one per line, optional)', 'পথের কাজের জায়গা (প্রতি লাইনে একটি, ঐচ্ছিক)')} hint={t('Start and end are added for you.', 'শুরু আর শেষের জায়গা নিজে থেকেই যোগ হবে।')}>

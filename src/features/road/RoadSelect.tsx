@@ -1,10 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { ROADS } from '@/core/roads';
 import { useI18n } from '@/shared/i18n';
 import { useSay } from '@/shared/voice';
 import { cn } from '@/shared/lib/utils';
-import { useRoad, useRoadStore } from './store';
+import { useRoad, useRoadStore, useRoads } from './store';
 
 type Variant = 'field' | 'header' | 'inline';
 
@@ -13,6 +12,7 @@ export function RoadSelect({ progress, variant = 'field', className }: { progres
   const { hint } = useSay();
   const road = useRoad();
   const setRoad = useRoadStore((s) => s.setRoad);
+  const roads = useRoads();
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   const listId = useId();
@@ -77,7 +77,7 @@ export function RoadSelect({ progress, variant = 'field', className }: { progres
             variant === 'field' ? 'w-full' : 'w-[min(26rem,calc(100vw-2rem))]',
           )}
         >
-          {ROADS.map((r) => {
+          {roads.map((r) => {
             const on = r.id === road.id;
             return (
               <li key={r.id} role="option" aria-selected={on}>
