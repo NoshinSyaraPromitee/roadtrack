@@ -1,10 +1,15 @@
-import { useRoad } from './store';
+import { useRoad, useRoads } from './store';
 import { useRoadPhoto } from './useRoadPhoto';
 
-/** The chosen road's photo behind the page, faded under a white wash so the form stays easy to read. */
-export function RoadBackdrop() {
+/**
+ * A road photo behind the page, faded under a white wash so the form stays easy to read.
+ * `other` shows the next road's photo instead of the chosen one, so two pages can look different.
+ */
+export function RoadBackdrop({ other = false }: { other?: boolean }) {
   const road = useRoad();
-  const photo = useRoadPhoto(road.photo);
+  const roads = useRoads();
+  const next = roads[(roads.findIndex((r) => r.id === road.id) + 1) % roads.length];
+  const photo = useRoadPhoto(other && next ? next.photo : road.photo);
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">

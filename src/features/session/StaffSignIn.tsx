@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import type { Account } from '@/core/accounts';
 import type { Provider } from '@/core/registrations';
+import { RoadBackdrop } from '@/features/road';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { Button } from '@/shared/ui';
@@ -24,6 +25,7 @@ export function StaffSignIn({ role, title, onDone, onBack }: { role: Account['ro
 
   return (
     <div className="space-y-4">
+      <RoadBackdrop other />
       <SignInForm role={role} title={title} onDone={onDone} onBack={onBack} />
       <div className="mx-auto max-w-md space-y-4">
         <SocialSignIn role={role} onAccount={onDone} onRegister={canRegister ? (email, provider) => setMode({ kind: 'register', provider, email }) : undefined} />
