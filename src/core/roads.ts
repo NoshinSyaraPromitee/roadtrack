@@ -3,6 +3,8 @@ import type { Road } from './types';
 export const ROADS: Road[] = [
   {
     id: 'r1',
+    photo: '/roads/tongi-gazipur.jpg',
+    credit: 'The Business Standard',
     name: { en: 'Tongi-Gazipur Link Road', bn: 'টঙ্গী-গাজীপুর সংযোগ সড়ক' },
     area: { en: 'Gazipur', bn: 'গাজীপুর' },
     from: { en: 'Cherag Ali Market', bn: 'চেরাগ আলী মার্কেট' },
@@ -17,6 +19,8 @@ export const ROADS: Road[] = [
   },
   {
     id: 'r2',
+    photo: '/roads/mirpur-kalshi.jpg',
+    credit: 'The Business Standard',
     name: { en: 'Mirpur 10 - Kalshi Road', bn: 'মিরপুর ১০ - কালশী সড়ক' },
     area: { en: 'Mirpur, Dhaka', bn: 'মিরপুর, ঢাকা' },
     from: { en: 'Mirpur 10 Circle', bn: 'মিরপুর ১০ গোলচত্বর' },
@@ -31,6 +35,8 @@ export const ROADS: Road[] = [
   },
   {
     id: 'r3',
+    photo: '/roads/savar-baipail.webp',
+    credit: 'Wikimedia Commons',
     name: { en: 'Savar - Baipail Road', bn: 'সাভার - বাইপাইল সড়ক' },
     area: { en: 'Savar, Dhaka', bn: 'সাভার, ঢাকা' },
     from: { en: 'Savar Bus Stand', bn: 'সাভার বাসস্ট্যান্ড' },
@@ -45,6 +51,8 @@ export const ROADS: Road[] = [
   },
   {
     id: 'r4',
+    photo: '/roads/medical-modern.jpg',
+    credit: 'Dreamstime',
     name: { en: 'Medical More - Modern More Road', bn: 'মেডিকেল মোড় - মডার্ন মোড় সড়ক' },
     area: { en: 'Rangpur', bn: 'রংপুর' },
     from: { en: 'Medical More', bn: 'মেডিকেল মোড়' },
@@ -59,9 +67,7 @@ export const ROADS: Road[] = [
   },
 ];
 
-export const ROAD_BY_ID: Record<string, Road> = Object.fromEntries(ROADS.map((r) => [r.id, r]));
-
-export const roadById = (id: string | null | undefined): Road => ROAD_BY_ID[id ?? ''] ?? ROADS[0];
+export const roadById = (id: string | null | undefined, roads: Road[] = ROADS): Road => roads.find((r) => r.id === id) ?? roads[0] ?? ROADS[0];
 
 export const kmToPct = (km: number, road: Road) => Math.round((km / road.lengthKm) * 10000) / 100;
 export const pctToKm = (pct: number, road: Road) => Math.round(((pct * road.lengthKm) / 100) * 100) / 100;

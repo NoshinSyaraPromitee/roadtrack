@@ -37,6 +37,11 @@ export type SignInResult = { ok: true; account: Account } | { ok: false; reason:
 
 export const normalizeEmail = (email: string) => email.trim().toLowerCase();
 
+/** A Bangladeshi mobile number: 11 digits starting with 01 (Bangla digits and +880 are accepted). */
+export const isMobileNumber = (phone: string) => /^01\d{9}$/.test(normalizePhone(phone));
+
+export const isEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(email));
+
 export const findAccount = (role: Account['role'], phone: string, extra: Account[] = []) =>
   [...ACCOUNTS, ...extra].find((a) => a.role === role && a.phone === normalizePhone(phone));
 

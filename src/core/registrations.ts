@@ -1,5 +1,5 @@
 import type { Account } from './accounts';
-import { normalizeEmail, normalizePhone } from './accounts';
+import { isEmail, isMobileNumber, normalizeEmail, normalizePhone } from './accounts';
 
 export type Provider = 'phone' | 'google' | 'apple';
 export type RegistrationStatus = 'pending' | 'approved' | 'rejected';
@@ -29,8 +29,6 @@ export interface RegistrationDraft {
 
 export type RegistrationProblem = 'name' | 'company' | 'licence' | 'phone' | 'email' | 'phone-taken' | 'email-taken';
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export function registrationProblems(d: RegistrationDraft, taken: { phones: string[]; emails: string[] }): RegistrationProblem[] {
   const problems: RegistrationProblem[] = [];
   const phone = normalizePhone(d.phone);
@@ -38,9 +36,9 @@ export function registrationProblems(d: RegistrationDraft, taken: { phones: stri
   if (d.name.trim().length < 3) problems.push('name');
   if (d.company.trim().length < 2) problems.push('company');
   if (!/^[A-Za-z0-9-/]{4,20}$/.test(d.licence.trim())) problems.push('licence');
-  if (phone.length !== 11 || !phone.startsWith('01')) problems.push('phone');
+  if (!isMobileNumber(phone)) problems.push('phone');
   else if (taken.phones.includes(phone)) problems.push('phone-taken');
-  if ((d.provider !== 'phone' || email) && !EMAIL.test(email)) problems.push('email');
+  if ((d.provider !== 'phone' || email) && !isEmail(email)) problems.push('email');
   else if (email && taken.emails.includes(email)) problems.push('email-taken');
   return problems;
 }

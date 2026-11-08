@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { sickDays } from '../health';
+import { sickDays, todaysReport, todaysReports } from '../health';
 import { day, report } from './fixtures';
 
 const NOW = day(20, 12);
@@ -41,5 +41,20 @@ describe('sickDays', () => {
 
   it('ignores other workers', () => {
     expect(sickDays([report('w2', 'sick', day(20))], 'w1', NOW)).toEqual({ streak: 0, month: 0 });
+  });
+});
+
+describe('todaysReports', () => {
+  const reports = [report('w1', 'sick', day(7, 8)), report('w1', 'fit', day(8, 7)), report('w1', 'sick', day(8, 11)), report('w2', 'fit', day(8, 9))];
+
+  it('keeps only the latest report per worker from today', () => {
+    expect(todaysReports(reports, day(8, 18)).map((r) => [r.workerId, r.status])).toEqual([
+      ['w1', 'sick'],
+      ['w2', 'fit'],
+    ]);
+  });
+
+  it('ignores earlier days', () => {
+    expect(todaysReport(reports, 'w1', day(9, 9))).toBeUndefined();
   });
 });

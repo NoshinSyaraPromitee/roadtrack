@@ -7,6 +7,20 @@ const dayStart = (d: Date) => {
   return x.getTime();
 };
 
+const isSameDay = (iso: string, now: Date | number = new Date()) => new Date(iso).toDateString() === new Date(now).toDateString();
+
+/** The worker's latest report from today, if any. */
+export function todaysReport(reports: HealthReport[], workerId: string, now: Date | number = new Date()): HealthReport | undefined {
+  const mine = reports.filter((r) => r.workerId === workerId && isSameDay(r.at, now));
+  return mine.sort((a, b) => a.at.localeCompare(b.at))[mine.length - 1];
+}
+
+/** One latest report per worker, from today only. */
+export function todaysReports(reports: HealthReport[], now: Date | number = new Date()): HealthReport[] {
+  const ids = Array.from(new Set(reports.filter((r) => isSameDay(r.at, now)).map((r) => r.workerId)));
+  return ids.map((id) => todaysReport(reports, id, now)).filter((r): r is HealthReport => !!r);
+}
+
 export interface SickDays {
   streak: number;
   month: number;
