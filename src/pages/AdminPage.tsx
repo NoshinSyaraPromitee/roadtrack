@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { FileText, Gauge, HandCoins, Megaphone, Route, Tractor, UserPlus, Wallet } from 'lucide-react';
 import { isBroken } from '@/core/machines';
 import { sumMaterials } from '@/core/materials';
@@ -60,7 +61,9 @@ export function AdminPage() {
         <>
           <ProjectOverview />
           <MaterialTotals lines={sumMaterials(shifts.map((s) => s.materials))} title={i.t('Materials on this road, all shifts', 'এই রাস্তার সব শিফটের মালামাল')} filterable />
-          <ProgressChart />
+          <Suspense fallback={<div className="h-80 rounded-3xl border border-line bg-white" />}>
+            <ProgressChart />
+          </Suspense>
         </>
       )}
       {tab === 'pay' && <PayrollApprovals shifts={shifts} onApprove={approvePay} />}

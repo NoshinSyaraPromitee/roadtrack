@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { Building2, LogOut, Megaphone, RotateCcw } from 'lucide-react';
 import { SUPERVISOR } from '@/data/seed';
@@ -9,8 +10,9 @@ import { Avatar, roleOf, shortName, useWorker } from '@/features/workforce';
 import { LangToggle, useI18n } from '@/shared/i18n';
 import { VoiceGuideToggle } from '@/shared/voice';
 import { Logo, Pictogram } from '@/shared/ui';
-import { BackButton } from './BackButton';
-import { HomeButton } from './HomeButton';
+import { clearSavedData } from '@/shared/lib/savedData';
+import { NavButtons } from './NavButtons';
+import { PageLoading } from './PageLoading';
 
 export function AppShell() {
   const i = useI18n();
@@ -27,9 +29,7 @@ export function AppShell() {
 
   const resetData = () => {
     if (!window.confirm(i.t('Delete everything saved on this device and start again?', 'এই ডিভাইসে রাখা সব তথ্য মুছে আবার শুরু করবেন?'))) return;
-    Object.keys(localStorage)
-      .filter((k) => k.startsWith('roadtrack-') && k !== 'roadtrack-v3-lang')
-      .forEach((k) => localStorage.removeItem(k));
+    clearSavedData();
     window.location.href = '/';
   };
 
@@ -98,14 +98,13 @@ export function AppShell() {
       </header>
       <main className="mx-auto max-w-6xl px-4 py-5 md:py-8">
         <div className="-mt-1 mb-4 flex items-center justify-between gap-3 md:mt-0">
-          <div className="flex shrink-0 items-center gap-2">
-            <BackButton />
-            <HomeButton />
-          </div>
+          <NavButtons />
           <RoadSelect progress={progress} variant="inline" className="min-w-0 md:hidden" />
         </div>
         <ApaAssistant />
-        <Outlet />
+        <Suspense fallback={<PageLoading />}>
+          <Outlet />
+        </Suspense>
       </main>
     </div>
   );
