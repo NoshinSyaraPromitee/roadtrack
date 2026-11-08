@@ -4,7 +4,7 @@ import { MAX_ROAD_KM, roadProblems, toRoad } from '@/core/newRoad';
 import type { RoadDraft, RoadProblem } from '@/core/newRoad';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
-import { Button, Card, CardHeader, Field, Input, PhotoPicker, Stepper, Textarea } from '@/shared/ui';
+import { Button, Card, CardHeader, confirmSent, Field, Input, PhotoPicker, Stepper, Textarea } from '@/shared/ui';
 import { uid } from '@/shared/lib/utils';
 import { useRoadStore, useRoads } from './store';
 
@@ -47,6 +47,7 @@ export function AddRoadForm({ onAdded }: { onAdded: () => void }) {
     setProblems(found);
     if (found.length) return;
     addRoad(toRoad({ ...draft, photo: photos[0] }, uid('road')));
+    confirmSent({ en: 'Road added', bn: 'রাস্তা যোগ হয়েছে' }, { en: `${draft.nameEn.trim()} is now in the road list.`, bn: `${draft.nameBn.trim() || draft.nameEn.trim()} এখন রাস্তার তালিকায় আছে।` });
     setDraft(blank);
     setPhotos([]);
     onAdded();

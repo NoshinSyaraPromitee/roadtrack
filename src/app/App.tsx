@@ -5,6 +5,7 @@ import { LoginPage } from '@/pages/LoginPage';
 import { SupervisorPage } from '@/pages/SupervisorPage';
 import { WorkerPage } from '@/pages/WorkerPage';
 import { useLang } from '@/shared/i18n';
+import { SubmitNotice } from '@/shared/ui';
 import { AppShell } from './AppShell';
 import { RequireRole } from './RequireRole';
 
@@ -17,6 +18,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <SubmitNotice />
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route element={<AppShell />}>

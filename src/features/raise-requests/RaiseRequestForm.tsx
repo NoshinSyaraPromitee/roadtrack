@@ -4,7 +4,7 @@ import { ArrowRight, HandCoins, Hourglass, Send, TrendingUp } from 'lucide-react
 import type { RaiseReason, Worker } from '@/core/types';
 import { RAISE_KEYS, RAISE_REASONS } from '@/core/catalog';
 import { useI18n } from '@/shared/i18n';
-import { Button, Card, CardHeader, Pictogram, Stepper, Tile, VoiceOrWrite } from '@/shared/ui';
+import { Button, Card, CardHeader, confirmSent, Pictogram, Stepper, Tile, VoiceOrWrite } from '@/shared/ui';
 import { REASON_ICON } from './meta';
 import { useRaiseRequests } from './store';
 
@@ -44,6 +44,7 @@ export function RaiseRequestForm({ worker }: { worker: Worker }) {
     if (!reason) return setError(t('Tap a reason.', 'একটি কারণে চাপ দিন।'));
     if (!audio && details.trim().length < 10) return setError(t('Record your voice or write a few words.', 'কণ্ঠ রেকর্ড করুন অথবা কয়েকটি কথা লিখুন।'));
     request({ workerId: worker.id, currentRate: worker.dailyRate, requestedRate: rate, reason, details: details.trim(), audio: audio ?? undefined });
+    confirmSent({ en: 'Raise request sent', bn: 'বেতন বাড়ানোর আবেদন পাঠানো হয়েছে' }, { en: 'Head office will decide.', bn: 'প্রধান কার্যালয় সিদ্ধান্ত নেবে।' });
   };
 
   return (

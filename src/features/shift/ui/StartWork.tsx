@@ -4,7 +4,7 @@ import { pctToKm } from '@/core/roads';
 import { useRoad } from '@/features/road';
 import { AvatarStack, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
-import { ActionBar, Card, CardHeader, RoadStrip } from '@/shared/ui';
+import { ActionBar, Card, confirmSent, CardHeader, RoadStrip } from '@/shared/ui';
 import type { DayPlan } from '../model/daySetup';
 import { useShiftStore } from '../model/store';
 import { MaterialPicto } from './icons';
@@ -19,6 +19,7 @@ export function StartWork({ plan, onBack, onStarted }: { plan: DayPlan; onBack: 
 
   const start = () => {
     startShift({ roadId: road.id, ...plan });
+    confirmSent({ en: 'Work started', bn: 'কাজ শুরু হয়েছে' }, { en: 'The shift timer is running.', bn: 'শিফটের সময় গোনা শুরু হয়েছে।' });
     onStarted();
   };
 

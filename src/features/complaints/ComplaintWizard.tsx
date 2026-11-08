@@ -6,7 +6,7 @@ import { SUPERVISOR } from '@/data/seed';
 import { PeoplePicker, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import { useSay } from '@/shared/voice';
-import { ActionBar, Card, CardHeader, Pictogram, Tile, VoiceOrWrite, WizardSteps } from '@/shared/ui';
+import { ActionBar, Card, CardHeader, confirmSent, Pictogram, Tile, VoiceOrWrite, WizardSteps } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { CATEGORY_ICON } from './meta';
 import { useComplaintReceipts, useComplaints } from './store';
@@ -57,6 +57,7 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
       const id = file({ fromWorkerId: workerId, againstId: against, category, message: message.trim(), audio: audio ?? undefined, anonymous });
       if (anonymous) keepReceipt(workerId, id);
       setSent(true);
+      confirmSent({ en: 'Complaint sent', bn: 'অভিযোগ পাঠানো হয়েছে' });
       return;
     }
     setStep(step + 1);

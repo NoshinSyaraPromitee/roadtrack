@@ -3,7 +3,7 @@ import { CircleCheck, X } from 'lucide-react';
 import type { Machine } from '@/core/types';
 import { MAX_REPAIR_COST, lastRepair, repairCost } from '@/core/machines';
 import { useI18n } from '@/shared/i18n';
-import { Button, Stepper } from '@/shared/ui';
+import { Button, confirmSent, Stepper } from '@/shared/ui';
 import { useEquipment } from './store';
 
 /** Shows what fixing this machine has cost, and asks for the amount when it is marked fixed. */
@@ -37,6 +37,7 @@ export function RepairControl({ m, needed }: { m: Machine; needed: boolean }) {
               className="min-w-0 flex-1"
               onClick={() => {
                 serviced(m.id, cost);
+                confirmSent({ en: 'Repair saved', bn: 'মেরামত সেভ হয়েছে' });
                 setAsking(false);
                 setCost(0);
               }}

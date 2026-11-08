@@ -10,7 +10,7 @@ import { useHealthReports } from '@/features/health';
 import { PayRules, PayrollList } from '@/features/payroll';
 import { useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
-import { ActionBar, Card, CardHeader, PageHeader, WizardSteps } from '@/shared/ui';
+import { ActionBar, Card, confirmSent, CardHeader, PageHeader, WizardSteps } from '@/shared/ui';
 import { pct } from '@/shared/lib/utils';
 import { useShiftStore } from '../model/store';
 import { MaterialTotals } from './MaterialTotals';
@@ -68,7 +68,9 @@ export function EndShiftWizard({ shift, onCancel, onEnded }: { shift: Shift; onC
     }
     if (step === 3) {
       const id = endShift(road.id, { attendance: rows, materials: mats, endProgress, incidentTags: tags, incidents: notes.trim(), photos, payEdits }, workers);
-      if (id) onEnded(id);
+      if (!id) return;
+      confirmSent({ en: 'Pay list sent', bn: 'মজুরির তালিকা পাঠানো হয়েছে' }, { en: 'The shift is finished. Head office will check and approve the pay.', bn: 'শিফট শেষ হয়েছে। প্রধান কার্যালয় দেখে মজুরি অনুমোদন দেবে।' });
+      onEnded(id);
       return;
     }
     setStep(step + 1);

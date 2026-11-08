@@ -5,7 +5,7 @@ import { RAISE_REASONS } from '@/core/catalog';
 import { Avatar, personName, roleOf, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import { VoiceNote } from '@/shared/voice';
-import { Badge, Button, Card, CardHeader, EmptyState, Pictogram } from '@/shared/ui';
+import { Badge, Button, Card, CardHeader, confirmSent, EmptyState, Pictogram } from '@/shared/ui';
 import { RAISE_STATUS, REASON_ICON } from './meta';
 import { useRaiseRequests } from './store';
 
@@ -58,6 +58,11 @@ export function RaiseInbox() {
   const approve = (r: RaiseRequest) => {
     decide(r.id, 'approved');
     updateRate(r.workerId, r.requestedRate);
+    confirmSent({ en: 'Raise approved', bn: 'বেতন বৃদ্ধি অনুমোদিত হয়েছে' });
+  };
+  const reject = (r: RaiseRequest) => {
+    decide(r.id, 'rejected');
+    confirmSent({ en: 'Raise rejected', bn: 'বেতন বৃদ্ধি বাতিল করা হয়েছে' });
   };
 
   return (
@@ -108,7 +113,7 @@ export function RaiseInbox() {
                 <div className="mt-3 flex justify-end gap-2">
                   {r.status === 'pending' ? (
                     <>
-                      <Button variant="secondary" onClick={() => decide(r.id, 'rejected')}>
+                      <Button variant="secondary" onClick={() => reject(r)}>
                         <X />
                         {i.t('Say no', 'না করুন')}
                       </Button>

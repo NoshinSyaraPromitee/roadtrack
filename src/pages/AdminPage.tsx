@@ -10,7 +10,7 @@ import { RaiseInbox, useRaiseRequests } from '@/features/raise-requests';
 import { ContractorApprovals, usePendingRegistrations } from '@/features/session';
 import { MaterialTotals, useCompletedShifts, useRoadProgressMap, useShiftStore } from '@/features/shift';
 import { useI18n } from '@/shared/i18n';
-import { PageHeader, TabBar } from '@/shared/ui';
+import { confirmSent, PageHeader, TabBar } from '@/shared/ui';
 import type { TabItem } from '@/shared/ui';
 import { useUrlState } from '@/shared/lib/useUrlState';
 
@@ -29,6 +29,10 @@ export function AdminPage() {
   const [tab, setTab] = useUrlState<Tab>('tab', 'overview', TAB_KEYS);
   const progressMap = useRoadProgressMap();
   const pendingContractors = usePendingRegistrations();
+  const approvePay = (id: string) => {
+    approve(id);
+    confirmSent({ en: 'Pay approved', bn: 'মজুরি অনুমোদিত হয়েছে' }, { en: 'Workers can see it in My money.', bn: 'শ্রমিকরা "আমার টাকা"-য় দেখতে পাবেন।' });
+  };
   const toOverview = () => {
     setTab('overview');
     window.scrollTo({ top: 0 });
@@ -59,7 +63,7 @@ export function AdminPage() {
           <ProgressChart />
         </>
       )}
-      {tab === 'pay' && <PayrollApprovals shifts={shifts} onApprove={approve} />}
+      {tab === 'pay' && <PayrollApprovals shifts={shifts} onApprove={approvePay} />}
       {tab === 'machines' && <EquipmentBoard />}
       {tab === 'complaints' && <ComplaintsInbox />}
       {tab === 'raises' && <RaiseInbox />}

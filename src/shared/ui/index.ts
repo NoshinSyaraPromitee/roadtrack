@@ -22,3 +22,6 @@ export * from './Photos';
 export * from './VoiceOrWrite';
 export * from './DateTile';
 export * from './PasswordInput';
+export * from './DemoToast';
+export * from './SubmitNotice';
+export { confirmSent } from './confirmSent';

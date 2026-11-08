@@ -4,7 +4,7 @@ import type { Health, Worker } from '@/core/types';
 import { sickDays, todaysReport } from '@/core/health';
 import { useI18n } from '@/shared/i18n';
 import { SpeakButton, VoiceNote } from '@/shared/voice';
-import { ActionBar, Button, Card, CardHeader, EmptyState, Pictogram, Tile, VoiceOrWrite } from '@/shared/ui';
+import { ActionBar, Button, Card, CardHeader, confirmSent, EmptyState, Pictogram, Tile, VoiceOrWrite } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { HEALTH_ICON, HEALTH_LABEL } from './meta';
 import { useHealthReports } from './store';
@@ -62,6 +62,7 @@ export function HealthCheckIn({ worker }: { worker: Worker }) {
   const send = () => {
     if (!status) return setError(i.t('Tap how you feel.', 'কেমন আছেন তা চাপুন।'));
     report({ workerId: worker.id, status, note: note.trim(), audio: audio ?? undefined });
+    confirmSent({ en: 'Sent to the supervisor', bn: 'সুপারভাইজারের কাছে পাঠানো হয়েছে' });
     setError('');
     setEditing(false);
   };

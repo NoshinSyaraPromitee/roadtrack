@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { CircleCheck, KeyRound, Send } from 'lucide-react';
+import { CircleCheck, KeyRound, MessageSquareText, Send } from 'lucide-react';
 import type { Account } from '@/core/accounts';
 import { findAccount, hashPassword, isMobileNumber, maskPhone, normalizePhone, passwordProblems } from '@/core/accounts';
 import { useI18n } from '@/shared/i18n';
-import { Button, Card, CardHeader, Field, Input } from '@/shared/ui';
+import { Button, Card, CardHeader, confirmSent, DemoToast, Field, Input } from '@/shared/ui';
 import { RESET_CODE_MS, RESET_TRIES, newResetCode, usePasswords } from './passwordStore';
-import { DemoSmsToast } from './DemoSmsToast';
 import { NewPasswordFields } from './NewPasswordFields';
 
 type Step = 'phone' | 'code' | 'new';
@@ -62,6 +61,7 @@ export function ResetPassword({
   const save = async (password: string, again: string) => {
     if (!account || passwordProblems(password, again).length) return;
     setHash(account.id, await hashPassword(account.id, password));
+    confirmSent({ en: 'Password changed', bn: 'পাসওয়ার্ড বদলানো হয়েছে' }, { en: 'Sign in with the new password.', bn: 'নতুন পাসওয়ার্ড দিয়ে সাইন ইন করুন।' });
     onDone(phone);
   };
 
@@ -102,7 +102,12 @@ export function ResetPassword({
             }}
           >
             <p className="text-ink-soft">{t(`If ${maskPhone(digits)} belongs to an account, a code was sent to it. It works for 5 minutes.`, `${maskPhone(digits)} নম্বরে অ্যাকাউন্ট থাকলে সেখানে কোড পাঠানো হয়েছে। কোডটি ৫ মিনিট চলবে।`)}</p>
-            {account && code && <DemoSmsToast key={code.value} code={code.value} />}
+            {account && code && (
+              <DemoToast key={code.value} icon={MessageSquareText}>
+                {t('Demo only: there is no SMS service, so the message is shown here.', 'শুধু ডেমো: এসএমএস সেবা নেই, তাই বার্তাটি এখানে দেখানো হলো।')}
+                <span className="mt-1 block font-sign text-3xl tracking-[0.2em] text-sign-600">{code.value}</span>
+              </DemoToast>
+            )}
             <Field label={t('6-digit code', '৬ অঙ্কের কোড')}>
               <Input value={typed} onChange={(e) => setTyped(e.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder="••••••" className="font-sign text-2xl tracking-[0.3em]" />
             </Field>

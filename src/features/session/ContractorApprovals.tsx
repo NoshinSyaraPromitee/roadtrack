@@ -1,14 +1,19 @@
 import { Check, CircleCheck, CircleX, Hourglass, UserPlus, X } from 'lucide-react';
 import type { Registration } from '@/core/registrations';
 import { useI18n } from '@/shared/i18n';
-import { Badge, Button, Card, CardHeader, EmptyState } from '@/shared/ui';
+import { Badge, Button, Card, CardHeader, confirmSent, EmptyState } from '@/shared/ui';
 import { useRegistrations } from './registrationStore';
 
 const PROVIDER = { phone: { en: 'Phone and password', bn: 'ফোন ও পাসওয়ার্ড' }, google: { en: 'Google', bn: 'Google' }, apple: { en: 'Apple', bn: 'Apple' } };
 
 function Row({ r }: { r: Registration }) {
   const i = useI18n();
-  const decide = useRegistrations((s) => s.decide);
+  const decideIn = useRegistrations((s) => s.decide);
+  const decide = (id: string, status: 'approved' | 'rejected') => {
+    decideIn(id, status);
+    if (status === 'approved') confirmSent({ en: 'Contractor approved', bn: 'ঠিকাদার অনুমোদিত হয়েছে' }, { en: 'They can sign in now.', bn: 'এখন তারা সাইন ইন করতে পারবেন।' });
+    else confirmSent({ en: 'Registration rejected', bn: 'নিবন্ধন বাতিল করা হয়েছে' });
+  };
   return (
     <li className="space-y-3 py-4">
       <div className="min-w-0">

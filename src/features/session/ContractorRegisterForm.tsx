@@ -7,7 +7,7 @@ import { registrationProblems, takenContacts, toRegistration } from '@/core/regi
 import { RoadBackdrop } from '@/features/road';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
-import { Button, Card, CardHeader, Field, Input } from '@/shared/ui';
+import { Button, Card, CardHeader, confirmSent, Field, Input } from '@/shared/ui';
 import { uid } from '@/shared/lib/utils';
 import { NewPasswordFields } from './NewPasswordFields';
 import { useRegistrations } from './registrationStore';
@@ -41,6 +41,7 @@ export function ContractorRegisterForm({ provider, startEmail = '', onBack }: { 
   const send = (passwordHash?: string) => {
     add(toRegistration(draft, id, new Date().toISOString(), passwordHash));
     setStep('sent');
+    confirmSent({ en: 'Registration sent', bn: 'নিবন্ধন পাঠানো হয়েছে' }, { en: 'Head office will check it.', bn: 'প্রধান কার্যালয় এটি যাচাই করবে।' });
   };
 
   const field = (key: Key, label: Text, extra: Partial<ComponentProps<typeof Input>> = {}, hint?: Text) => (
