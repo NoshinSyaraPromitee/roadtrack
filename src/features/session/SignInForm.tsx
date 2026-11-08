@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { CircleCheck, Loader2, LogIn } from 'lucide-react';
 import type { Account } from '@/core/accounts';
 import { checkSignIn } from '@/core/accounts';
+import { waitingRegistration } from '@/core/registrations';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { SpeakButton } from '@/shared/voice';
 import { Button, Card, Field, Input, PasswordInput } from '@/shared/ui';
 import { useNow } from '@/shared/lib/useNow';
 import type { Problem } from './signInProblems';
-import { CHECK_FAILED, LOCK_MS, MAX_TRIES, inputProblem, lockedProblem, wrongProblem } from './signInProblems';
+import { CHECK_FAILED, LOCK_MS, MAX_TRIES, inputProblem, lockedProblem, waitingProblem, wrongProblem } from './signInProblems';
 import { usePasswords } from './passwordStore';
+import { useApprovedAccounts, useRegistrations } from './registrationStore';
 import { ResetPassword } from './ResetPassword';
 
 export function SignInForm({ role, title, onDone, onBack }: { role: Account['role']; title: Text; onDone: (account: Account) => void; onBack: () => void }) {
@@ -25,6 +27,8 @@ export function SignInForm({ role, title, onDone, onBack }: { role: Account['rol
   const [resetting, setResetting] = useState(false);
   const [changed, setChanged] = useState(false);
   const saved = usePasswords((s) => s.changed);
+  const extra = useApprovedAccounts();
+  const registrations = useRegistrations((s) => s.list);
   const locked = lockedUntil > now;
   const wait = Math.ceil((lockedUntil - now) / 1000);
 
@@ -33,14 +37,12 @@ export function SignInForm({ role, title, onDone, onBack }: { role: Account['rol
     const used = lockedUntil ? 0 : tries;
     if (lockedUntil) setLockedUntil(0);
     const bad = inputProblem(phone, password, i);
-    if (bad) {
-      setProblem(bad);
-      return;
-    }
+    const waiting = role === 'supervisor' ? waitingRegistration(registrations, { phone }) : undefined;
+    if (bad || waiting) return setProblem(bad ?? waitingProblem(waiting?.status === 'pending'));
     setBusy(true);
     setProblem(null);
     try {
-      const result = await checkSignIn(role, phone, password, saved);
+      const result = await checkSignIn(role, phone, password, saved, extra);
       if (result.ok) {
         onDone(result.account);
         return;
@@ -64,6 +66,7 @@ export function SignInForm({ role, title, onDone, onBack }: { role: Account['rol
     return (
       <ResetPassword
         role={role}
+        extra={extra}
         startPhone={phone}
         onBack={() => setResetting(false)}
         onDone={(p) => {

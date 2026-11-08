@@ -51,7 +51,7 @@ function Row({ r }: { r: Registration }) {
   );
 }
 
-export function SignupRequests() {
+export function ContractorApprovals() {
   const { t } = useI18n();
   const list = useRegistrations((s) => s.list);
   const pending = list.filter((r) => r.status === 'pending');

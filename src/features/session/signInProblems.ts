@@ -1,4 +1,4 @@
-import { canHash, normalizePhone } from '@/core/accounts';
+import { canHash, isMobileNumber, normalizePhone } from '@/core/accounts';
 import type { I18n, Text } from '@/shared/i18n';
 
 export type Problem = { why: Text; fix: Text };
@@ -11,7 +11,7 @@ export function inputProblem(phone: string, password: string, i: I18n): Problem 
   if (!digits) {
     return { why: { en: 'The phone number is empty.', bn: 'ফোন নম্বর লেখা হয়নি।' }, fix: { en: 'Write the phone number the office gave you.', bn: 'অফিস যে ফোন নম্বর দিয়েছে তা লিখুন।' } };
   }
-  if (digits.length !== 11 || !digits.startsWith('01')) {
+  if (!isMobileNumber(digits)) {
     return {
       why: { en: `A Bangladeshi mobile number has 11 digits and starts with 01. This one has ${digits.length}.`, bn: `বাংলাদেশের মোবাইল নম্বর ১১ অঙ্কের, শুরু হয় ০১ দিয়ে। এখানে ${i.num(digits.length)}টি অঙ্ক আছে।` },
       fix: { en: 'Check the number and write all 11 digits.', bn: 'নম্বরটি আবার দেখে ১১টি অঙ্কই লিখুন।' },

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CircleCheck, KeyRound, Send } from 'lucide-react';
 import type { Account } from '@/core/accounts';
-import { findAccount, hashPassword, maskPhone, normalizePhone, passwordProblems } from '@/core/accounts';
+import { findAccount, hashPassword, isMobileNumber, maskPhone, normalizePhone, passwordProblems } from '@/core/accounts';
 import { useI18n } from '@/shared/i18n';
 import { Button, Card, CardHeader, Field, Input } from '@/shared/ui';
 import { RESET_CODE_MS, RESET_TRIES, newResetCode, usePasswords } from './passwordStore';
@@ -36,7 +36,7 @@ export function ResetPassword({
   const digits = normalizePhone(phone);
 
   const send = () => {
-    if (digits.length !== 11 || !digits.startsWith('01')) return setError(t('Write all 11 digits of your phone number, starting with 01.', 'ফোন নম্বরের ১১টি অঙ্কই লিখুন, ০১ দিয়ে শুরু।'));
+    if (!isMobileNumber(digits)) return setError(t('Write all 11 digits of your phone number, starting with 01.', 'ফোন নম্বরের ১১টি অঙ্কই লিখুন, ০১ দিয়ে শুরু।'));
     setCode({ value: newResetCode(), until: Date.now() + RESET_CODE_MS });
     setTyped('');
     setTries(0);

@@ -4,12 +4,12 @@ import { ArrowRight, CircleCheck, UserPlus } from 'lucide-react';
 import { ACCOUNTS, hashPassword } from '@/core/accounts';
 import type { Provider, RegistrationDraft, RegistrationProblem } from '@/core/registrations';
 import { registrationProblems, takenContacts, toRegistration } from '@/core/registrations';
+import { RoadBackdrop } from '@/features/road';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { Button, Card, CardHeader, Field, Input } from '@/shared/ui';
 import { uid } from '@/shared/lib/utils';
 import { NewPasswordFields } from './NewPasswordFields';
-import { RoadBackdrop } from './RoadBackdrop';
 import { useRegistrations } from './registrationStore';
 
 const PROBLEM: Record<RegistrationProblem, Text> = {
@@ -24,7 +24,7 @@ const PROBLEM: Record<RegistrationProblem, Text> = {
 
 type Key = 'name' | 'company' | 'licence' | 'phone' | 'email';
 
-export function RegisterForm({ provider, startEmail = '', onBack }: { provider: Provider; startEmail?: string; onBack: () => void }) {
+export function ContractorRegisterForm({ provider, startEmail = '', onBack }: { provider: Provider; startEmail?: string; onBack: () => void }) {
   const i = useI18n();
   const { t } = i;
   const { list, add } = useRegistrations();

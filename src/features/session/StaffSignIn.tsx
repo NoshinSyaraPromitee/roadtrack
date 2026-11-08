@@ -5,7 +5,7 @@ import type { Provider } from '@/core/registrations';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { Button } from '@/shared/ui';
-import { RegisterForm } from './RegisterForm';
+import { ContractorRegisterForm } from './ContractorRegisterForm';
 import { SignInForm } from './SignInForm';
 import { SocialSignIn } from './SocialSignIn';
 
@@ -31,7 +31,7 @@ export function StaffSignIn({
     window.scrollTo({ top: 0 });
   };
 
-  if (mode.kind === 'register') return <RegisterForm key={mode.email} provider={mode.provider} startEmail={mode.email} onBack={toSignIn} />;
+  if (mode.kind === 'register') return <ContractorRegisterForm key={mode.email} provider={mode.provider} startEmail={mode.email} onBack={toSignIn} />;
 
   return (
     <div className="space-y-4">

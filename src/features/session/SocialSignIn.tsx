@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ArrowRight, Info } from 'lucide-react';
 import type { Account } from '@/core/accounts';
-import { ACCOUNTS, findAccountByEmail } from '@/core/accounts';
+import { ACCOUNTS, findAccountByEmail, isEmail } from '@/core/accounts';
 import type { Provider } from '@/core/registrations';
 import { waitingRegistration } from '@/core/registrations';
 import { useI18n } from '@/shared/i18n';
@@ -11,7 +11,6 @@ import { useApprovedAccounts, useRegistrations } from './registrationStore';
 
 type Social = Exclude<Provider, 'phone'>;
 const NAME: Record<Social, string> = { google: 'Google', apple: 'Apple' };
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function SocialSignIn({
   role,
@@ -32,7 +31,7 @@ export function SocialSignIn({
 
   const go = (value = email) => {
     if (!provider) return;
-    if (!EMAIL.test(value.trim())) return setMessage(t('Write a full email address, like name@gmail.com.', 'পুরো ইমেইল ঠিকানা লিখুন, যেমন name@gmail.com।'));
+    if (!isEmail(value)) return setMessage(t('Write a full email address, like name@gmail.com.', 'পুরো ইমেইল ঠিকানা লিখুন, যেমন name@gmail.com।'));
     const account = findAccountByEmail(role, value, extra);
     if (account) return onAccount(account);
     const waiting = role === 'supervisor' ? waitingRegistration(registrations, { email: value }) : undefined;

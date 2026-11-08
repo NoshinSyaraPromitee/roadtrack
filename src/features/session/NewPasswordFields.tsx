@@ -14,7 +14,7 @@ const RULES: Array<{ key: PasswordProblem; text: Text }> = [
   { key: 'mismatch', text: { en: 'Both boxes match', bn: 'দুটো ঘর একই' } },
 ];
 
-export function NewPasswordFields({ onSave }: { onSave: (password: string, again: string) => Promise<void> }) {
+export function NewPasswordFields({ onSave, submitLabel }: { onSave: (password: string, again: string) => Promise<void>; submitLabel?: string }) {
   const { t, tx } = useI18n();
   const [password, setPassword] = useState('');
   const [again, setAgain] = useState('');
@@ -54,7 +54,7 @@ export function NewPasswordFields({ onSave }: { onSave: (password: string, again
       </ul>
       <Button type="submit" size="lg" className="w-full" disabled={!ready || busy}>
         {busy ? <Loader2 className="animate-spin" /> : <Save />}
-        {t('Save new password', 'নতুন পাসওয়ার্ড সেভ করুন')}
+        {submitLabel ?? t('Save new password', 'নতুন পাসওয়ার্ড সেভ করুন')}
       </Button>
     </form>
   );

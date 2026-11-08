@@ -19,9 +19,9 @@ const ROLES: Array<{ key: string; role: Role; path: string; title: Text; cta: Te
   { key: 'admin', role: 'admin', path: '/admin', title: { en: 'Head office', bn: 'প্রধান কার্যালয়' }, cta: { en: 'Open the office view', bn: 'অফিসের পাতা খুলুন' }, icon: Building2, tone: 'sign', shape: 'disc' },
 ];
 
-export type LoginStep = 'role' | 'name' | 'signin';
+type LoginStep = 'role' | 'name' | 'signin';
 
-export function LoginFlow({ progress, onStepChange }: { progress: Record<string, number>; onStepChange?: (step: LoginStep) => void }) {
+export function LoginFlow({ progress }: { progress: Record<string, number> }) {
   const { t, tx } = useI18n();
   const { hint, say } = useSay();
   const login = useSession((s) => s.login);
@@ -36,7 +36,6 @@ export function LoginFlow({ progress, onStepChange }: { progress: Record<string,
 
   const setStep = (next: LoginStep) => {
     setStepState(next);
-    onStepChange?.(next);
     window.scrollTo({ top: 0 });
   };
 
