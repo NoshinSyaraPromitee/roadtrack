@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronRight, Construction, MapPin, Package, Users } from 'lucide-react';
+import { ChevronRight, Construction, Package, Users } from 'lucide-react';
 import type { MaterialKey, Text } from '@/core/types';
 import { MATERIALS, POSTS } from '@/core/catalog';
 import { kmToPct, pctToKm } from '@/core/roads';
@@ -16,7 +16,7 @@ import { PlaceCard } from './PlaceCard';
 const STEPS = [
   { icon: Users, label: { en: 'Workers', bn: 'শ্রমিক' } },
   { icon: Package, label: { en: 'Materials', bn: 'মালামাল' } },
-  { icon: MapPin, label: { en: 'Place', bn: 'স্থান' } },
+  { icon: Construction, label: { en: 'Progress', bn: 'অগ্রগতি' } },
 ];
 
 export function StartShiftWizard({ initial, onDone }: { initial?: DayPlan; onDone: (plan: DayPlan) => void }) {
@@ -45,16 +45,16 @@ export function StartShiftWizard({ initial, onDone }: { initial?: DayPlan; onDon
   ) as Array<[keyof typeof POSTS, number]>;
 
   const next = () => {
+    const place = other.trim() ? { en: other.trim(), bn: other.trim() } : site;
+    if (step === 0 && !place.en) {
+      setError(t('Choose where the crew is working.', 'কোথায় কাজ হচ্ছে তা বাছাই করুন।'));
+      return;
+    }
     if (step === 0 && selected.length === 0) {
       setError(t('Tap at least one worker.', 'অন্তত একজন শ্রমিক বাছাই করুন।'));
       return;
     }
     if (step === 2) {
-      const place = other.trim() ? { en: other.trim(), bn: other.trim() } : site;
-      if (!place.en) {
-        setError(t('Choose where the crew is working.', 'কোথায় কাজ হচ্ছে তা বাছাই করুন।'));
-        return;
-      }
       onDone({ site: place, startProgress: progress, workerIds: selected, materials: MATERIALS.map((m) => ({ key: m.key, allocated: qty[m.key] })) });
       return;
     }
@@ -65,6 +65,8 @@ export function StartShiftWizard({ initial, onDone }: { initial?: DayPlan; onDon
   return (
     <div className="space-y-5 pb-36">
       <WizardSteps steps={STEPS} current={step} />
+
+      {step === 0 && <PlaceCard places={road.places} site={site} other={other} onSite={setSite} onOther={setOther} />}
 
       {step === 0 && (
         <Card>
@@ -117,20 +119,17 @@ export function StartShiftWizard({ initial, onDone }: { initial?: DayPlan; onDon
       )}
 
       {step === 2 && (
-        <>
-          <PlaceCard places={road.places} site={site} other={other} onSite={setSite} onOther={setOther} />
-          <Card>
-            <CardHeader
-              icon={Construction}
-              tone="mark"
-              title={t('How many km of road are done?', 'রাস্তার কত কিলোমিটার হয়েছে?')}
-              subtitle={t(`The whole road is ${fixed(road.lengthKm)} km. Last record: ${fixed(pctToKm(lastProgress, road), 2)} km`, `পুরো রাস্তা ${fixed(road.lengthKm)} কিমি। শেষ হিসাব: ${fixed(pctToKm(lastProgress, road), 2)} কিমি`)}
-              speak={{ en: 'How many kilometres of the road are done? Use plus and minus.', bn: 'রাস্তার কত কিলোমিটার হয়েছে? যোগ আর বিয়োগ চিহ্ন ব্যবহার করুন।' }}
-            />
-            <RoadStrip progress={progress} lengthKm={road.lengthKm} />
-            <KmStepper km={km} min={0} max={road.lengthKm} progress={progress} onChange={setKm} />
-          </Card>
-        </>
+        <Card>
+          <CardHeader
+            icon={Construction}
+            tone="mark"
+            title={t('How many km of road are done?', 'রাস্তার কত কিলোমিটার হয়েছে?')}
+            subtitle={t(`The whole road is ${fixed(road.lengthKm)} km. Last record: ${fixed(pctToKm(lastProgress, road), 2)} km`, `পুরো রাস্তা ${fixed(road.lengthKm)} কিমি। শেষ হিসাব: ${fixed(pctToKm(lastProgress, road), 2)} কিমি`)}
+            speak={{ en: 'How many kilometres of the road are done? Use plus and minus.', bn: 'রাস্তার কত কিলোমিটার হয়েছে? যোগ আর বিয়োগ চিহ্ন ব্যবহার করুন।' }}
+          />
+          <RoadStrip progress={progress} lengthKm={road.lengthKm} />
+          <KmStepper km={km} min={0} max={road.lengthKm} progress={progress} onChange={setKm} />
+        </Card>
       )}
 
       <ActionBar

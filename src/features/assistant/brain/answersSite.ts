@@ -23,8 +23,8 @@ export function answerSite(key: QuestionKey, ctx: ApaContext): Text | null {
 
     case 'how_start':
       return {
-        en: 'Four steps, in order. First, today\'s work: tap the workers who came, set the materials and choose the place. Second, check the machines. Third, check the crew\'s health. Last, tap Start work.',
-        bn: 'চারটি ধাপ, পরপর। প্রথমে আজকের কাজ: যারা এসেছেন তাদের চাপুন, মাল ঠিক করুন, জায়গা বাছাই করুন। তারপর মেশিন দেখুন। তারপর শ্রমিকদের স্বাস্থ্য দেখুন। শেষে "কাজ শুরু করুন" চাপুন।',
+        en: 'Four steps, in order. First, today\'s work: choose the place, tap the workers who came, set the materials and enter the km done. Second, check the machines. Third, check the crew\'s health. Last, tap Start work.',
+        bn: 'চারটি ধাপ, পরপর। প্রথমে আজকের কাজ: জায়গা বাছাই করুন, যারা এসেছেন তাদের চাপুন, মাল ঠিক করুন, কত কিমি হয়েছে দিন। তারপর মেশিন দেখুন। তারপর শ্রমিকদের স্বাস্থ্য দেখুন। শেষে "কাজ শুরু করুন" চাপুন।',
       };
 
     case 'how_finish':
