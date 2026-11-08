@@ -10,6 +10,7 @@ import { LangToggle, useI18n } from '@/shared/i18n';
 import { VoiceGuideToggle } from '@/shared/voice';
 import { Logo, Pictogram } from '@/shared/ui';
 import { BackButton } from './BackButton';
+import { HomeButton } from './HomeButton';
 
 export function AppShell() {
   const i = useI18n();
@@ -97,7 +98,10 @@ export function AppShell() {
       </header>
       <main className="mx-auto max-w-6xl px-4 py-5 md:py-8">
         <div className="-mt-1 mb-4 flex items-center justify-between gap-3 md:mt-0">
-          <BackButton />
+          <div className="flex shrink-0 items-center gap-2">
+            <BackButton />
+            <HomeButton />
+          </div>
           <RoadSelect progress={progress} variant="inline" className="min-w-0 md:hidden" />
         </div>
         <ApaAssistant />
