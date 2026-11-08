@@ -8,6 +8,20 @@ import { Badge, StackBar, Stepper } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { INCIDENT_ICON, MaterialPicto } from './icons';
 
+/** Green for used, red for wasted, the rest of the bar is what is left. */
+export function MaterialUsageBar({ line, className }: { line: Pick<MaterialLine, 'allocated' | 'used' | 'wasted'>; className?: string }) {
+  return (
+    <StackBar
+      className={className}
+      total={line.allocated}
+      parts={[
+        { value: line.used, className: 'bg-guide-500' },
+        { value: line.wasted, className: 'bg-stop-500' },
+      ]}
+    />
+  );
+}
+
 export function MaterialUseList({ lines, compact = false }: { lines: MaterialLine[]; compact?: boolean }) {
   const { tx, num } = useI18n();
   return (
@@ -25,14 +39,7 @@ export function MaterialUseList({ lines, compact = false }: { lines: MaterialLin
                   {!compact && ` ${tx(def.unit)}`}
                 </span>
               </div>
-              <StackBar
-                className={compact ? 'mt-1 h-2' : 'mt-1.5'}
-                total={m.allocated}
-                parts={[
-                  { value: m.used, className: 'bg-guide-500' },
-                  { value: m.wasted, className: 'bg-stop-500' },
-                ]}
-              />
+              <MaterialUsageBar line={m} className={compact ? 'mt-1 h-2' : 'mt-1.5'} />
             </div>
           </li>
         );

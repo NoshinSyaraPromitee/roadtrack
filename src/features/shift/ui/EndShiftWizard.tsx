@@ -4,8 +4,9 @@ import type { Attendance, IncidentKey, MaterialLine, Shift } from '@/core/types'
 import { applyPayEdits, calculatePayroll, payrollTotal } from '@/core/payroll';
 import type { PayEdit } from '@/core/payroll';
 import { kmToPct, pctToKm } from '@/core/roads';
+import { todaysReport } from '@/core/health';
 import { useRoad } from '@/features/road';
-import { useHealthReports, todaysReport } from '@/features/health';
+import { useHealthReports } from '@/features/health';
 import { PayRules, PayrollList } from '@/features/payroll';
 import { useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';

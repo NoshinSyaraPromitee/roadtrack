@@ -2,9 +2,10 @@ import { CircleCheck, Package, TriangleAlert } from 'lucide-react';
 import type { MaterialLine } from '@/core/types';
 import { MATERIAL_BY_KEY } from '@/core/catalog';
 import { useI18n } from '@/shared/i18n';
-import { Badge, Button, Card, CardHeader, StackBar, Stepper } from '@/shared/ui';
+import { Badge, Button, Card, CardHeader, Stepper } from '@/shared/ui';
 import { pct } from '@/shared/lib/utils';
 import { MaterialPicto } from './icons';
+import { MaterialUsageBar } from './ShiftParts';
 
 export const WASTE_LIMIT = 5;
 
@@ -38,14 +39,7 @@ export function MaterialsStep({ mats, updateMat }: { mats: MaterialLine[]; updat
                   {t('All used', 'সব খরচ')}
                 </Button>
               </div>
-              <StackBar
-                className="mt-3"
-                total={m.allocated}
-                parts={[
-                  { value: m.used, className: 'bg-guide-500' },
-                  { value: m.wasted, className: 'bg-stop-500' },
-                ]}
-              />
+              <MaterialUsageBar line={m} className="mt-3" />
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border-2 border-guide-200 p-2.5">
                   <p className="mb-1.5 px-1 text-sm font-semibold text-guide-700">

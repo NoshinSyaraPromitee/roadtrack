@@ -1,5 +1,5 @@
-export { useWorkforce, useWorker, usePerson } from './store';
+export { useWorkforce, useWorker } from './store';
 export { Avatar, AvatarStack } from './Avatar';
-export { POST_ICON, roleIcon } from './postIcons';
+export { POST_ICON } from './postIcons';
 export { PeoplePicker } from './PeoplePicker';
-export { personName, shortName, roleOf, spokenName, isWorker } from './names';
+export { personName, shortName, roleOf } from './names';

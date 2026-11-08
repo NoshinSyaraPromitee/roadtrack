@@ -3,7 +3,7 @@ import type { IncidentKey, MaterialKey } from '@/core/types';
 import { Pictogram } from '@/shared/ui';
 import type { IconType } from '@/shared/ui';
 
-export const MATERIAL_ICON: Record<MaterialKey, IconType> = {
+const MATERIAL_ICON: Record<MaterialKey, IconType> = {
   bitumen: Barrel,
   stone: Mountain,
   sand: Hourglass,

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Person, Worker } from '@/core/types';
-import { SEED_WORKERS, SUPERVISOR } from '@/data/seed';
+import type { Worker } from '@/core/types';
+import { SEED_WORKERS } from '@/data/seed';
 
 interface WorkforceState {
   workers: Worker[];
@@ -28,6 +28,3 @@ export const useWorkforce = create<WorkforceState>()(
 );
 
 export const useWorker = (id: string | null) => useWorkforce((s) => s.workers.find((w) => w.id === id));
-
-export const usePerson = (id: string | null): Person | undefined =>
-  useWorkforce((s) => (id === SUPERVISOR.id ? SUPERVISOR : s.workers.find((w) => w.id === id)));
