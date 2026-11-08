@@ -1,9 +1,9 @@
-import { CalendarCheck, CircleCheck, HeartHandshake, Hourglass } from 'lucide-react';
+import { CalendarCheck, CircleCheck, Hourglass } from 'lucide-react';
 import type { Shift, Worker } from '@/core/types';
 import { Avatar, shortName } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import { SpeakButton } from '@/shared/voice';
-import { Badge, Card, CardHeader, DateTile, EmptyState, Pictogram } from '@/shared/ui';
+import { Badge, Card, CardHeader, DateTile, EmptyState } from '@/shared/ui';
 import { cn, sum } from '@/shared/lib/utils';
 import { PayFlags } from './PayFlags';
 
@@ -49,12 +49,11 @@ export function WorkerEarnings({ shifts, worker }: { shifts: Shift[]; worker: Wo
 
         <div className="grid grid-cols-3 gap-2">
           {[
-            { icon: Hourglass, tone: 'mark' as const, label: i.t('After work', 'কাজের পরে পাবেন'), value: i.taka(waiting) },
-            { icon: CalendarCheck, tone: 'guide' as const, label: i.t('Days worked', 'কাজের দিন'), value: i.num(days) },
-            { icon: HeartHandshake, tone: 'sign' as const, label: i.t('Extra help', 'বাড়তি সহায়তা'), value: i.taka(extra) },
+            { label: i.t('After work', 'কাজের পরে পাবেন'), value: i.taka(waiting) },
+            { label: i.t('Days worked', 'কাজের দিন'), value: i.num(days) },
+            { label: i.t('Extra help', 'বাড়তি সহায়তা'), value: i.taka(extra) },
           ].map((s) => (
-            <div key={s.label} className="flex flex-col items-center gap-2 rounded-2xl border border-line bg-white px-2 py-3 text-center">
-              <Pictogram icon={s.icon} tone={s.tone} size={40} />
+            <div key={s.label} className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-line bg-white px-2 py-4 text-center">
               <p className="font-sign text-2xl leading-none tabular-nums">{s.value}</p>
               <p className="text-sm leading-tight text-ink-soft">{s.label}</p>
             </div>
