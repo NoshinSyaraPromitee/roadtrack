@@ -11,9 +11,18 @@
   unicode-range: U+0951-0952, U+0964-0965, U+0980-09FE, U+1CD0, U+1CD2, U+1CD5-1CD6, U+1CD8, U+1CE1, U+1CEA, U+1CED, U+1CF2, U+1CF5-1CF7, U+200C-200D, U+20B9, U+25CC, U+A8F1;
 }
 
+/* Times New Roman for every English number (digits and . , % :), so figures sit evenly on one line. */
+@font-face {
+  font-family: "RT Numbers";
+  font-style: normal;
+  font-weight: 400 700;
+  src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Times");
+  unicode-range: U+0025, U+002C-002E, U+0030-003A;
+}
+
 @theme {
-  --font-sans: "Kalpurush RT", "Anek Latin Variable", system-ui, sans-serif;
-  --font-display: "Kalpurush RT", "Tiro Bangla", Georgia, serif;
+  --font-sans: "Kalpurush RT", "RT Numbers", "Anek Latin Variable", system-ui, sans-serif;
+  --font-display: "Kalpurush RT", "RT Numbers", "Tiro Bangla", Georgia, serif;
 
   --color-paper: #f3f5f0;
   --color-ink: #17201b;

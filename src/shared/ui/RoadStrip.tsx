@@ -35,7 +35,7 @@ export function RoadStrip({ progress, lengthKm, today, size = 'md', showScale = 
   const ticks = Array.from({ length: Math.floor(lengthKm) + 1 }, (_, k) => k).filter((k) => k === 0 || lengthKm - k > lengthKm * 0.08);
   const paintFrom = today ? clamp(today.from, 0, 100) : 0;
   const paintTo = today ? clamp(today.to, 0, 100) : 0;
-  const truck = lg ? 56 : 46;
+  const truck = lg ? 74 : 62;
   const cone = lg ? 22 : 18;
 
   return (
