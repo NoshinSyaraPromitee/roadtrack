@@ -10,7 +10,7 @@ export function Card({ className, tone = 'plain', children }: { className?: stri
   return (
     <section
       className={cn(
-        'rounded-2xl p-4 sm:p-5',
+        'rounded-[14px] p-5 sm:p-6',
         tone === 'plain' && 'border border-line bg-white',
         tone === 'alert' && 'border-2 border-mark-400 bg-mark-100',
         tone === 'sunk' && 'bg-black/[0.035]',
@@ -34,11 +34,11 @@ interface CardHeaderProps {
 
 export function CardHeader({ title, subtitle, icon, tone, shape, speak, action }: CardHeaderProps) {
   return (
-    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
       <div className="flex min-w-0 items-center gap-3">
-        {icon && <Pictogram icon={icon} tone={tone} shape={shape} size={44} />}
+        {icon && <Pictogram icon={icon} tone={tone} shape={shape} size={40} />}
         <div className="min-w-0">
-          <h2 className="font-sign text-xl leading-tight sm:text-2xl">{title}</h2>
+          <h2 className="font-sign text-[1.6rem] leading-[1.1] sm:text-[1.85rem]">{title}</h2>
           {subtitle && <p className="mt-0.5 text-sm text-ink-soft sm:text-base">{subtitle}</p>}
         </div>
         {speak && <SpeakButton text={speak} size="sm" />}

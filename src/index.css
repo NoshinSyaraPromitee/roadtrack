@@ -1,22 +1,13 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'Kalpurush RT';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 400;
-  size-adjust: 112%;
-  src: url('../node_modules/@hixbe/kalpurush/files/kalpurush.woff2') format('woff2'), url('../node_modules/@hixbe/kalpurush/files/kalpurush.woff') format('woff');
-  unicode-range: U+0951-0952, U+0964-0965, U+0980-09FE, U+1CD0, U+1CD2, U+1CD5-1CD6, U+1CD8, U+1CE1, U+1CEA, U+1CED, U+1CF2, U+1CF5-1CF7, U+200C-200D, U+20B9, U+25CC, U+A8F1;
-}
-
 @theme {
-  --font-sans: "Kalpurush RT", "Times New Roman", Times, serif;
+  --font-sans: "Anek Latin Variable", "Anek Bangla Variable", system-ui, sans-serif;
+  --font-display: "Tiro Bangla", Georgia, serif;
 
-  --color-paper: #eceeea;
-  --color-ink: #1f2623;
-  --color-ink-soft: #56615b;
-  --color-line: #d5dad4;
+  --color-paper: #f3f5f0;
+  --color-ink: #17201b;
+  --color-ink-soft: #58625c;
+  --color-line: #d8ddd4;
   --color-asphalt: #2c3330;
 
   --color-guide-50: #e9f2ea;
@@ -47,9 +38,9 @@
 }
 
 @utility font-sign {
-  font-stretch: 80%;
-  font-weight: 720;
-  letter-spacing: 0.002em;
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.005em;
 }
 
 html {
@@ -59,7 +50,7 @@ html {
 body {
   background: var(--color-paper);
   color: var(--color-ink);
-  font-weight: 430;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   text-size-adjust: 100%;
 }
@@ -103,6 +94,24 @@ body {
 
 .road-dash {
   background-image: repeating-linear-gradient(90deg, #ffffff 0 16px, transparent 16px 30px);
+}
+
+.verge {
+  background-color: #8fbf6e;
+  background-image: radial-gradient(#6fa452 1.2px, transparent 1.4px), radial-gradient(#a9d18e 1px, transparent 1.2px);
+  background-size: 8px 8px, 11px 11px;
+  background-position: 0 0, 4px 5px;
+}
+
+.asphalt {
+  background-color: #33393c;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1.2px), radial-gradient(rgba(0, 0, 0, 0.25) 1px, transparent 1.2px);
+  background-size: 6px 6px, 9px 9px;
+  background-position: 0 0, 3px 2px;
+}
+
+.kerb {
+  background-image: repeating-linear-gradient(90deg, #1f2523 0 12px, #f2a91c 12px 24px);
 }
 
 .gravel {

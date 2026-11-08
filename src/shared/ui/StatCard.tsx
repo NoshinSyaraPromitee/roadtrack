@@ -22,7 +22,7 @@ export function StatCard({
   className?: string;
 }) {
   return (
-    <div className={cn('flex flex-col gap-2 rounded-2xl border border-line bg-white p-4 sm:flex-row sm:items-start sm:gap-3', className)}>
+    <div className={cn('flex flex-col gap-2 rounded-[14px] border border-line bg-white p-4 sm:flex-row sm:items-start sm:gap-3 sm:p-5', className)}>
       <Pictogram icon={icon} tone={tone} shape={shape} size={40} />
       <div className="min-w-0">
         <p className="text-sm text-ink-soft">{label}</p>

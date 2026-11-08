@@ -1,19 +1,20 @@
 import { FileText, Gauge, HandCoins, Megaphone, Route, Tractor, UserPlus, Wallet } from 'lucide-react';
+import { isBroken } from '@/core/machines';
+import { sumMaterials } from '@/core/materials';
 import { ComplaintsInbox, useComplaints } from '@/features/complaints';
 import { ProgressChart, ProjectOverview, ShiftRecords } from '@/features/dashboard';
 import { EquipmentBoard, useEquipment } from '@/features/equipment';
 import { AddRoadForm, RoadList, useRoad } from '@/features/road';
 import { PayrollApprovals } from '@/features/payroll';
 import { RaiseInbox, useRaiseRequests } from '@/features/raise-requests';
-import { SignupRequests, usePendingSignups } from '@/features/session';
-import { sumMaterials } from '@/core/materials';
+import { ContractorApprovals, usePendingRegistrations } from '@/features/session';
 import { MaterialTotals, useCompletedShifts, useRoadProgressMap, useShiftStore } from '@/features/shift';
 import { useI18n } from '@/shared/i18n';
 import { PageHeader, TabBar } from '@/shared/ui';
 import type { TabItem } from '@/shared/ui';
 import { useUrlState } from '@/shared/lib/useUrlState';
 
-const TAB_KEYS = ['overview', 'pay', 'machines', 'complaints', 'raises', 'records', 'roads', 'signups'] as const;
+const TAB_KEYS = ['overview', 'pay', 'machines', 'complaints', 'raises', 'records', 'roads', 'contractors'] as const;
 type Tab = (typeof TAB_KEYS)[number];
 
 export function AdminPage() {
@@ -24,10 +25,10 @@ export function AdminPage() {
   const openRaises = useRaiseRequests((s) => s.requests.filter((r) => r.status === 'pending').length);
   const pendingPay = shifts.filter((s) => s.payrollStatus === 'pending').length;
   const road = useRoad();
-  const broken = useEquipment((s) => s.machines.filter((m) => m.roadId === road.id && m.status === 'repair').length);
+  const broken = useEquipment((s) => s.machines.filter((m) => m.roadId === road.id && isBroken(m)).length);
   const [tab, setTab] = useUrlState<Tab>('tab', 'overview', TAB_KEYS);
   const progressMap = useRoadProgressMap();
-  const pendingSignups = usePendingSignups();
+  const pendingContractors = usePendingRegistrations();
   const toOverview = () => {
     setTab('overview');
     window.scrollTo({ top: 0 });
@@ -41,7 +42,7 @@ export function AdminPage() {
     { key: 'raises', icon: HandCoins, label: { en: 'Raises', bn: 'বেতন বৃদ্ধি' }, count: openRaises },
     { key: 'records', icon: FileText, label: { en: 'Records', bn: 'রেকর্ড' } },
     { key: 'roads', icon: Route, label: { en: 'Roads', bn: 'রাস্তা' } },
-    { key: 'signups', icon: UserPlus, label: { en: 'Contractors', bn: 'ঠিকাদার' }, count: pendingSignups },
+    { key: 'contractors', icon: UserPlus, label: { en: 'Contractors', bn: 'ঠিকাদার' }, count: pendingContractors },
   ];
 
   return (
@@ -63,7 +64,7 @@ export function AdminPage() {
       {tab === 'complaints' && <ComplaintsInbox />}
       {tab === 'raises' && <RaiseInbox />}
       {tab === 'records' && <ShiftRecords />}
-      {tab === 'signups' && <SignupRequests />}
+      {tab === 'contractors' && <ContractorApprovals />}
       {tab === 'roads' && (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
           <AddRoadForm onAdded={toOverview} />
