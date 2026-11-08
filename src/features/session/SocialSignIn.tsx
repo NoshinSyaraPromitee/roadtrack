@@ -5,7 +5,7 @@ import { ACCOUNTS, findAccountByEmail, isEmail } from '@/core/accounts';
 import type { Provider } from '@/core/registrations';
 import { waitingRegistration } from '@/core/registrations';
 import { useI18n } from '@/shared/i18n';
-import { Button, Field, Input } from '@/shared/ui';
+import { Button, DemoToast, Field, Input } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
 import { useApprovedAccounts, useRegistrations } from './registrationStore';
 
@@ -78,13 +78,12 @@ export function SocialSignIn({
             go();
           }}
         >
-          <p className="flex items-start gap-2 text-[0.95rem] leading-snug text-ink-soft">
-            <Info className="mt-0.5 h-4 w-4 shrink-0" />
+          <DemoToast key={provider} icon={Info} side="left">
             {t(
               `Demo only: there is no real ${NAME[provider]} connection. Write the ${NAME[provider]} email you would use.`,
               `শুধু ডেমো: আসল ${NAME[provider]} সংযোগ নেই। যে ${NAME[provider]} ইমেইল ব্যবহার করতেন সেটি লিখুন।`,
             )}
-          </p>
+          </DemoToast>
           <Field label={t(`${NAME[provider]} email`, `${NAME[provider]} ইমেইল`)}>
             <Input
               value={email}
