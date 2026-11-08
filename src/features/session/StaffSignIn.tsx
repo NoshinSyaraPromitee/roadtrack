@@ -39,11 +39,8 @@ export function StaffSignIn({
       <div className="mx-auto max-w-md space-y-4">
         <SocialSignIn role={role} onAccount={onDone} onRegister={contractor ? (email, provider) => setMode({ kind: 'register', provider, email }) : undefined} />
         {contractor && (
-          <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-line bg-white p-4">
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold">{t('New contractor?', 'নতুন ঠিকাদার?')}</p>
-              <p className="text-[0.95rem] text-ink-soft">{t('Register your firm. Head office approves it before you can sign in.', 'আপনার প্রতিষ্ঠান নিবন্ধন করুন। প্রধান কার্যালয় অনুমোদন দিলে সাইন ইন করতে পারবেন।')}</p>
-            </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-white p-4">
+            <p className="font-semibold">{t('New contractor?', 'নতুন ঠিকাদার?')}</p>
             <Button variant="secondary" onClick={() => setMode({ kind: 'register', provider: 'phone', email: '' })}>
               <UserPlus />
               {t('Register', 'নিবন্ধন')}
