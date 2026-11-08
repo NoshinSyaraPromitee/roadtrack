@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, Check, ClipboardCheck, HardHat } from 'lucide-react';
 import type { Role } from '@/core/types';
-import { RoadSelect, useRoad } from '@/features/road';
+import { RoadHero, RoadSelect, useRoad } from '@/features/road';
 import { PeoplePicker, shortName, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { SpeakButton, useSay } from '@/shared/voice';
-import { ActionBar, Pictogram, RoadStrip } from '@/shared/ui';
+import { ActionBar, Pictogram } from '@/shared/ui';
 import type { IconType, PictoShape, PictoTone } from '@/shared/ui';
 import { SignInForm } from './SignInForm';
 import { useSession } from './store';
@@ -61,7 +61,7 @@ export function LoginFlow({ progress, onStepChange }: { progress: Record<string,
     return (
       <div className="pb-32">
         <div className="mb-2 flex items-center gap-3">
-          <h1 className="font-sign text-3xl sm:text-5xl">{t('Tap your name', 'আপনার নামে চাপ দিন')}</h1>
+          <h1 className="font-sign text-[2.5rem] leading-none sm:text-[3.5rem]">{t('Tap your name', 'আপনার নামে চাপ দিন')}</h1>
           <SpeakButton
             text={{ en: 'Tap your name. The phone will say the name you tapped.', bn: 'আপনার নামে চাপ দিন। চাপ দিলে ফোন নামটি বলে দেবে।' }}
             size="lg"
@@ -89,23 +89,21 @@ export function LoginFlow({ progress, onStepChange }: { progress: Record<string,
     <div>
       <section className="mb-8">
         <div className="mb-3 flex items-center gap-3">
-          <h1 className="font-sign text-3xl sm:text-5xl">{t('Which road?', 'কোন রাস্তা?')}</h1>
+          <h1 className="font-sign text-[2.5rem] leading-none sm:text-[3.5rem]">{t('Which road?', 'কোন রাস্তা?')}</h1>
           <SpeakButton text={{ en: 'Which road are you working on? Tap the box to choose.', bn: 'আপনি কোন রাস্তায় কাজ করছেন? বাছাই করতে বাক্সে চাপ দিন।' }} size="lg" />
         </div>
         <RoadSelect progress={progress} />
-        <div className="mt-3 rounded-2xl border border-line bg-white p-3 sm:p-4">
-          <RoadStrip progress={progress[road.id] ?? 0} lengthKm={road.lengthKm} size="lg" />
-        </div>
+        <RoadHero road={road} progress={progress[road.id] ?? 0} className="mt-3" />
       </section>
       <div className="mb-5 flex items-center gap-3">
-        <h1 className="font-sign text-3xl sm:text-5xl">{t('Who are you?', 'আপনি কে?')}</h1>
+        <h1 className="font-sign text-[2.5rem] leading-none sm:text-[3.5rem]">{t('Who are you?', 'আপনি কে?')}</h1>
         <SpeakButton text={{ en: 'Who are you? Choose one.', bn: 'আপনি কে? একটি বেছে নিন।' }} size="lg" />
       </div>
       <div className="grid gap-3 md:grid-cols-3 md:gap-4">
         {ROLES.map((r) => (
           <div
             key={r.role}
-            className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 rounded-3xl border-2 border-line bg-white p-4 transition hover:border-guide-600 hover:bg-guide-50 md:flex md:flex-col md:p-6 md:text-center"
+            className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 rounded-[18px] border border-line bg-white p-4 transition hover:border-guide-600 hover:bg-guide-50 md:flex md:flex-col md:p-6 md:text-center"
           >
             <span className="md:hidden">
               <Pictogram icon={r.icon} tone={r.tone} shape={r.shape} size={64} keepTone />

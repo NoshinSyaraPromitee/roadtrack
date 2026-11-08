@@ -1,18 +1,19 @@
-import { FileText, Gauge, HandCoins, Megaphone, Tractor, Wallet } from 'lucide-react';
+import { FileText, Gauge, HandCoins, Megaphone, Route, Tractor, UserPlus, Wallet } from 'lucide-react';
 import { ComplaintsInbox, useComplaints } from '@/features/complaints';
 import { ProgressChart, ProjectOverview, ShiftRecords } from '@/features/dashboard';
 import { EquipmentBoard, useEquipment } from '@/features/equipment';
-import { useRoad } from '@/features/road';
+import { AddRoadForm, RoadList, useRoad } from '@/features/road';
 import { PayrollApprovals } from '@/features/payroll';
 import { RaiseInbox, useRaiseRequests } from '@/features/raise-requests';
+import { SignupRequests, usePendingSignups } from '@/features/session';
 import { sumMaterials } from '@/core/materials';
-import { MaterialTotals, useCompletedShifts, useShiftStore } from '@/features/shift';
+import { MaterialTotals, useCompletedShifts, useRoadProgressMap, useShiftStore } from '@/features/shift';
 import { useI18n } from '@/shared/i18n';
 import { PageHeader, TabBar } from '@/shared/ui';
 import type { TabItem } from '@/shared/ui';
 import { useUrlState } from '@/shared/lib/useUrlState';
 
-const TAB_KEYS = ['overview', 'pay', 'machines', 'complaints', 'raises', 'records'] as const;
+const TAB_KEYS = ['overview', 'pay', 'machines', 'complaints', 'raises', 'records', 'roads', 'signups'] as const;
 type Tab = (typeof TAB_KEYS)[number];
 
 export function AdminPage() {
@@ -25,6 +26,12 @@ export function AdminPage() {
   const road = useRoad();
   const broken = useEquipment((s) => s.machines.filter((m) => m.roadId === road.id && m.status === 'repair').length);
   const [tab, setTab] = useUrlState<Tab>('tab', 'overview', TAB_KEYS);
+  const progressMap = useRoadProgressMap();
+  const pendingSignups = usePendingSignups();
+  const toOverview = () => {
+    setTab('overview');
+    window.scrollTo({ top: 0 });
+  };
 
   const tabs: TabItem<Tab>[] = [
     { key: 'overview', icon: Gauge, label: { en: 'Overview', bn: 'সারসংক্ষেপ' } },
@@ -33,6 +40,8 @@ export function AdminPage() {
     { key: 'complaints', icon: Megaphone, label: { en: 'Complaints', bn: 'অভিযোগ' }, count: openComplaints },
     { key: 'raises', icon: HandCoins, label: { en: 'Raises', bn: 'বেতন বৃদ্ধি' }, count: openRaises },
     { key: 'records', icon: FileText, label: { en: 'Records', bn: 'রেকর্ড' } },
+    { key: 'roads', icon: Route, label: { en: 'Roads', bn: 'রাস্তা' } },
+    { key: 'signups', icon: UserPlus, label: { en: 'Contractors', bn: 'ঠিকাদার' }, count: pendingSignups },
   ];
 
   return (
@@ -54,6 +63,13 @@ export function AdminPage() {
       {tab === 'complaints' && <ComplaintsInbox />}
       {tab === 'raises' && <RaiseInbox />}
       {tab === 'records' && <ShiftRecords />}
+      {tab === 'signups' && <SignupRequests />}
+      {tab === 'roads' && (
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
+          <AddRoadForm onAdded={toOverview} />
+          <RoadList progress={progressMap} onOpen={toOverview} />
+        </div>
+      )}
     </div>
   );
 }

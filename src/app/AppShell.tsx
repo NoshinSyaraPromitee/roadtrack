@@ -3,7 +3,7 @@ import { Building2, LogOut, Megaphone, RotateCcw } from 'lucide-react';
 import { SUPERVISOR } from '@/data/seed';
 import { ApaAssistant } from '@/features/assistant';
 import { RoadSelect } from '@/features/road';
-import { useSession } from '@/features/session';
+import { useContractor, useSession } from '@/features/session';
 import { useRoadProgressMap } from '@/features/shift';
 import { Avatar, roleOf, shortName, useWorker } from '@/features/workforce';
 import { LangToggle, useI18n } from '@/shared/i18n';
@@ -16,11 +16,13 @@ export function AppShell() {
   const role = useSession((s) => s.role);
   const workerId = useSession((s) => s.workerId);
   const logout = useSession((s) => s.logout);
+  const contractor = useContractor(useSession((s) => s.accountId));
   const worker = useWorker(workerId);
   const navigate = useNavigate();
   const progress = useRoadProgressMap();
 
-  const person = role === 'worker' ? worker : role === 'supervisor' ? SUPERVISOR : undefined;
+  const supervisor = contractor ? { id: contractor.id, name: contractor.name, nameBn: contractor.name, color: SUPERVISOR.color } : SUPERVISOR;
+  const person = role === 'worker' ? worker : role === 'supervisor' ? supervisor : undefined;
 
   const resetData = () => {
     if (!window.confirm(i.t('Delete everything saved on this device and start again?', 'এই ডিভাইসে রাখা সব তথ্য মুছে আবার শুরু করবেন?'))) return;
@@ -42,15 +44,15 @@ export function AppShell() {
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             {person ? (
-              <span className="mr-1 hidden items-center gap-2 lg:flex">
+              <span className="mr-1 hidden items-center gap-2 xl:flex">
                 <Avatar person={person} size={36} />
                 <span className="leading-tight">
                   <span className="block w-24 truncate font-semibold">{shortName(person, i.lang)}</span>
-                  <span className="block w-24 truncate text-sm text-white/75">{i.tx(roleOf(person))}</span>
+                  <span className="block w-24 truncate text-sm text-white/75">{contractor ? i.t('Contractor', 'ঠিকাদার') : i.tx(roleOf(person))}</span>
                 </span>
               </span>
             ) : role === 'admin' ? (
-              <span className="mr-1 hidden items-center gap-2 lg:flex">
+              <span className="mr-1 hidden items-center gap-2 xl:flex">
                 <Pictogram icon={Building2} shape="disc" size={36} onDark />
                 <span className="font-semibold">{i.t('Head office', 'প্রধান কার্যালয়')}</span>
               </span>
@@ -85,7 +87,7 @@ export function AppShell() {
                 navigate('/');
               }}
               aria-label={i.t('Switch user', 'ব্যবহারকারী বদলান')}
-              className="flex h-10 items-center justify-center gap-2 rounded-full bg-white/10 px-3 font-semibold transition hover:bg-white/20 lg:w-44"
+              className="flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white/10 px-3 font-semibold transition hover:bg-white/20 lg:px-4"
             >
               <LogOut className="h-5 w-5" />
               <span className="hidden lg:inline">{i.t('Switch user', 'ব্যবহারকারী বদলান')}</span>

@@ -31,7 +31,7 @@ export function inputProblem(phone: string, password: string, i: I18n): Problem 
 
 export const lockedProblem = (i: I18n): Problem => ({
   why: { en: `The phone number or password was wrong ${MAX_TRIES} times.`, bn: `ফোন নম্বর বা পাসওয়ার্ড ${i.num(MAX_TRIES)} বার ভুল হয়েছে।` },
-  fix: { en: 'Wait 30 seconds and try again. If you forgot the password, call the head office.', bn: '৩০ সেকেন্ড অপেক্ষা করে আবার চেষ্টা করুন। পাসওয়ার্ড ভুলে গেলে প্রধান কার্যালয়ে ফোন করুন।' },
+  fix: { en: 'Wait 30 seconds and try again, or tap "Forgot password?" to set a new one.', bn: '৩০ সেকেন্ড অপেক্ষা করে আবার চেষ্টা করুন, অথবা নতুন পাসওয়ার্ড দিতে "পাসওয়ার্ড ভুলে গেছেন?" চাপুন।' },
 });
 
 export const wrongProblem = (left: number, i: I18n): Problem => ({
@@ -46,3 +46,14 @@ export const CHECK_FAILED: Problem = {
   why: { en: 'The browser could not check the password.', bn: 'ব্রাউজার পাসওয়ার্ড যাচাই করতে পারেনি।' },
   fix: { en: 'Reload the page and try again. If it keeps happening, use Google Chrome or Microsoft Edge.', bn: 'পাতা রিলোড করে আবার চেষ্টা করুন। বারবার হলে Google Chrome বা Microsoft Edge ব্যবহার করুন।' },
 };
+
+export const waitingProblem = (pending: boolean): Problem =>
+  pending
+    ? {
+        why: { en: 'Your registration is waiting for head office approval.', bn: 'আপনার নিবন্ধন প্রধান কার্যালয়ের অনুমোদনের অপেক্ষায় আছে।' },
+        fix: { en: 'You can sign in as soon as head office approves it.', bn: 'প্রধান কার্যালয় অনুমোদন দিলেই সাইন ইন করতে পারবেন।' },
+      }
+    : {
+        why: { en: 'Head office did not approve this registration.', bn: 'প্রধান কার্যালয় এই নিবন্ধন অনুমোদন করেনি।' },
+        fix: { en: 'Call the head office, or register again with the right trade licence.', bn: 'প্রধান কার্যালয়ে ফোন করুন, অথবা সঠিক ট্রেড লাইসেন্স দিয়ে আবার নিবন্ধন করুন।' },
+      };

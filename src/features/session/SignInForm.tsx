@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Loader2, LogIn } from 'lucide-react';
+import { CircleCheck, Loader2, LogIn } from 'lucide-react';
 import type { Account } from '@/core/accounts';
 import { checkSignIn } from '@/core/accounts';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { SpeakButton } from '@/shared/voice';
-import { Button, Card, Field, Input } from '@/shared/ui';
+import { Button, Card, Field, Input, PasswordInput } from '@/shared/ui';
 import { useNow } from '@/shared/lib/useNow';
 import type { Problem } from './signInProblems';
 import { CHECK_FAILED, LOCK_MS, MAX_TRIES, inputProblem, lockedProblem, wrongProblem } from './signInProblems';
+import { usePasswords } from './passwordStore';
+import { ResetPassword } from './ResetPassword';
 
 export function SignInForm({ role, title, onDone, onBack }: { role: Account['role']; title: Text; onDone: (account: Account) => void; onBack: () => void }) {
   const i = useI18n();
@@ -16,11 +18,13 @@ export function SignInForm({ role, title, onDone, onBack }: { role: Account['rol
   const now = useNow(1000);
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
-  const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<Problem | null>(null);
   const [tries, setTries] = useState(0);
   const [lockedUntil, setLockedUntil] = useState(0);
+  const [resetting, setResetting] = useState(false);
+  const [changed, setChanged] = useState(false);
+  const saved = usePasswords((s) => s.changed);
   const locked = lockedUntil > now;
   const wait = Math.ceil((lockedUntil - now) / 1000);
 
@@ -36,7 +40,7 @@ export function SignInForm({ role, title, onDone, onBack }: { role: Account['rol
     setBusy(true);
     setProblem(null);
     try {
-      const result = await checkSignIn(role, phone, password);
+      const result = await checkSignIn(role, phone, password, saved);
       if (result.ok) {
         onDone(result.account);
         return;
@@ -55,6 +59,25 @@ export function SignInForm({ role, title, onDone, onBack }: { role: Account['rol
       setBusy(false);
     }
   };
+
+  if (resetting) {
+    return (
+      <ResetPassword
+        role={role}
+        startPhone={phone}
+        onBack={() => setResetting(false)}
+        onDone={(p) => {
+          setPhone(p);
+          setPassword('');
+          setTries(0);
+          setLockedUntil(0);
+          setProblem(null);
+          setChanged(true);
+          setResetting(false);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="mx-auto max-w-md">
@@ -85,28 +108,26 @@ export function SignInForm({ role, title, onDone, onBack }: { role: Account['rol
             />
           </Field>
           <Field label={t('Password', 'পাসওয়ার্ড')}>
-            <div className="relative">
-              <Input
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (!locked) setProblem(null);
-                }}
-                type={show ? 'text' : 'password'}
-                autoComplete="current-password"
-                disabled={busy || locked}
-                className="pr-12"
-              />
-              <button
-                type="button"
-                onClick={() => setShow((v) => !v)}
-                aria-label={show ? t('Hide password', 'পাসওয়ার্ড লুকান') : t('Show password', 'পাসওয়ার্ড দেখুন')}
-                className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center text-ink-soft hover:text-ink"
-              >
-                {show ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-              </button>
-            </div>
+            <PasswordInput
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (!locked) setProblem(null);
+              }}
+              autoComplete="current-password"
+              disabled={busy || locked}
+            />
           </Field>
+          <button type="button" onClick={() => setResetting(true)} className="-mt-2 font-semibold text-guide-700 underline-offset-4 hover:underline">
+            {t('Forgot password?', 'পাসওয়ার্ড ভুলে গেছেন?')}
+          </button>
+
+          {changed && !problem && (
+            <p role="status" className="flex items-center gap-2 rounded-xl bg-guide-50 p-3 font-semibold text-guide-700">
+              <CircleCheck className="h-5 w-5 shrink-0" />
+              {t('Password changed. Sign in with the new one.', 'পাসওয়ার্ড বদলানো হয়েছে। নতুনটি দিয়ে সাইন ইন করুন।')}
+            </p>
+          )}
 
           {problem && (
             <div role="alert" className="rounded-xl bg-stop-50 p-3 text-[0.95rem] leading-snug">
