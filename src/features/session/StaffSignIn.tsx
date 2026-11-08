@@ -11,20 +11,9 @@ import { SocialSignIn } from './SocialSignIn';
 
 type Mode = { kind: 'signin' } | { kind: 'register'; provider: Provider; email: string };
 
-export function StaffSignIn({
-  role,
-  title,
-  contractor = false,
-  onDone,
-  onBack,
-}: {
-  role: Account['role'];
-  title: Text;
-  contractor?: boolean;
-  onDone: (account: Account) => void;
-  onBack: () => void;
-}) {
+export function StaffSignIn({ role, title, onDone, onBack }: { role: Account['role']; title: Text; onDone: (account: Account) => void; onBack: () => void }) {
   const { t } = useI18n();
+  const canRegister = role === 'supervisor';
   const [mode, setMode] = useState<Mode>({ kind: 'signin' });
   const toSignIn = () => {
     setMode({ kind: 'signin' });
@@ -37,8 +26,8 @@ export function StaffSignIn({
     <div className="space-y-4">
       <SignInForm role={role} title={title} onDone={onDone} onBack={onBack} />
       <div className="mx-auto max-w-md space-y-4">
-        <SocialSignIn role={role} onAccount={onDone} onRegister={contractor ? (email, provider) => setMode({ kind: 'register', provider, email }) : undefined} />
-        {contractor && (
+        <SocialSignIn role={role} onAccount={onDone} onRegister={canRegister ? (email, provider) => setMode({ kind: 'register', provider, email }) : undefined} />
+        {canRegister && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-white p-4">
             <p className="font-semibold">{t('New contractor?', 'নতুন ঠিকাদার?')}</p>
             <Button variant="secondary" onClick={() => setMode({ kind: 'register', provider: 'phone', email: '' })}>

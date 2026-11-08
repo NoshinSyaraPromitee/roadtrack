@@ -1,6 +1,6 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BriefcaseBusiness, Building2, Check, ClipboardCheck, HardHat } from 'lucide-react';
+import { Building2, Check, ClipboardCheck, HardHat } from 'lucide-react';
 import type { Role } from '@/core/types';
 import { RoadHero, RoadSelect, useRoad } from '@/features/road';
 import { PeoplePicker, shortName, useWorkforce } from '@/features/workforce';
@@ -12,11 +12,10 @@ import type { IconType, PictoShape, PictoTone } from '@/shared/ui';
 import { StaffSignIn } from './StaffSignIn';
 import { useSession } from './store';
 
-const ROLES: Array<{ key: string; role: Role; path: string; title: Text; cta: Text; icon: IconType; tone: PictoTone; shape: PictoShape }> = [
-  { key: 'worker', role: 'worker', path: '/worker', title: { en: 'Worker', bn: 'শ্রমিক' }, cta: { en: 'I am a worker', bn: 'আমি শ্রমিক' }, icon: HardHat, tone: 'mark', shape: 'plate' },
-  { key: 'supervisor', role: 'supervisor', path: '/supervisor', title: { en: 'Supervisor', bn: 'সুপারভাইজার' }, cta: { en: 'I am the supervisor', bn: 'আমি সুপারভাইজার' }, icon: ClipboardCheck, tone: 'guide', shape: 'plate' },
-  { key: 'contractor', role: 'supervisor', path: '/supervisor', title: { en: 'Contractor', bn: 'ঠিকাদার' }, cta: { en: 'I am a contractor', bn: 'আমি ঠিকাদার' }, icon: BriefcaseBusiness, tone: 'mark', shape: 'disc' },
-  { key: 'admin', role: 'admin', path: '/admin', title: { en: 'Head office', bn: 'প্রধান কার্যালয়' }, cta: { en: 'Open the office view', bn: 'অফিসের পাতা খুলুন' }, icon: Building2, tone: 'sign', shape: 'disc' },
+const ROLES: Array<{ role: Role; path: string; title: Text; cta: Text; icon: IconType; tone: PictoTone; shape: PictoShape }> = [
+  { role: 'worker', path: '/worker', title: { en: 'Worker', bn: 'শ্রমিক' }, cta: { en: 'I am a worker', bn: 'আমি শ্রমিক' }, icon: HardHat, tone: 'mark', shape: 'plate' },
+  { role: 'supervisor', path: '/supervisor', title: { en: 'Supervisor', bn: 'সুপারভাইজার' }, cta: { en: 'I am the supervisor', bn: 'আমি সুপারভাইজার' }, icon: ClipboardCheck, tone: 'guide', shape: 'plate' },
+  { role: 'admin', path: '/admin', title: { en: 'Head office', bn: 'প্রধান কার্যালয়' }, cta: { en: 'Open the office view', bn: 'অফিসের পাতা খুলুন' }, icon: Building2, tone: 'sign', shape: 'disc' },
 ];
 
 type LoginStep = 'role' | 'name' | 'signin';
@@ -50,7 +49,6 @@ export function LoginFlow({ progress }: { progress: Record<string, number> }) {
     return (
       <StaffSignIn
         role={role}
-        contractor={r.key === 'contractor'}
         title={{ en: `${r.title.en} sign in`, bn: `${r.title.bn} সাইন ইন` }}
         onBack={() => setStep('role')}
         onDone={(account) => enter(role, r.path, { accountId: account.id })}
@@ -100,10 +98,10 @@ export function LoginFlow({ progress }: { progress: Record<string, number> }) {
         <h1 className="font-sign text-[2.5rem] leading-none sm:text-[3.5rem]">{t('Who are you?', 'আপনি কে?')}</h1>
         <SpeakButton text={{ en: 'Who are you? Choose one.', bn: 'আপনি কে? একটি বেছে নিন।' }} size="lg" />
       </div>
-      <div className="grid gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
+      <div className="grid gap-3 md:grid-cols-3 md:gap-4">
         {ROLES.map((r) => (
           <div
-            key={r.key}
+            key={r.role}
             className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 rounded-[18px] border border-line bg-white p-4 transition hover:border-guide-600 hover:bg-guide-50 md:flex md:flex-col md:p-6 md:text-center"
           >
             <span className="md:hidden">
@@ -121,7 +119,7 @@ export function LoginFlow({ progress }: { progress: Record<string, number> }) {
               onClick={() => {
                 hint(r.title);
                 if (r.role === 'worker') setStep('name');
-                else if (session.role === r.role && session.accountId && (r.key === 'contractor') === session.accountId.startsWith('reg_')) navigate(r.path);
+                else if (session.role === r.role && session.accountId) navigate(r.path);
                 else {
                   setSigninRole(r);
                   setStep('signin');
