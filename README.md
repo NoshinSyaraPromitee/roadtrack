@@ -1,50 +1,142 @@
-﻿# RoadTrack - Road Construction Tracker (Frontend Demo)
+# RoadTrack
 
-Credosis Internship Phase 02, Frontend track.
+**Road construction tracker for Bangladesh, built so workers who cannot read can still use it.**
+Frontend demo for the Credosis Internship, Phase 02.
 
-## Problem
-Road construction crews in Bangladesh are tracked on paper. Headcounts drift, wasted material goes unexplained, rest breaks get skipped, and older or sick workers are paid the same as everyone else. Many workers cannot read, so a normal app would shut them out.
+**Live demo:** https://roadtrack-tan.vercel.app/
 
-## Designed for people who cannot read
-- **Road-sign pictograms.** Green plates for information, blue circles for "do this", red triangles for problems. Shape and colour carry the meaning, words are optional.
-- **People as signs.** Every worker is shown as their work icon (shovel, brick wall, roller) on their own colour. Tap a person and the phone says their name.
-- **Voice.** Every key card has a speaker button that reads it aloud in Bangla or English. Break reminders speak on their own. Workers can record a voice message instead of writing a complaint.
-- **No typing.** Numbers use big minus and plus buttons. Tap the number to type if you prefer.
-- **Bangla and English.** One tap switches the language, including Bangla digits. Bangla text uses Kalpurush; English uses Tiro Bangla for headings and Anek for everything else.
-- **Plain switches.** Choices are shown by coloured text, not filled pill buttons.
-- **Phone and laptop.** Big bottom tabs and one column on phones; top tabs and two columns on laptops.
+---
 
-## Features
-- **Choose a road.** Four demo roads in Gazipur, Dhaka, Savar and Rangpur. Each has its own shifts, machines and progress. Work places are named (Board Bazar, Mirpur 11 Bus Stand), never coordinates.
-- **Core: shift lifecycle (Supervisor).** Pick the crew by tapping them, issue materials, choose the place, enter how many km of road are done (the app works out the percent), then a live shift timer. Finish in four steps: recount, materials used and wasted, progress and problems, pay list. Pay is calculated automatically: elders (50+) get +15%, sick or hurt workers get +20%, and anyone who left early gets -50%.
-- **Rest and snack reminders** with spoken alerts, phone vibration and notifications. A fast demo timer is included.
-- **Head office dashboard.** A photo of the road with its progress strip right under it, charts, pay approval, complaints with voice playback, raise approvals and full shift records with CSV export.
-- **Add roads.** Head office can add a new road (names in English and Bangla, start and end, length, work places, optional photo) and remove roads it added.
-- **Password reset.** Supervisor and head office can reset a forgotten password with a 6-digit code (shown on screen in this demo, since there is no SMS service), a 5-minute expiry and 3 tries.
-- **Equipment tracking.** Every roller, truck, mixer and generator on the road: working, idle or broken, fuel level, hours run today and when the next service is due.
-- **Worker phone view.** My money, my health (workers tell the supervisor if they are sick or hurt, by tapping or by voice), ask for a raise, make a complaint (by voice or text, optionally anonymous).
-- **Ask Apa.** A drawn Bangladeshi site helper on every screen. Her speech bubble says what to do now and when (break due, a sick worker, a broken machine, time to finish). Tap a question, speak (Bangla or English) or type, and she answers out loud from the app's own data. Turn on "Call me by saying Apa" to open her hands-free.
+## Contents
+1. [Demo sign-in (phone, email, password)](#1-demo-sign-in)
+2. [How to try it in 2 minutes](#2-how-to-try-it-in-2-minutes)
+3. [The problem](#3-the-problem)
+4. [Made for people who cannot read](#4-made-for-people-who-cannot-read)
+5. [Features](#5-features)
+6. [Run it on your computer](#6-run-it-on-your-computer)
+7. [Code structure](#7-code-structure)
+8. [Privacy](#8-privacy)
 
-## Architecture (clean, layered)
-```
-src/app       routing, shell, role guard
-src/pages     thin pages that only compose features
-src/features  self-contained bricks: road, session, workforce, shift, reminders, payroll, complaints, raise-requests, equipment, health, dashboard, assistant
-src/shared    i18n, voice, UI kit (pictograms, steppers, wizard, road strip), utils
-src/data      demo seed data
-src/core      pure business rules and types: pay, breaks, health, roads, materials, complaints, accounts
-```
-Dependencies point inwards only: `app -> pages -> features -> shared / data -> core`. `core` imports nothing outside itself, not even React.
-Each feature exposes its public API through `index.ts`; other code may not import its inner files.
-ESLint enforces these boundaries and a 160-line limit per file (`npm run lint`).
+---
 
-## Privacy
-A complaint sent with "Hide my name" is stored without the sender. Only the sender's own device keeps a receipt so they can follow it.
+## 1. Demo sign-in
 
-## Run
-```
+Pick a role on the home page, then use these details.
+
+### Supervisor
+
+| | |
+| --- | --- |
+| **Name** | Engr. Tanvir Rahman |
+| **Phone** | `01711000100` |
+| **Password** | `Tanvir@2026` |
+| **Google / Apple email** | `tanvir.rahman@roadtrack.demo` |
+
+### Head office
+
+| | |
+| --- | --- |
+| **Phone** | `01711000200` |
+| **Password** | `Office@2026` |
+| **Google / Apple email** | `office@roadtrack.demo` |
+
+### Worker
+
+No password. Tap **Worker**, then tap your own name and photo.
+
+> **Good to know**
+> - Google and Apple sign-in are simulated: type the email above instead of a real Google or Apple login.
+> - A changed password or a new contractor sign-up is saved only in your browser.
+> - **Start again** in the top bar resets everything to the starting data.
+
+---
+
+## 2. How to try it in 2 minutes
+
+1. **Home page:** choose a road, then choose **Supervisor**.
+2. **Supervisor:** sign in, start a shift (pick the crew, give materials, set the place), then finish it.
+3. **Worker:** go home, choose **Worker**, tap a name and look at money, health and complaints.
+4. **Head office:** sign in to see progress, approve pay, read complaints and approve new contractors.
+5. **New contractor:** on the Supervisor sign-in, press **Register**, then approve it from Head office → **Contractors**.
+
+---
+
+## 3. The problem
+
+Road crews in Bangladesh are tracked on paper. Headcounts drift, wasted material goes unexplained, rest breaks get skipped, and older or sick workers are paid the same as everyone else. Many workers cannot read, so a normal app would shut them out.
+
+---
+
+## 4. Made for people who cannot read
+
+| Idea | What it means |
+| --- | --- |
+| **Road-sign pictures** | Green plates = information, blue circles = do this, red triangles = problem. Shape and colour carry the meaning. |
+| **Faces, not names** | Every worker is shown by their photo. Tap a person and the phone says their name. |
+| **Voice** | Speaker buttons read cards aloud in Bangla or English. Break reminders speak on their own. Complaints can be recorded by voice. |
+| **No typing** | Big minus and plus buttons for numbers. |
+| **Bangla and English** | One tap switches language, including Bangla digits. Fonts: Kalpurush for Bangla, Times New Roman for numbers. |
+| **Phone and laptop** | Big bottom tabs on phones, top tabs and two columns on laptops. |
+
+---
+
+## 5. Features
+
+### Supervisor
+- **Shifts from start to finish:** pick the crew, issue materials, choose the place, enter km done (the app works out the percent), live shift timer.
+- **Finish in four steps:** recount, materials used and wasted, progress and problems, pay list.
+- **Automatic pay:** elders (50+) get +15%, sick or hurt workers +20%, leaving early −50%.
+- **Rest and snack reminders** with spoken alerts and vibration (a fast demo timer is included).
+- **Machines:** working, idle or broken; fuel; hours today; next service; cost of each repair.
+
+### Worker (phone view)
+- My money, my health (tell the supervisor you are sick or hurt), ask for a raise, make a complaint (voice or text, can hide your name).
+
+### Head office
+- Road photo with a progress strip, charts, pay approval, complaints with voice playback, raise approvals, shift records with CSV export.
+- **Add or remove roads** (English and Bangla names, start and end, length, work places, optional photo).
+- **Approve contractors:** new sign-ups wait under **Contractors** until approved or rejected.
+
+### Sign-in
+- **Phone and password** for supervisor and head office.
+- **Continue with Google or Apple** (simulated). A new email on the Supervisor sign-in starts contractor registration.
+- **Forgot password:** 6-digit code (shown on screen, since there is no SMS), expires in 5 minutes, 3 tries.
+
+### Ask Apa
+A drawn site helper on every screen. She says what to do now (break due, sick worker, broken machine, time to finish) and answers questions out loud, by tap, voice or typing.
+
+### Roads
+Four demo roads in Gazipur, Dhaka, Savar and Rangpur. Each has its own shifts, machines and progress. Places are named (Board Bazar, Mirpur 10 Circle), never coordinates.
+
+---
+
+## 6. Run it on your computer
+
+```bash
 npm install
-npm run dev
-npm test        # unit tests for the core rules (Vitest)
-npm run check   # type check, lint and tests together
+npm run dev      # start at http://localhost:5173
+npm test         # unit tests (Vitest)
+npm run check    # type check + lint + tests
 ```
+
+---
+
+## 7. Code structure
+src/app routing, page shell, role guard
+src/pages thin pages that only combine features
+src/features road, session, workforce, shift, reminders, payroll, complaints,
+raise-requests, equipment, health, dashboard, assistant
+src/shared language, voice, UI kit, helpers
+src/data demo data
+src/core pure business rules (pay, breaks, health, roads, machines, accounts ...)
+
+- Imports only point inward: `app → pages → features → shared / data → core`.
+- `core` is plain TypeScript with no React.
+- Each feature is used only through its `index.ts`.
+- ESLint enforces these rules and a 160-line limit per file.
+
+---
+
+## 8. Privacy
+
+A complaint sent with **Hide my name** is stored without the sender. Only the sender's own phone keeps a receipt so they can follow it.
