@@ -43,6 +43,7 @@ Pick a role on the home page, then use these details.
 ### Worker
 
 No password. Tap **Worker**, then tap your own name and photo.
+New worker? Tap **New worker? Sign up** and give just three things: name, age (18 to 70) and the work they will do. They are signed in straight away.
 
 > **Good to know**
 > - Google and Apple sign-in are simulated: type the email above instead of a real Google or Apple login.
@@ -90,6 +91,7 @@ Road crews in Bangladesh are tracked on paper. Headcounts drift, wasted material
 - **Machines:** working, idle or broken; fuel; hours today; next service; cost of each repair.
 
 ### Worker (phone view)
+- **Sign up in three taps:** name, age and the work (pictures for each job). Daily pay starts at the usual rate for that work.
 - My money, my health (tell the supervisor you are sick or hurt), ask for a raise, make a complaint (voice or text, can hide your name).
 
 ### Head office

@@ -6,6 +6,7 @@ import { SEED_WORKERS } from '@/data/seed';
 interface WorkforceState {
   workers: Worker[];
   updateRate: (id: string, rate: number) => void;
+  addWorker: (worker: Worker) => void;
 }
 
 export const useWorkforce = create<WorkforceState>()(
@@ -13,6 +14,7 @@ export const useWorkforce = create<WorkforceState>()(
     (set) => ({
       workers: SEED_WORKERS,
       updateRate: (id, rate) => set((s) => ({ workers: s.workers.map((w) => (w.id === id ? { ...w, dailyRate: rate } : w)) })),
+      addWorker: (worker) => set((s) => ({ workers: [...s.workers, worker] })),
     }),
     {
       name: 'roadtrack-v3-workforce',

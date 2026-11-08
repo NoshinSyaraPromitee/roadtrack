@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Check, ClipboardCheck, HardHat } from 'lucide-react';
+import { Building2, ClipboardCheck, HardHat } from 'lucide-react';
 import type { Role } from '@/core/types';
 import { RoadHero, RoadSelect, useRoad } from '@/features/road';
-import { PeoplePicker, shortName, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import type { Text } from '@/shared/i18n';
 import { SpeakButton, useSay } from '@/shared/voice';
-import { ActionBar, Pictogram } from '@/shared/ui';
+import { Pictogram } from '@/shared/ui';
 import type { IconType, PictoShape, PictoTone } from '@/shared/ui';
 import { StaffSignIn } from './StaffSignIn';
+import { WorkerSignIn } from './WorkerSignIn';
 import { useSession } from './store';
 
 const ROLES: Array<{ role: Role; path: string; title: Text; cta: Text; icon: IconType; tone: PictoTone; shape: PictoShape }> = [
@@ -22,16 +22,13 @@ type LoginStep = 'role' | 'name' | 'signin';
 
 export function LoginFlow({ progress }: { progress: Record<string, number> }) {
   const { t, tx } = useI18n();
-  const { hint, say } = useSay();
+  const { hint } = useSay();
   const login = useSession((s) => s.login);
   const session = useSession();
   const [signinRole, setSigninRole] = useState<(typeof ROLES)[number] | null>(null);
-  const workers = useWorkforce((s) => s.workers);
   const navigate = useNavigate();
   const road = useRoad();
   const [step, setStepState] = useState<LoginStep>('role');
-  const [picked, setPicked] = useState<string | null>(null);
-  const me = workers.find((w) => w.id === picked);
 
   const setStep = (next: LoginStep) => {
     setStepState(next);
@@ -56,33 +53,7 @@ export function LoginFlow({ progress }: { progress: Record<string, number> }) {
     );
   }
 
-  if (step === 'name') {
-    return (
-      <div className="pb-32">
-        <div className="mb-2 flex items-center gap-3">
-          <h1 className="font-sign text-[2.5rem] leading-none sm:text-[3.5rem]">{t('Tap your name', 'আপনার নামে চাপ দিন')}</h1>
-          <SpeakButton
-            text={{ en: 'Tap your name. The phone will say the name you tapped.', bn: 'আপনার নামে চাপ দিন। চাপ দিলে ফোন নামটি বলে দেবে।' }}
-            size="lg"
-          />
-        </div>
-        <div className="mb-5" />
-        <PeoplePicker people={workers} selected={picked ? [picked] : []} onPick={setPicked} size={80} />
-        <ActionBar
-          onBack={() => {
-            setPicked(null);
-            setStep('role');
-          }}
-          onNext={() => {
-            if (me) enter('worker', '/worker', { workerId: me.id });
-            else say({ en: 'Tap your name first', bn: 'আগে আপনার নামে চাপ দিন' });
-          }}
-          nextIcon={Check}
-          nextLabel={me ? t(`Yes, I am ${shortName(me, 'en')}`, `হ্যাঁ, আমি ${shortName(me, 'bn')}`) : t('Tap your name', 'আপনার নামে চাপ দিন')}
-        />
-      </div>
-    );
-  }
+  if (step === 'name') return <WorkerSignIn onBack={() => setStep('role')} onEnter={(workerId) => enter('worker', '/worker', { workerId })} />;
 
   return (
     <div>
