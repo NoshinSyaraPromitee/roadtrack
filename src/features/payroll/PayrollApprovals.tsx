@@ -25,11 +25,7 @@ export function PayrollApprovals({ shifts, onApprove }: { shifts: Shift[]; onApp
         }
       />
       {pending.length === 0 ? (
-        <EmptyState
-          icon={BadgeCheck}
-          title={i.t('Every pay list is approved', 'সব মজুরি অনুমোদিত')}
-          text={i.t('A new list appears here when the supervisor closes a shift.', 'সুপারভাইজার শিফট শেষ করলে নতুন তালিকা এখানে আসবে।')}
-        />
+        <EmptyState icon={BadgeCheck} title={i.t('Every pay list is approved', 'সব মজুরি অনুমোদিত')} />
       ) : (
         <ul className="space-y-3">
           {pending.map((s) => {

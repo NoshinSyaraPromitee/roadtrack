@@ -54,7 +54,7 @@ export function MaterialTotals({ lines, title, filterable = false }: { lines: Ma
       />
 
       {filterable && (
-        <div className="mb-4 max-w-sm rounded-2xl border-2 border-line p-2">
+        <div className="mb-4 max-w-sm">
           <p className="mb-1.5 px-1 text-sm font-semibold text-ink-soft">{t('Show', 'দেখান')}</p>
           <Segmented boxed label={t('Show', 'দেখান')} options={SHOW} value={show} onChange={setShow} />
         </div>

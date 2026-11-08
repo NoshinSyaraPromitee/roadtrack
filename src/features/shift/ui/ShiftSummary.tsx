@@ -25,13 +25,15 @@ export function ShiftSummary({ shiftId, onClose }: { shiftId: string; onClose: (
     <div className="space-y-5">
       <PageHeader
         title={t('Shift finished', 'শিফট শেষ')}
-        subtitle={`${i.dateLong(shift.startedAt)}, ${tx(shift.site)}`}
         speak={{ en: `Shift finished. The pay list of ${i.numEn(total)} taka was sent to the office.`, bn: `শিফট শেষ। ${num(total)} টাকার মজুরির তালিকা অফিসে পাঠানো হয়েছে।` }}
         action={
-          <Button size="lg" onClick={onClose}>
-            <CircleCheck />
-            {t('Done', 'ঠিক আছে')}
-          </Button>
+          <div className="flex flex-col items-end gap-3 text-right">
+            <p className="font-semibold text-ink-soft sm:text-lg">{`${i.dateLong(shift.startedAt)}, ${tx(shift.site)}`}</p>
+            <Button size="lg" onClick={onClose}>
+              <CircleCheck />
+              {t('Done', 'ঠিক আছে')}
+            </Button>
+          </div>
         }
       />
 
