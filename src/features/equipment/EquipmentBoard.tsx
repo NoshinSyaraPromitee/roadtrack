@@ -1,6 +1,6 @@
 import { Tractor } from 'lucide-react';
 import type { Machine, MachineStatus } from '@/core/types';
-import { repairCostAll } from '@/core/repairs';
+import { LOW_FUEL_PCT, MACHINE_NAMES, SERVICE_EVERY_HOURS, fuelLow, isBroken, machineLabel, repairCostAll, serviceDue } from '@/core/machines';
 import { Avatar, personName, useWorkforce } from '@/features/workforce';
 import { useRoad } from '@/features/road';
 import { useI18n } from '@/shared/i18n';
@@ -8,7 +8,7 @@ import { SpeakButton } from '@/shared/voice';
 import { Card, CardHeader, Pictogram, Segmented, StackBar, Stepper } from '@/shared/ui';
 import type { SegmentOption } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
-import { LOW_FUEL_PCT, MACHINE_KIND, MACHINE_STATUS, SERVICE_EVERY_HOURS, fuelLow, machineName, serviceDue } from './meta';
+import { MACHINE_ICON, MACHINE_STATUS } from './meta';
 import { RepairControl } from './RepairControl';
 import { useEquipment } from './store';
 
@@ -23,18 +23,18 @@ function MachineCard({ m }: { m: Machine }) {
   const update = useEquipment((s) => s.update);
   const workers = useWorkforce((s) => s.workers);
   const operator = workers.find((w) => w.id === m.operatorId);
-  const kind = MACHINE_KIND[m.kind];
   const st = MACHINE_STATUS[m.status];
   const low = fuelLow(m);
   const due = serviceDue(m);
-  const name = machineName(m);
+  const name = machineLabel(m);
+  const broken = isBroken(m);
 
   return (
-    <li className={cn('rounded-2xl border-2 bg-white p-3 sm:p-4', m.status === 'repair' ? 'border-stop-100' : 'border-line')}>
+    <li className={cn('rounded-2xl border-2 bg-white p-3 sm:p-4', broken ? 'border-stop-100' : 'border-line')}>
       <div className="flex items-start gap-3">
-        <Pictogram icon={kind.icon} tone={m.status === 'repair' ? 'stop' : m.status === 'idle' ? 'mark' : 'guide'} shape={m.status === 'repair' ? 'warn' : 'plate'} size={56} />
+        <Pictogram icon={MACHINE_ICON[m.kind]} tone={broken ? 'stop' : m.status === 'idle' ? 'mark' : 'guide'} shape={broken ? 'warn' : 'plate'} size={56} />
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-semibold leading-tight">{i.tx(kind.name)}</p>
+          <p className="text-lg font-semibold leading-tight">{i.tx(MACHINE_NAMES[m.kind])}</p>
           <p className="font-sign text-lg leading-tight text-ink-soft">{m.code}</p>
           <p className={cn('mt-0.5 font-semibold', st.text)}>
             {i.tx(st.label)}
@@ -83,7 +83,7 @@ function MachineCard({ m }: { m: Machine }) {
           ? i.t(`Service due: ${i.num(m.hoursSinceService)} hours since last service`, `সার্ভিসিং দরকার: শেষ সার্ভিসের পর ${i.num(m.hoursSinceService)} ঘণ্টা`)
           : i.t(`Next service in ${i.num(SERVICE_EVERY_HOURS - m.hoursSinceService)} hours`, `${i.num(SERVICE_EVERY_HOURS - m.hoursSinceService)} ঘণ্টা পর সার্ভিসিং`)}
       </p>
-      <RepairControl m={m} needed={due || m.status === 'repair'} />
+      <RepairControl m={m} needed={due || broken} />
     </li>
   );
 }

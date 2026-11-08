@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { CalendarDays, HeartPulse, Send } from 'lucide-react';
 import type { Health, Worker } from '@/core/types';
+import { sickDays, todaysReport } from '@/core/health';
 import { useI18n } from '@/shared/i18n';
 import { SpeakButton, VoiceNote } from '@/shared/voice';
 import { ActionBar, Button, Card, CardHeader, EmptyState, Pictogram, Tile, VoiceOrWrite } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
-import { HEALTH_ICON } from './meta';
-import { HEALTH_LABEL, sickDays, todaysReport } from './model';
+import { HEALTH_ICON, HEALTH_LABEL } from './meta';
 import { useHealthReports } from './store';
 
 const CHOICES: Health[] = ['fit', 'sick', 'injured'];

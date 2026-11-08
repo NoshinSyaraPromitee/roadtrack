@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CircleCheck, X } from 'lucide-react';
 import type { Machine } from '@/core/types';
-import { lastRepair, repairCost } from '@/core/repairs';
+import { MAX_REPAIR_COST, lastRepair, repairCost } from '@/core/machines';
 import { useI18n } from '@/shared/i18n';
 import { Button, Stepper } from '@/shared/ui';
 import { useEquipment } from './store';
@@ -26,7 +26,7 @@ export function RepairControl({ m, needed }: { m: Machine; needed: boolean }) {
       {asking ? (
         <div className="space-y-3 rounded-xl bg-paper p-3">
           <p className="font-semibold">{i.t('How much did the fix cost?', 'মেরামতে কত টাকা লেগেছে?')}</p>
-          <Stepper value={cost} step={500} min={0} max={10_000_000} prefix="৳" label={i.t('Repair cost', 'মেরামতের খরচ')} onChange={setCost} />
+          <Stepper value={cost} step={500} min={0} max={MAX_REPAIR_COST} prefix="৳" label={i.t('Repair cost', 'মেরামতের খরচ')} onChange={setCost} />
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" size="sm" onClick={() => setAsking(false)}>
               <X />

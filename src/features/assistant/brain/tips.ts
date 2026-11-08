@@ -31,8 +31,8 @@ export function nextStep(ctx: ApaContext): Tip {
   }
 
   if (ctx.role === 'supervisor') {
-    const broken = h.roadMachines(ctx).filter((m) => m.status === 'repair');
-    const low = h.roadMachines(ctx).filter((m) => m.fuelPct < 25 && m.status !== 'repair');
+    const broken = h.roadMachines(ctx).filter(h.isBroken);
+    const low = h.roadMachines(ctx).filter((m) => h.fuelLow(m) && !h.isBroken(m));
     if (st?.due)
       return {
         key: `due-${st.due}-${shift!.breaks.length}`,
@@ -54,7 +54,7 @@ export function nextStep(ctx: ApaContext): Tip {
       return {
         key: `machine-${m.id}-${m.status}-${m.fuelPct}`,
         tone: 'warn',
-        text: m.status === 'repair'
+        text: h.isBroken(m)
           ? { en: `${h.machineLabel(m).en} is broken. Call the mechanic, then mark it fixed in Machines.`, bn: `${h.machineLabel(m).bn} নষ্ট। মিস্ত্রি ডাকুন, তারপর "মেশিন"-এ ঠিক করা হয়েছে চিহ্ন দিন।` }
           : { en: `${h.machineLabel(m).en} has only ${m.fuelPct}% fuel. Fill it before work stops.`, bn: `${h.machineLabel(m).bn}-এ মাত্র ${h.bn.num(m.fuelPct)}% জ্বালানি। কাজ থামার আগে তেল দিন।` },
       };
@@ -73,7 +73,7 @@ export function nextStep(ctx: ApaContext): Tip {
   if (pending.length) return { key: `pay-${pending.map((s) => s.id).join('-')}`, tone: 'warn', text: { en: `${h.en.num(pending.length)} ${pending.length === 1 ? 'pay list is' : 'pay lists are'} waiting. Open Pay and approve it so workers get paid.`, bn: `${h.bn.num(pending.length)}টি মজুরির তালিকা অপেক্ষায়। শ্রমিকরা যেন টাকা পান, "মজুরি" খুলে অনুমোদন দিন।` } };
   const open = ctx.complaints.filter((c) => c.status === 'open').length;
   if (open) return { key: `complaints-${open}`, tone: 'warn', text: { en: `${h.en.num(open)} new ${open === 1 ? 'complaint is' : 'complaints are'} not opened yet. Open Complaints.`, bn: `${h.bn.num(open)}টি নতুন অভিযোগ এখনো খোলা হয়নি। "অভিযোগ" খুলুন।` } };
-  const broken = h.roadMachines(ctx).filter((m) => m.status === 'repair');
+  const broken = h.roadMachines(ctx).filter(h.isBroken);
   if (broken.length) return { key: `broken-${broken.map((m) => m.id).join('-')}`, tone: 'warn', text: { en: `${h.list_(broken.map((m) => h.machineLabel(m).en), 'en')} ${broken.length === 1 ? 'is' : 'are'} broken on this road.`, bn: `এই রাস্তায় ${h.list_(broken.map((m) => h.machineLabel(m).bn), 'bn')} নষ্ট।` } };
   return { key: 'admin-idle', tone: 'info', text: { en: `${ctx.road.name.en} is ${h.en.fixed(h.roadDone(ctx))}% done. Ask me anything.`, bn: `${ctx.road.name.bn}-এর ${h.bn.fixed(h.roadDone(ctx))}% শেষ। যা খুশি জিজ্ঞেস করুন।` } };
 }

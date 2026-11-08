@@ -1,11 +1,11 @@
 import { HeartPulse, ThumbsUp } from 'lucide-react';
+import { sickDays, todaysReports } from '@/core/health';
 import { Avatar, personName, roleOf, useWorkforce } from '@/features/workforce';
 import { useI18n } from '@/shared/i18n';
 import { VoiceNote } from '@/shared/voice';
 import { Card, CardHeader, EmptyState } from '@/shared/ui';
 import { cn } from '@/shared/lib/utils';
-import { HEALTH_ICON } from './meta';
-import { HEALTH_LABEL, sickDays, todaysReports } from './model';
+import { HEALTH_ICON, HEALTH_LABEL } from './meta';
 import { useHealthReports } from './store';
 
 export function CrewHealth() {
@@ -41,6 +41,7 @@ export function CrewHealth() {
             const w = workers.find((x) => x.id === r.workerId);
             if (!w) return null;
             const m = HEALTH_ICON[r.status];
+            const streak = r.status === 'fit' ? 0 : sickDays(reports, r.workerId).streak;
             return (
               <li key={r.id} className={cn('rounded-2xl border p-3', r.status === 'fit' ? 'border-line' : 'border-stop-100 bg-stop-50/50')}>
                 <div className="flex items-center gap-3">
@@ -51,9 +52,7 @@ export function CrewHealth() {
                   </div>
                   <span className={cn('text-right font-semibold leading-tight', m.text)}>
                     {i.tx(HEALTH_LABEL[r.status])}
-                    {r.status !== 'fit' && sickDays(reports, r.workerId).streak > 1 && (
-                      <span className="block text-sm">{i.t(`${i.num(sickDays(reports, r.workerId).streak)} days in a row`, `টানা ${i.num(sickDays(reports, r.workerId).streak)} দিন`)}</span>
-                    )}
+                    {streak > 1 && <span className="block text-sm">{i.t(`${i.num(streak)} days in a row`, `টানা ${i.num(streak)} দিন`)}</span>}
                   </span>
                 </div>
                 {(r.note || r.audio) && (

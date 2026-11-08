@@ -91,8 +91,8 @@ export function answerSite(key: QuestionKey, ctx: ApaContext): Text | null {
       if (!list.length) return { en: 'There are no machines on this road.', bn: 'এই রাস্তায় কোনো মেশিন নেই।' };
       const working = list.filter((m) => m.status === 'working').length;
       const idle = list.filter((m) => m.status === 'idle').length;
-      const broken = list.filter((m) => m.status === 'repair');
-      const low = list.filter((m) => m.fuelPct < 25);
+      const broken = list.filter(h.isBroken);
+      const low = list.filter(h.fuelLow);
       const brokenText = broken.length ? { en: ` Broken: ${h.list_(broken.map((m) => h.machineLabel(m).en), 'en')}.`, bn: ` নষ্ট: ${h.list_(broken.map((m) => h.machineLabel(m).bn), 'bn')}।` } : { en: '', bn: '' };
       const lowText = low.length ? { en: ` Low on fuel: ${h.list_(low.map((m) => h.machineLabel(m).en), 'en')}.`, bn: ` জ্বালানি কম: ${h.list_(low.map((m) => h.machineLabel(m).bn), 'bn')}।` } : { en: '', bn: '' };
       return {

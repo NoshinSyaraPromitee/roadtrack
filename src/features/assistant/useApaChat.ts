@@ -13,7 +13,7 @@ import type { Message, VoiceState } from './chatTypes';
 const THINK_MS = 500;
 const MAX_MESSAGES = 30;
 
-export function apaStatus(i: I18n, listening: boolean, thinking: boolean, voice: VoiceState, soundOn: boolean) {
+function apaStatus(i: I18n, listening: boolean, thinking: boolean, voice: VoiceState, soundOn: boolean) {
   if (listening) return i.t('Listening…', 'শুনছে…');
   if (thinking) return i.t('Thinking…', 'ভাবছে…');
   if (voice === 'loading') return i.t('Getting the voice ready…', 'আওয়াজ আসছে…');
