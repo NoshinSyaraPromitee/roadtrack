@@ -60,11 +60,11 @@ export function SignupRequests() {
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start lg:gap-6">
       <Card>
-        <CardHeader icon={Hourglass} title={t('Waiting for approval', 'অনুমোদনের অপেক্ষায়')} subtitle={t('Check the trade licence before you approve.', 'অনুমোদনের আগে ট্রেড লাইসেন্স যাচাই করুন।')} />
+        <CardHeader icon={Hourglass} title={t('Waiting for approval', 'অনুমোদনের অপেক্ষায়')} />
         {pending.length ? (
           <ul className="divide-y divide-line">{pending.map((r) => <Row key={r.id} r={r} />)}</ul>
         ) : (
-          <EmptyState icon={UserPlus} title={t('No new sign-ups', 'নতুন কোনো নিবন্ধন নেই')} text={t('New contractors appear here after they register.', 'নতুন ঠিকাদার নিবন্ধন করলে এখানে দেখাবে।')} />
+          <EmptyState icon={UserPlus} title={t('No new sign-ups', 'নতুন কোনো নিবন্ধন নেই')} />
         )}
       </Card>
       <Card>

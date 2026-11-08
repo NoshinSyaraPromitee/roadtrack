@@ -1,15 +1,28 @@
 import { useState } from 'react';
-import { CircleCheck, KeyRound, MessageSquareText, Send } from 'lucide-react';
+import { CircleCheck, KeyRound, Send } from 'lucide-react';
 import type { Account } from '@/core/accounts';
 import { findAccount, hashPassword, maskPhone, normalizePhone, passwordProblems } from '@/core/accounts';
 import { useI18n } from '@/shared/i18n';
 import { Button, Card, CardHeader, Field, Input } from '@/shared/ui';
 import { RESET_CODE_MS, RESET_TRIES, newResetCode, usePasswords } from './passwordStore';
+import { DemoSmsToast } from './DemoSmsToast';
 import { NewPasswordFields } from './NewPasswordFields';
 
 type Step = 'phone' | 'code' | 'new';
 
-export function ResetPassword({ role, startPhone, onDone, onBack }: { role: Account['role']; startPhone: string; onDone: (phone: string) => void; onBack: () => void }) {
+export function ResetPassword({
+  role,
+  startPhone,
+  extra = [],
+  onDone,
+  onBack,
+}: {
+  role: Account['role'];
+  startPhone: string;
+  extra?: Account[];
+  onDone: (phone: string) => void;
+  onBack: () => void;
+}) {
   const i = useI18n();
   const { t } = i;
   const setHash = usePasswords((s) => s.setHash);
@@ -19,7 +32,7 @@ export function ResetPassword({ role, startPhone, onDone, onBack }: { role: Acco
   const [typed, setTyped] = useState('');
   const [tries, setTries] = useState(0);
   const [error, setError] = useState('');
-  const account = findAccount(role, phone);
+  const account = findAccount(role, phone, extra);
   const digits = normalizePhone(phone);
 
   const send = () => {
@@ -58,7 +71,7 @@ export function ResetPassword({ role, startPhone, onDone, onBack }: { role: Acco
         <CardHeader
           icon={KeyRound}
           title={t('Reset your password', 'পাসওয়ার্ড বদলান')}
-          subtitle={step === 'new' ? t('Choose a new password.', 'নতুন পাসওয়ার্ড দিন।') : t('We send a 6-digit code to your phone.', 'আপনার ফোনে ৬ অঙ্কের একটি কোড পাঠানো হবে।')}
+          subtitle={step === 'phone' ? t('We send a 6-digit code to your phone.', 'আপনার ফোনে ৬ অঙ্কের একটি কোড পাঠানো হবে।') : step === 'new' ? t('Choose a new password.', 'নতুন পাসওয়ার্ড দিন।') : undefined}
         />
         {step === 'phone' && (
           <form
@@ -89,15 +102,7 @@ export function ResetPassword({ role, startPhone, onDone, onBack }: { role: Acco
             }}
           >
             <p className="text-ink-soft">{t(`If ${maskPhone(digits)} belongs to an account, a code was sent to it. It works for 5 minutes.`, `${maskPhone(digits)} নম্বরে অ্যাকাউন্ট থাকলে সেখানে কোড পাঠানো হয়েছে। কোডটি ৫ মিনিট চলবে।`)}</p>
-            {account && code && (
-              <div className="flex items-start gap-2.5 rounded-xl border border-sign-100 bg-sign-50 p-3">
-                <MessageSquareText className="mt-0.5 h-5 w-5 shrink-0" />
-                <p className="text-[0.95rem] leading-snug">
-                  {t('Demo only: there is no SMS service, so the message is shown here.', 'শুধু ডেমো: এসএমএস সেবা নেই, তাই বার্তাটি এখানে দেখানো হলো।')}
-                  <span className="mt-1 block font-sign text-2xl tracking-[0.2em] text-sign-600">{code.value}</span>
-                </p>
-              </div>
-            )}
+            {account && code && <DemoSmsToast key={code.value} code={code.value} />}
             <Field label={t('6-digit code', '৬ অঙ্কের কোড')}>
               <Input value={typed} onChange={(e) => setTyped(e.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder="••••••" className="font-sign text-2xl tracking-[0.3em]" />
             </Field>

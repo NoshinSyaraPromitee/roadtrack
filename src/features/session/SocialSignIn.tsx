@@ -20,7 +20,7 @@ export function SocialSignIn({
 }: {
   role: Account['role'];
   onAccount: (account: Account) => void;
-  onRegister: (email: string, provider: Social) => void;
+  onRegister?: (email: string, provider: Social) => void;
 }) {
   const { t } = useI18n();
   const extra = useApprovedAccounts();
@@ -38,8 +38,8 @@ export function SocialSignIn({
     const waiting = role === 'supervisor' ? waitingRegistration(registrations, { email: value }) : undefined;
     if (waiting?.status === 'pending') return setMessage(t('This registration is waiting for head office approval.', 'এই নিবন্ধন প্রধান কার্যালয়ের অনুমোদনের অপেক্ষায় আছে।'));
     if (waiting) return setMessage(t('Head office did not approve this registration. Register again or call the office.', 'প্রধান কার্যালয় এই নিবন্ধন অনুমোদন করেনি। আবার নিবন্ধন করুন বা অফিসে ফোন করুন।'));
-    if (role === 'supervisor') return onRegister(value, provider);
-    setMessage(t('No head office account uses this email.', 'এই ইমেইলে প্রধান কার্যালয়ের কোনো অ্যাকাউন্ট নেই।'));
+    if (onRegister) return onRegister(value, provider);
+    setMessage(t('No account uses this email.', 'এই ইমেইলে কোনো অ্যাকাউন্ট নেই।'));
   };
 
   return (
