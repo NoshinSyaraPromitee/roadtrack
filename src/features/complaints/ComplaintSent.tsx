@@ -9,9 +9,8 @@ export function ComplaintSent({ onAgain }: { onAgain: () => void }) {
     <Card className="flex flex-col items-center py-8 text-center">
       <Pictogram icon={CircleCheck} size={88} />
       <h2 className="mt-4 font-sign text-3xl">{t('Complaint sent', 'অভিযোগ পাঠানো হয়েছে')}</h2>
-      <p className="mt-1 text-lg text-ink-soft">{t('The head office will look into it.', 'প্রধান কার্যালয় বিষয়টি দেখবে।')}</p>
       <div className="mt-3">
-        <SpeakButton text={{ en: 'Complaint sent. The head office will look into it.', bn: 'অভিযোগ পাঠানো হয়েছে। প্রধান কার্যালয় বিষয়টি দেখবে।' }} />
+        <SpeakButton text={{ en: 'Complaint sent.', bn: 'অভিযোগ পাঠানো হয়েছে।' }} />
       </div>
       <Button size="lg" variant="secondary" className="mt-6" onClick={onAgain}>
         {t('Make another complaint', 'আরেকটি অভিযোগ করুন')}

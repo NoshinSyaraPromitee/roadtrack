@@ -42,9 +42,9 @@ export function RaiseRequestForm({ worker }: { worker: Worker }) {
   const send = () => {
     setError('');
     if (!reason) return setError(t('Tap a reason.', 'একটি কারণে চাপ দিন।'));
-    if (!audio && details.trim().length < 10) return setError(t('Record your voice or write a few words.', 'কণ্ঠ রেকর্ড করুন অথবা কয়েকটি কথা লিখুন।'));
+    if (!audio && !details.trim()) return setError(t('Record your voice or write something.', 'কণ্ঠ রেকর্ড করুন অথবা কিছু লিখুন।'));
     request({ workerId: worker.id, currentRate: worker.dailyRate, requestedRate: rate, reason, details: details.trim(), audio: audio ?? undefined });
-    confirmSent({ en: 'Raise request sent', bn: 'বেতন বাড়ানোর আবেদন পাঠানো হয়েছে' }, { en: 'Head office will decide.', bn: 'প্রধান কার্যালয় সিদ্ধান্ত নেবে।' });
+    confirmSent({ en: 'Raise request sent', bn: 'বেতন বাড়ানোর আবেদন পাঠানো হয়েছে' });
   };
 
   return (

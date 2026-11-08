@@ -52,7 +52,7 @@ export function ComplaintWizard({ workerId }: { workerId: string }) {
     if (step === 0 && !against) return setError(t('Tap a person first.', 'আগে একজনের নামে চাপ দিন।'));
     if (step === 1 && !category) return setError(t('Tap what happened.', 'কী হয়েছে তা চাপুন।'));
     if (step === 2) {
-      if (!audio && message.trim().length < 10) return setError(t('Record your voice or write a few words.', 'কণ্ঠ রেকর্ড করুন অথবা কয়েকটি কথা লিখুন।'));
+      if (!audio && !message.trim()) return setError(t('Record your voice or write something.', 'কণ্ঠ রেকর্ড করুন অথবা কিছু লিখুন।'));
       if (!against || !category) return;
       const id = file({ fromWorkerId: workerId, againstId: against, category, message: message.trim(), audio: audio ?? undefined, anonymous });
       if (anonymous) keepReceipt(workerId, id);
